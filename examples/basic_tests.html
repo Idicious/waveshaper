@@ -1,0 +1,122 @@
+<!DOCTYPE>
+<html>
+
+<head>
+    <style>
+        .testCanvas {
+            width: 100%;
+            height: 150px;
+        }
+
+        #virtual-scroll-container {
+            width: 100%;
+        }
+
+        #virtual-scroll {
+            overflow-y: auto;
+        }
+
+        #virtual-scroll-width {
+            height: 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id='testCanvas1' class='testCanvas'></canvas>
+    <canvas id='testCanvas2' class='testCanvas'></canvas>
+    <canvas id='testCanvas3' class='testCanvas'></canvas>
+    <canvas id='testCanvas4' class='testCanvas'></canvas>
+
+    <div id="virtual-scroll-container">
+        <div id="virtual-scroll">
+            <div id="virtual-scroll-width">
+            </div>
+        </div>
+    </div>
+
+    <br/>
+
+    <div id="duration"></div>
+    <div id="samples-per-pixel"></div>
+    <button id="zoom-in">Zoom In</button>
+    <button id="zoom-out">Zoom Out</button>
+
+
+    <script src="../dist/waveshaper.bundle.js"></script>
+    <script>
+        const audioContext = new AudioContext();
+        const canvas1 = document.getElementById('testCanvas1');
+        const canvas2 = document.getElementById('testCanvas2');
+        const canvas3 = document.getElementById('testCanvas3');
+        const canvas4 = document.getElementById('testCanvas4');
+
+        var options = {
+            scrollPosition: 0,
+            samplesPerPixel: 1024,
+            sampleSize: 256,
+            drawStyle: 'fill',
+            meterType: 'peak'
+        }
+        var manager = new WaveShapeManager(audioContext.sampleRate, options);
+
+        // Get audio data from the server
+        fetch('/examples/audio/GTR.wav')
+            .then(r => r.arrayBuffer())
+            .then(d => audioContext.decodeAudioData(d))
+            .then(buffer => {
+
+                // Create waveshaper with the audio data we just loaded and draw it
+                var audioData = buffer.getChannelData(0);
+                manager.addWave(canvas1, audioData);
+                manager.addWave(canvas2, audioData);
+                manager.addWave(canvas3, audioData);
+                manager.addWave(canvas4, audioData);
+                requestAnimationFrame(() => {
+                    manager.draw();
+                });
+
+                var durationDiv = document.getElementById('duration');
+                var duration = manager.getDurationAsDate();
+                durationDiv.innerText = 'Duration: ' + duration.getMinutes() + ' : ' + duration.getSeconds() +
+                    ' : ' + duration.getMilliseconds();
+
+                // Set scroll width to the total draw length of the audio file
+                var scroller = document.getElementById('virtual-scroll-width');
+                scroller.style.width = manager.getScrollWidth() + 'px';
+
+                var sppDiv = document.getElementById('samples-per-pixel');
+                sppDiv.innerText = 'Samples per pixel: ' + manager.samplesPerPixel;
+
+                // Add a listener to the scrollable element for virtual scroll
+                document.getElementById('virtual-scroll').addEventListener('scroll', function (e) {
+                    requestAnimationFrame(() => {
+                        manager.setScroll(e.target.scrollLeft);
+                        manager.draw();
+                    });
+                });
+
+                document.getElementById('zoom-in').addEventListener('click', function (e) {
+                    var currentZoom = manager.samplesPerPixel;
+                    var newZoom = currentZoom / 2;
+
+                    manager.setSamplesPerPixel(newZoom);
+                    sppDiv.innerText = 'Samples per pixel: ' + manager.samplesPerPixel;
+                    scroller.style.width = manager.getScrollWidth() + 'px';
+                    manager.draw();
+                });
+
+                document.getElementById('zoom-out').addEventListener('click', function (e) {
+                    var currentZoom = manager.samplesPerPixel;
+                    var newZoom = currentZoom * 2;
+
+                    manager.setSamplesPerPixel(newZoom);
+                    sppDiv.innerText = 'Samples per pixel: ' + manager.samplesPerPixel;
+                    scroller.style.width = manager.getScrollWidth() + 'px';
+                    manager.draw();
+                });
+            });
+    </script>
+</body>
+
+</html>
