@@ -1,7 +1,6 @@
 import { WaveShaper } from './waveshaper';
 import { Segment } from '../models/segment';
 import { defaultOptions } from '../defaults';
-import { hamsters } from 'hamsters.js';
 import { setupDrag } from '../interaction/drag';
 import { setupResize } from '../interaction/resize';
 import { setupCut } from '../interaction/cut';
@@ -20,6 +19,14 @@ export class WaveShapeManager {
      * @memberof WaveShapeManager
      */
     get waveShapers(){ return this._waveShapers; }
+
+    /**
+     * 
+     * @type {Map<string, AudioBuffer>}
+     * @readonly
+     * @memberof WaveShapeManager
+     */
+    get audioData() { return this._audioData; };
 
     /**
      * @description Audio samplerate
@@ -116,6 +123,8 @@ export class WaveShapeManager {
         }
 
         this._waveShapers = new Map();
+        this._audioData = new Map();
+        
         this._samplerate = samplerate;
     
         this._resolution = options.resolution;
@@ -124,6 +133,11 @@ export class WaveShapeManager {
         this._drawStyle = options.drawStyle;
         this._meterType = options.meterType;
         this._container = container;
+
+        /**
+         * @type {string[]}
+         */
+        this._lastDraw = new Array();
 
         setupDrag(this, this._container);
         setupResize(this, this._container);
@@ -142,6 +156,22 @@ export class WaveShapeManager {
         canvas.setAttribute('data-wave-id', id);
         const wave = new WaveShaper(id, canvas, segments);
         this.waveShapers.set(id, wave);
+    }
+
+    /**
+     * Adds audio data to the waveshaper and redraws waveshapers using it
+     * 
+     * @param {string} id 
+     * @param {AudioBuffer} data 
+     */
+    addAudioData(id, data) {
+        this.audioData.set(id, data);
+        
+        const ids = this._lastDraw.map(id => this.waveShapers.get(id))
+            .filter(ws => ws.segments.some(s => s.data === id))
+            .map(ws => ws.id);
+        
+        this.draw(ids, true);
     }
 
     /**
@@ -217,6 +247,7 @@ WaveShapeManager.prototype.getScrollWidth = function () {
  */
 WaveShapeManager.prototype.draw = function (ids, forceDraw) {
     const idsToDraw = ids == null ? this.waveShapers.keys() : ids;
+    this._lastDraw = idsToDraw;
     for (var id of idsToDraw) {
         var wave = this.waveShapers.get(id);
         wave.calculate(
