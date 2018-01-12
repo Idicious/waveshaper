@@ -68,7 +68,7 @@ Schedular.prototype.start = function() {
 
     const startIndex = this.currentJobIndex;
     const endTime = performance.now() + this.interval;
-    while(true || performance.now() < endTime) {
+    while(performance.now() < endTime) {
         const job = this.jobs[this.currentJobIndex];
         if(job.hasJob) job.doJob();
 
