@@ -20,6 +20,7 @@ import {
     Interval
 } from '../models/interval';
 import { drawSvgPath } from '../strategies/render/svg/path';
+import { drawCanvasRect } from '../strategies/render/canvas/rect';
 
 /**
  * Default constructor 
@@ -34,8 +35,8 @@ export function WaveShaper(id, element, segments) {
     this.element = element;
     this.segments = segments;
     this.flatten();
-    //this.element.width = element.clientWidth || element.width;
-    //this.element.height = element.clientHeight || element.height;
+    this.element.width = element.clientWidth;
+    this.element.height = element.clientHeight;
     this.calculated;
 
     this.width = this.element.width;

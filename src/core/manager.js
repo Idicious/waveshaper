@@ -154,15 +154,6 @@ export class WaveShapeManager {
      */
     addWave(id, element, segments) {
         element.setAttribute('data-wave-id', id);
-        if(element instanceof HTMLCanvasElement) {
-            element.width = this._container.clientWidth;
-            element.height = this._container.clientHeight;
-        } 
-        if(element instanceof SVGElement) {
-            element.setAttribute('width', this._container.clientWidth + 'px');
-            element.setAttribute('height', this._container.clientHeight + 'px');
-        }
-        
         const wave = new WaveShaper(id, element, segments);
         this.waveShapers.set(id, wave);
     }

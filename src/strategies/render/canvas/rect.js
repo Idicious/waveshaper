@@ -23,7 +23,4 @@ export function drawCanvasRect(waveform, height, width, element, drawStyle) {
     }
     ctx.closePath();
     ctx.fill();
-    
-    ctx.clearRect(0, 0, width, height);
-    ctx.drawImage(offScreenCtx.canvas, 0, 0);
 }
