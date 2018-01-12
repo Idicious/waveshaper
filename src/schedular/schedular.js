@@ -9,13 +9,30 @@
  * 
  * @param {number} interval ms that jobs are sceduled for each animationframe
  * @param {Handle[]} jobs array that jobs are stored in
+ * @param {AudioContext} audioContext
  */
-export const Schedular = function(interval, jobs) {
+export const Schedular = function(interval, jobs, audioContext) {
     this.interval =  interval || 16;
     this.jobs = jobs || [];
+    this.ctx = audioContext;
     
     this.currentJobIndex = 0;
     this.frame = -1; // current animation frame
+}
+
+/**
+ * Gets the current time
+ * 
+ * @returns {number}
+ */
+Schedular.prototype.getTime = function() {
+    if(this.ctx) {
+        return this.ctx.currentTime;
+    } else if(window['performance']) {
+        return performance.now();
+    } else {
+        return Date.now();
+    }
 }
 
 /**
@@ -67,8 +84,8 @@ Schedular.prototype.start = function() {
     if(this.jobs.length === 0) return;
 
     const startIndex = this.currentJobIndex;
-    const endTime = performance.now() + this.interval;
-    while(performance.now() < endTime) {
+    const endTime = this.getTime() + this.interval;
+    while(this.getTime() < endTime) {
         const job = this.jobs[this.currentJobIndex];
         if(job.hasJob) job.doJob();
 
@@ -83,9 +100,6 @@ Schedular.prototype.start = function() {
 Schedular.prototype.stop = function() {
     cancelAnimationFrame(this.frame);
 }
-
-
-
 
 /**
  * 
