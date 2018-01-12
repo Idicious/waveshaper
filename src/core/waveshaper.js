@@ -8,8 +8,8 @@ import {
     calculateRms
 } from '../strategies/calculate/rms'
 import {
-    drawDoubleLoop
-} from '../strategies/render/double-loop';
+    drawCanvasLine
+} from '../strategies/render/canvas/line';
 import {
     Segment
 } from '../models/segment';
@@ -19,6 +19,7 @@ import {
 import {
     Interval
 } from '../models/interval';
+import { drawSvgPath } from '../strategies/render/svg/path';
 
 /**
  * Default constructor 
@@ -28,24 +29,17 @@ import {
  * @param {Segment[]} segments 
  * @param {Interval[]} flattened
  */
-export function WaveShaper(id, canvas, segments) {
+export function WaveShaper(id, element, segments) {
     this.id = id;
-    this.canvas = canvas;
+    this.element = element;
     this.segments = segments;
     this.flatten();
-    this.canvas.width = canvas.clientWidth;
-    this.canvas.height = canvas.clientHeight;
+    //this.element.width = element.clientWidth || element.width;
+    //this.element.height = element.clientHeight || element.height;
     this.calculated;
 
-    this.offScreenCanvas = document.createElement('canvas');
-    this.offScreenCanvas.width = this.canvas.width;
-    this.offScreenCanvas.height = this.canvas.height;
-
-    this.width = this.canvas.width;
-    this.height = this.canvas.height;
-
-    this.ctx = canvas.getContext('2d');
-    this.offScreenCtx = this.offScreenCanvas.getContext('2d');
+    this.width = this.element.width;
+    this.height = this.element.height;
 }
 
 WaveShaper.prototype.flatten = function () {
@@ -149,12 +143,9 @@ WaveShaper.prototype.calculate = function (meterType, sampleSize, samplesPerPixe
                 sampleSize,
                 samplesPerPixel,
                 this.width,
-                this.height,
                 this.flattened,
                 scrollPosition,
-                samplerate,
-                this.ctx,
-                this.offScreenCtx
+                samplerate
             );
     }
     
@@ -168,12 +159,11 @@ WaveShaper.prototype.calculate = function (meterType, sampleSize, samplesPerPixe
  */
 WaveShaper.prototype.draw = function (drawStyle) {
     if (!this.skipDraw) {
-        drawDoubleLoop(
+        drawCanvasLine(
             this.calculated,
             this.height,
             this.width,
-            this.ctx,
-            this.offScreenCtx,
+            this.element,
             drawStyle
         );
     }

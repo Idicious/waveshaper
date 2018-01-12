@@ -25,7 +25,14 @@ export function calculatePeaks(sampleRatio, samplesPerPixel, width, segments, sc
         let negMax = 0;
 
         const currentSecond = startSecond + ((i * samplesPerPixel) / sampleRate);
-        const interval = segments.find(s => s.start <= currentSecond && s.end >= currentSecond);
+        let interval;
+        for(let i = 0; i < segments.length; i++) {
+            const s = segments[i];
+            if(s.start <= currentSecond && s.end >= currentSecond) {
+                interval = s;
+                break;
+            }
+        }
 
         if(interval == null) {
             vals.push([negMax, posMax]);

@@ -1,19 +1,18 @@
 
 /**
  * 
- * A job schedular that limmits the time it can take up
+ * A job schedular that limits the time it can take up
  * in an animationframe by the interval given to it.
  * 
  * This should only be used for jobs that can be dropped if a new
  * one arrives before the old is completed. 
  * 
  * @param {number} interval ms that jobs are sceduled for each animationframe
- * @param {Handle[]} jobs array that jobs are stored in
  * @param {AudioContext} audioContext
  */
-export const Schedular = function(interval, jobs, audioContext) {
+export const Schedular = function(interval, audioContext) {
     this.interval =  interval || 16;
-    this.jobs = jobs || [];
+    this.jobs = [];
     this.ctx = audioContext;
     
     this.currentJobIndex = 0;
@@ -45,6 +44,8 @@ Schedular.prototype.getTime = function() {
 Schedular.prototype.getHandle = function() {
     const handle = new Handle();
     this.jobs.push(handle);
+
+    return handle;
 }
 
 /**
@@ -58,10 +59,7 @@ Schedular.prototype.getHandle = function() {
 Schedular.prototype.getHandles = function(ammount) {
     var arr = [];
     for(let i = 0; i < ammount; i ++) {
-        const handle = new Handle();
-
-        this.jobs.push(handle);
-        arr.push(handle);
+        arr.push(this.getHandle());
     }
     return arr;
 }
@@ -84,8 +82,8 @@ Schedular.prototype.start = function() {
     if(this.jobs.length === 0) return;
 
     const startIndex = this.currentJobIndex;
-    const endTime = this.getTime() + this.interval;
-    while(this.getTime() < endTime) {
+    const endTime = this.ctx.currentTime + this.interval / 1000;
+    while(this.ctx.currentTime <= endTime) {
         const job = this.jobs[this.currentJobIndex];
         if(job.hasJob) job.doJob();
 

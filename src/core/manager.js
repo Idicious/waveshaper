@@ -148,13 +148,22 @@ export class WaveShapeManager {
      * @description Adds a waveshaper to the manager
      * 
      * @param {string} id
-     * @param {HTMLCanvasElement} canvas Html canvas element
+     * @param {HTMLCanvasElement | SVGElement} element Html draw element
      * @param {Segment[]} segments 
      * @memberof WaveShapeManager
      */
-    addWave(id, canvas, segments) {
-        canvas.setAttribute('data-wave-id', id);
-        const wave = new WaveShaper(id, canvas, segments);
+    addWave(id, element, segments) {
+        element.setAttribute('data-wave-id', id);
+        if(element instanceof HTMLCanvasElement) {
+            element.width = this._container.clientWidth;
+            element.height = this._container.clientHeight;
+        } 
+        if(element instanceof SVGElement) {
+            element.setAttribute('width', this._container.clientWidth + 'px');
+            element.setAttribute('height', this._container.clientHeight + 'px');
+        }
+        
+        const wave = new WaveShaper(id, element, segments);
         this.waveShapers.set(id, wave);
     }
 
@@ -258,5 +267,10 @@ WaveShapeManager.prototype.draw = function (ids, forceDraw) {
             this.samplerate,
             forceDraw
         );
+    }
+
+    for (var id of idsToDraw) {
+        var wave = this.waveShapers.get(id);
+        wave.draw(this.drawStyle);
     }
 }

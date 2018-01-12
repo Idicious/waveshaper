@@ -16,7 +16,7 @@ const savedValues = [];
  * @param {CanvasRenderingContext2D} offScreenCtx 
  * @returns 
  */
-export function calculateRms(sampleRatio, samplesPerPixel, width, height, segments, scrollPosition, sampleRate, ctx, offScreenCtx) {
+export function calculateRms(sampleRatio, samplesPerPixel, width, segments, scrollPosition, sampleRate) {
     const scale = height / 2;
     const sampleSize = Math.max(1, samplesPerPixel / sampleRatio);
     //const sampleSize = Math.max(1, Math.log2(samplesPerPixel));
@@ -24,8 +24,6 @@ export function calculateRms(sampleRatio, samplesPerPixel, width, height, segmen
     const startSecond = start / sampleRate;
 
     const vals = [];
-
-    offScreenCtx.beginPath();
     // For each pixel we display
     for (let i = 0; i < width; i++) {
         let posSum = 0;
@@ -67,17 +65,10 @@ export function calculateRms(sampleRatio, samplesPerPixel, width, height, segmen
         }
 
         const samples = Math.round(samplesPerPixel / sampleSize);
-        const minHeight = -Math.sqrt(negSum / samples * 2) * scale + scale;
-        const maxHeight = Math.sqrt(posSum / samples * 2) * scale + scale;
-        const height = maxHeight - minHeight;
+        const min = -Math.sqrt(negSum / samples * 2);
+        const max = Math.sqrt(posSum / samples * 2);
 
-        offScreenCtx.moveTo(i, minHeight);
-        offScreenCtx.lineTo(i, maxHeight)
+        vals.push([min, max]);
     }
-    offScreenCtx.closePath();
-    offScreenCtx.stroke();
-
-    ctx.clearRect(0, 0, width, height);
-    ctx.drawImage(offScreenCtx.canvas, 0, 0);
-    offScreenCtx.clearRect(0, 0, width, height);
+    return vals;
 }
