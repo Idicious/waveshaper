@@ -12,6 +12,9 @@ export const setupCut = function(manager, container) {
     const hammer = new Hammer(container);
 
     hammer.on('tap', (ev) => { 
+        if(manager.mode !== 'cut')
+            return;
+
         const id = ev.target.getAttribute('data-wave-id');
         const wave = manager.waveShapers.get(+id);
 

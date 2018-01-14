@@ -4,6 +4,7 @@ import { defaultOptions } from '../defaults';
 import { setupDrag } from '../interaction/drag';
 import { setupResize } from '../interaction/resize';
 import { setupCut } from '../interaction/cut';
+import { setupPan } from '../interaction/pan';
 
 /**
  * 
@@ -91,6 +92,27 @@ export class WaveShapeManager {
     set meterType(type) { this._meterType = type; }
 
     /**
+     * @description Active id's, redraws when draw is called without argument
+     * @example Peak get the peak values of the range, RMS is similar to average https://en.wikipedia.org/wiki/Root_mean_square
+     * 
+     * @param {string[]}
+     * @returns {string[]}
+     * @memberof WaveShapeManager
+     */
+    get activeWaveShapers() { return this._activeWaveShapers; }
+    set activeWaveShapers(active) { this._activeWaveShapers = active; }
+
+    /**
+     * @description Interaction mode of the the waveforms
+     * 
+     * @param {'pan' | 'drag' | 'cut' | 'resize'}
+     * @returns {'pan' | 'drag' | 'cut' | 'resize'}
+     * @memberof WaveShapeManager
+     */
+    get mode() { return this._mode; }
+    set mode(mode) { this._mode = mode; }
+
+    /**
      * @description Set at start of an interaction, null when interaction is complete
      * 
      * @param {Segment} segment Currently active segment
@@ -132,6 +154,7 @@ export class WaveShapeManager {
         this._scrollPosition = options.scrollPosition;
         this._drawStyle = options.drawStyle;
         this._meterType = options.meterType;
+        this._mode = options.mode;
         this._container = container;
 
         /**
@@ -142,6 +165,7 @@ export class WaveShapeManager {
         setupDrag(this, this._container);
         setupResize(this, this._container);
         setupCut(this, this._container);
+        setupPan(this, this._container);
     }
     
     /**
@@ -153,9 +177,11 @@ export class WaveShapeManager {
      * @memberof WaveShapeManager
      */
     addWave(id, element, segments) {
-        element.setAttribute('data-wave-id', id);
-        const wave = new WaveShaper(id, element, segments);
-        this.waveShapers.set(id, wave);
+        if(!this.waveShapers.has(id)) {
+            element.setAttribute('data-wave-id', id);
+            const wave = new WaveShaper(id, element, segments);
+            this.waveShapers.set(id, wave);
+        }
     }
 
     /**
@@ -246,7 +272,7 @@ WaveShapeManager.prototype.getScrollWidth = function () {
  * @param {boolean} forceDraw Force redraw of the given waves
  */
 WaveShapeManager.prototype.draw = function (ids, forceDraw) {
-    const idsToDraw = ids == null ? this.waveShapers.keys() : ids;
+    const idsToDraw = ids == null ? this.activeWaveShapers == null ? this.waveShapers.keys() : this.activeWaveShapers : ids;
     this._lastDraw = idsToDraw;
     for (var id of idsToDraw) {
         var wave = this.waveShapers.get(id);

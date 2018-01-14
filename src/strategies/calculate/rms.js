@@ -22,6 +22,7 @@ export function calculateRms(sampleRatio, samplesPerPixel, width, segments, scro
     //const sampleSize = Math.max(1, Math.log2(samplesPerPixel));
     const start = scrollPosition * samplesPerPixel;
     const startSecond = start / sampleRate;
+    const secondsPerPixel = samplesPerPixel / sampleRate;
 
     const vals = [];
     // For each pixel we display
@@ -40,8 +41,14 @@ export function calculateRms(sampleRatio, samplesPerPixel, width, segments, scro
         }
 
         if(interval == null) {
-            vals.push([posSum, negSum]);
+            vals.push([posSum, negSum, false]);
             continue;
+        }
+
+        let endOfInterval = false;
+        if((currentSecond + secondsPerPixel) > interval.end 
+            || currentSecond - secondsPerPixel < interval.start) {
+            endOfInterval = true;
         }
 
         const offsetStart = interval.start - interval.originalStart;
@@ -68,7 +75,7 @@ export function calculateRms(sampleRatio, samplesPerPixel, width, segments, scro
         const min = -Math.sqrt(negSum / samples * 2);
         const max = Math.sqrt(posSum / samples * 2);
 
-        vals.push([min, max]);
+        vals.push([min, max, endOfInterval]);
     }
     return vals;
 }

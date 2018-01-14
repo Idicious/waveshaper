@@ -16,6 +16,7 @@ export function calculatePeaks(sampleRatio, samplesPerPixel, width, segments, sc
     const sampleSize = Math.max(1, samplesPerPixel / sampleRatio);
     const start = scrollPosition * samplesPerPixel;
     const startSecond = start / sampleRate;
+    const secondsPerPixel = samplesPerPixel / sampleRate;
 
     const vals = [];
 
@@ -33,10 +34,16 @@ export function calculatePeaks(sampleRatio, samplesPerPixel, width, segments, sc
                 break;
             }
         }
-
+        
         if(interval == null) {
-            vals.push([negMax, posMax]);
+            vals.push([negMax, posMax, false]);
             continue;
+        }
+
+        let endOfInterval = false;
+        if(currentSecond + secondsPerPixel > interval.end 
+            || currentSecond - secondsPerPixel < interval.start) {
+            endOfInterval = true;
         }
 
         const offsetStart = interval.start - interval.originalStart;
@@ -58,7 +65,7 @@ export function calculatePeaks(sampleRatio, samplesPerPixel, width, segments, sc
                 }
             }
         }
-        vals.push([negMax, posMax]);
+        vals.push([negMax, posMax, endOfInterval]);
     }
     return vals;
 }

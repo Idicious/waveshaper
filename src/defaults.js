@@ -3,5 +3,6 @@ export const defaultOptions = {
     samplesPerPixel: 1024,
     resolution: 1,
     drawStyle: 'fill',
-    meterType: 'rms'
+    meterType: 'rms',
+    mode: 'pan'
 }

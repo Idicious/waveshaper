@@ -7,7 +7,6 @@
             width: 100%;
             height: 150px;
             background-color: yellow;
-            image-rendering: optimizeSpeed;
         }
 
         #canvas-container {
@@ -75,37 +74,16 @@
             samplesPerPixel: 1024,
             resolution: 32,
             drawStyle: 'fill',
-            meterType: 'peak'
+            meterType: 'peak',
+            mode: 'pan'
         }
-
-        //const timelineCanvas = document.getElementById('timeline');
-        //timelineCanvas.width = timelineCanvas.clientWidth;
-        //timelineCanvas.height = timelineCanvas.clientHeight;
-        //const timelineCtx = timelineCanvas.getContext('2d');
 
         const width = window.outerWidth;
         const height = 50;
-
-        // const drawTimeLine = function(spp, sr, w, h, sp) {
-        //     const secondsPerPixel = (spp / sr);
-        //     const pixelsPerSecond = 1 / secondsPerPixel;
-        //     const secondsInWindow = Math.ceil(secondsPerPixel * w);
-        //     const secondsFromStart = (sp * secondsPerPixel) % 1;
-        //     const pixelsFromStart = secondsFromStart * pixelsPerSecond;
-
-        //     timelineCtx.clearRect(0, 0, w, h);
-        //     for(let i = 0; i <= secondsInWindow; i++) {
-        //         const pixel = Math.floor((i * pixelsPerSecond) + pixelsFromStart);
-        //         timelineCtx.fillRect(pixel, 0, 1, h);
-        //     }
-        // }
-        // drawTimeLine(options.samplesPerPixel, audioContext.sampleRate, width, height, 0);
         
 
         const schedular = new Schedular(16, audioContext);
         schedular.start();
-
-        
         
         const canvasContainer = document.getElementById('canvas-container');
         const canvasWrapper = document.getElementById('canvas-wrapper');
@@ -195,6 +173,7 @@
                 buffersInView.push(waveShapeData);
                 canvasFragment.appendChild(waveShapeData.canvas);
                 manager.addWave(waveShapeData.id, waveShapeData.canvas, waveShapeData.segments);
+                manager.activeWaveShapers = buffersInView.map(b => b.id);
                 requestAnimationFrame(() => manager.draw([waveShapeData.id]));
             }
         }
@@ -265,6 +244,7 @@
             canvasWrapper.replaceChild(containerDiv, oldNode);
 
             buffersInView = buffers.slice(startIndex, startIndex + fitInElement);
+            manager.activeWaveShapers = buffersInView.map(b => b.id);
             for(const buffer of buffersInView) {
                containerDiv.appendChild(buffer.canvas);
                manager.addWave(buffer.id, buffer.canvas, buffer.segments);

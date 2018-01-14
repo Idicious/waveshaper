@@ -35,4 +35,10 @@ export function drawCanvasLine(waveform, height, width, element, drawStyle) {
         default:
             ctx.fill();
     }
+
+    for (let i = 0; i < waveform.length; i++) {
+        if(i != 0 && !waveform[i-1][2] && waveform[i][2]) {
+            ctx.fillRect(i-1, 0, 1, height);
+        }
+    }
 }

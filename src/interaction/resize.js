@@ -12,6 +12,9 @@ export const setupResize = function(manager, container) {
     const hammer = new Hammer(container);
 
     hammer.on('panstart', (ev) => { 
+        if(manager.mode !== 'resize')
+            return;
+
         const id = ev.target.getAttribute('data-wave-id');
         const wave = manager.waveShapers.get(+id);
 
@@ -37,6 +40,9 @@ export const setupResize = function(manager, container) {
     });
 
     hammer.on('pan', (ev) =>  {
+        if(manager.mode !== 'resize')
+            return;
+            
         if(manager.activeSegment == null)
             return;
 
@@ -69,6 +75,9 @@ export const setupResize = function(manager, container) {
     });
 
     hammer.on('panend', (ev) => {
+        if(manager.mode !== 'resize')
+            return;
+
         manager.activeSegment = null;
         manager.activeSegmentStart = null;
         manager.dragWave = null;
