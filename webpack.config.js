@@ -7,5 +7,6 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     filename: "waveshaper.bundle.js",
     publicPath: "/"
-  }
+  },
+  devtool: 'source-map'
 };

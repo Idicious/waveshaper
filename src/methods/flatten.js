@@ -43,7 +43,7 @@ function mapToIntervals(segments) {
         end: s.start + s.duration - s.offsetEnd,
         index: s.index,
         originalStart: s.start,
-        data: s.data
+        source: s.source
       };
     });
 }

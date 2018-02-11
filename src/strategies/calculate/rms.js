@@ -8,18 +8,14 @@ const savedValues = [];
  * @param {number} sampleRatio 
  * @param {number} samplesPerPixel 
  * @param {number} width 
- * @param {number} height
  * @param {Interval[]} segments 
  * @param {number} scrollPosition 
  * @param {number} sampleRate
- * @param {CanvasRenderingContext2D} ctx 
- * @param {CanvasRenderingContext2D} offScreenCtx 
+ * @param {Map<string, Float32Array} dataMap
  * @returns 
  */
-export function calculateRms(sampleRatio, samplesPerPixel, width, segments, scrollPosition, sampleRate) {
-    const scale = height / 2;
-    const sampleSize = Math.max(1, samplesPerPixel / sampleRatio);
-    //const sampleSize = Math.max(1, Math.log2(samplesPerPixel));
+export function calculateRms(sampleRatio, samplesPerPixel, width, segments, scrollPosition, sampleRate, dataMap) {
+    const sampleSize = Math.ceil(samplesPerPixel / sampleRatio);
     const start = scrollPosition * samplesPerPixel;
     const startSecond = start / sampleRate;
     const secondsPerPixel = samplesPerPixel / sampleRate;
@@ -45,6 +41,7 @@ export function calculateRms(sampleRatio, samplesPerPixel, width, segments, scro
             continue;
         }
 
+        const buffer = dataMap.get(interval.source);
         let endOfInterval = false;
         if((currentSecond + secondsPerPixel) > interval.end 
             || currentSecond - secondsPerPixel < interval.start) {
@@ -59,8 +56,8 @@ export function calculateRms(sampleRatio, samplesPerPixel, width, segments, scro
         // Don't cycle through more than sampleSize frames per pixel.
         for (let j = 0; j < samplesPerPixel; j += sampleSize) {
             const index = j + startSample;
-            if (index < interval.data.length) {
-                const val = interval.data[index];
+            if (index < buffer.length) {
+                const val = buffer[index];
 
                 // Keep track of positive and negative values separately
                 if (val > 0) {

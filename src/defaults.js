@@ -4,5 +4,7 @@ export const defaultOptions = {
     resolution: 1,
     drawStyle: 'fill',
     meterType: 'rms',
-    mode: 'pan'
+    mode: 'pan',
+    width: 300,
+    height: 150
 }

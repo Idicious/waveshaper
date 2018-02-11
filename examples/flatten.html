@@ -69,128 +69,119 @@
     <script src="/waveshaper.bundle.js"></script>
     <script>
         const audioContext = new AudioContext();
+        const canvasContainer = document.getElementById('canvas-container');
         const options = {
             scrollPosition: 0,
             samplesPerPixel: 1024,
-            resolution: 32,
+            resolution: 10,
             drawStyle: 'fill',
             meterType: 'peak',
-            mode: 'pan'
+            mode: 'pan',
+            height: 150,
+            width: canvasContainer.clientWidth
         }
-
-        const width = window.outerWidth;
-        const height = 50;
         
 
         const schedular = new Schedular(16, audioContext);
         schedular.start();
         
-        const canvasContainer = document.getElementById('canvas-container');
         const canvasWrapper = document.getElementById('canvas-wrapper');
         const canvasFragment = document.getElementById('canvas-fragment');
 
         const manager = new WaveShapeManager(audioContext.sampleRate, canvasWrapper, options);
 
-        const elementHeight = 150;
+        const elementHeight = options.height;
         const ownHeight = canvasContainer.clientHeight;
         const fitInElement = Math.ceil(ownHeight / elementHeight);
 
         const buffers = [];
         let buffersInView = [];
-        const worker = new Worker('/examples/workers/audio-worker.js');
-        worker.onmessage = (message) => {
-            const buffer = getAudioBuffer(message.data.buffer, message.data.meta);
+
+        fetch('/examples/audio/GTR.WAV')
+            .then(res => res.arrayBuffer())
+            .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+            .then(audioBuffer => {
+                manager.addAudioData("1", audioBuffer);
+            });
+
+        for(let i = 0; i < 100; i++) {
             const canvas = document.createElement('canvas');
             canvas.classList.add('testCanvas');
 
-            var data = buffer.getChannelData(0);
-            var duration = data.length / audioContext.sampleRate;
-            var segments = [{
+            const segments = [{
                     id: "" + Math.random(),
                     start: 0,
-                    duration: duration,
+                    duration: 136,
                     offsetStart: 10,
                     offsetEnd: 0,
                     index: 0,
-                    data: data
+                    source: "1"
                 },
                 {
                     id: "" + Math.random(),
                     start: 5,
-                    duration: duration,
+                    duration: 136,
                     offsetStart: 10,
                     offsetEnd: 0,
                     index: 1,
-                    data: data
+                    source: "1"
                 },
                 {
                     id: "" + Math.random(),
                     start: 10,
-                    duration: duration,
+                    duration: 136,
                     offsetStart: 10,
                     offsetEnd: 0,
                     index: 1,
-                    data: data
+                    source: "1"
                 },
                 {
                     id: "" + Math.random(),
                     start: 23,
-                    duration: duration,
+                    duration: 136,
                     offsetStart: 10,
                     offsetEnd: 0,
                     index: 1,
-                    data: data
+                    source: "1"
                 },
                 {
                     id: "" + Math.random(),
                     start: 24,
-                    duration: duration,
+                    duration: 136,
                     offsetStart: 10,
                     offsetEnd: 0,
                     index: 0,
-                    data: data
+                    source: "1"
                 },
                 {
                     id: "" + Math.random(),
                     start: 35,
-                    duration: duration,
+                    duration: 136,
                     offsetStart: 10,
                     offsetEnd: 0,
                     index: 2,
-                    data: data
+                    source: "1"
                 }
             ]
 
             var waveShapeData = {
-                id: Math.random(),
+                id: i,
                 canvas,
                 segments
             };
-            buffers.push(waveShapeData);
 
+            buffers.push(waveShapeData);
+            manager.addWave(waveShapeData.id, waveShapeData.canvas, waveShapeData.segments);
             canvasWrapper.style.height = buffers.length * elementHeight + 'px';
+
             if (buffers.length <= fitInElement) {
                 buffersInView.push(waveShapeData);
                 canvasFragment.appendChild(waveShapeData.canvas);
-                manager.addWave(waveShapeData.id, waveShapeData.canvas, waveShapeData.segments);
+                
                 manager.activeWaveShapers = buffersInView.map(b => b.id);
-                requestAnimationFrame(() => manager.draw([waveShapeData.id]));
+                requestAnimationFrame(() => manager.draw());
             }
         }
-        for (var i = 0; i < 100; i++) {
-            worker.postMessage('/examples/audio/GTR.WAV');
-        }
-
-        const getAudioBuffer = (buffer, meta) => {
-            const audioBuf = audioContext.createBuffer(meta.channels, meta.length, meta.sampleRate);
-            for (var i = 0; i < meta.channels; i++) {
-                const channelData = new Float32Array(buffer[i]);
-                audioBuf.copyToChannel(channelData, i);
-            }
-            return audioBuf;
-        }
-
-
 
         var durationDiv = document.getElementById('duration');
         var duration = manager.getDurationAsDate();
@@ -204,25 +195,10 @@
         var scroller = document.getElementById('virtual-scroll-width');
         scroller.style.width = manager.getScrollWidth() + 'px';
 
-        //var currentAnimation;
-        // Add a listener to the scrollable element for virtual scroll
-        let scrollHandles = schedular.getHandles(fitInElement);
         document.getElementById('virtual-scroll').addEventListener('scroll', function (e) {
             manager.scrollPosition = e.target.scrollLeft;
-            var bufs = buffers.slice(lastStartIndex, lastStartIndex + fitInElement).map(buf => buf.id);
 
-            // requestAnimationFrame(() => {
-            //     drawTimeLine(manager.samplesPerPixel, audioContext.sampleRate, width, height, manager.scrollPosition);
-            //     manager.draw(bufs);
-            // })
-            
-            //drawTimeLine(manager.samplesPerPixel, audioContext.sampleRate, width, height, manager.scrollPosition);
-            for(let i = 0; i < bufs.length; i++) {
-                const handle = scrollHandles[i];
-                const buf = bufs[i];
-
-                handle.addJob(() => manager.draw([buf]));
-            }
+            requestAnimationFrame(() => manager.draw());
         });
 
         let lastStartIndex = 0;
@@ -245,18 +221,12 @@
 
             buffersInView = buffers.slice(startIndex, startIndex + fitInElement);
             manager.activeWaveShapers = buffersInView.map(b => b.id);
+
             for(const buffer of buffersInView) {
                containerDiv.appendChild(buffer.canvas);
-               manager.addWave(buffer.id, buffer.canvas, buffer.segments);
             }
-            //manager.draw(buffersInView.map(b => b.id));
 
-            for(let i = 0; i < buffersInView.length; i++) {
-                const handle = scrollHandles[i];
-                const buf = buffersInView[i];
-
-                handle.addJob(() => manager.draw([buf.id]));
-            }
+            requestAnimationFrame(() => manager.draw());
 
             lastStartIndex = startIndex;
         });
@@ -266,14 +236,11 @@
             var newZoom = currentZoom / 2;
 
             manager.samplesPerPixel = newZoom;
-            //drawTimeLine(newZoom, audioContext.sampleRate, width, height, manager.scrollPosition);
 
             sppDiv.innerText = 'Samples per pixel: ' + manager.samplesPerPixel;
             scroller.style.width = manager.getScrollWidth() + 'px';
 
-            const ids = buffers.slice(lastStartIndex, lastStartIndex + fitInElement)
-                .map(b => b.id);
-            manager.draw(ids);
+            
         });
 
         document.getElementById('zoom-out').addEventListener('click', function (e) {
@@ -281,14 +248,11 @@
             var newZoom = currentZoom * 2;
 
             manager.samplesPerPixel = newZoom;
-            //drawTimeLine(newZoom, audioContext.sampleRate, width, height, manager.scrollPosition);
 
             sppDiv.innerText = 'Samples per pixel: ' + manager.samplesPerPixel;
             scroller.style.width = manager.getScrollWidth() + 'px';
 
-            const ids = buffers.slice(lastStartIndex, lastStartIndex + fitInElement)
-                .map(b => b.id);
-            manager.draw(ids);
+            requestAnimationFram(() => manager.draw());
         });
     </script>
 </body>

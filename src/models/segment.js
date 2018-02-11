@@ -7,15 +7,15 @@
  * @param {number} duration 
  * @param {number} offsetStart 
  * @param {number} offsetEnd 
- * @param {Float32Array} data 
  * @param {number} index
+ * @param {string} source
  */
-export function Segment(id, start, duration, offsetStart, offsetEnd, data, index) {
+export function Segment(id, start, duration, offsetStart, offsetEnd, index, source) {
     this.id = id;
     this.start = start;
     this.duration = duration;
     this.offsetStart = offsetStart;
     this.offsetEnd = offsetEnd;
-    this.data = data;
     this.index = index;
+    this.source = source;
 }

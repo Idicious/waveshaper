@@ -23,7 +23,7 @@ export class WaveShapeManager {
 
     /**
      * 
-     * @type {Map<string, AudioBuffer>}
+     * @type {Map<string, Float32Array>}
      * @readonly
      * @memberof WaveShapeManager
      */
@@ -155,6 +155,8 @@ export class WaveShapeManager {
         this._drawStyle = options.drawStyle;
         this._meterType = options.meterType;
         this._mode = options.mode;
+        this._width = options.width;
+        this._height = options.height;
         this._container = container;
 
         /**
@@ -179,7 +181,7 @@ export class WaveShapeManager {
     addWave(id, element, segments) {
         if(!this.waveShapers.has(id)) {
             element.setAttribute('data-wave-id', id);
-            const wave = new WaveShaper(id, element, segments);
+            const wave = new WaveShaper(id, element, segments, this._width, this._height);
             this.waveShapers.set(id, wave);
         }
     }
@@ -191,13 +193,10 @@ export class WaveShapeManager {
      * @param {AudioBuffer} data 
      */
     addAudioData(id, data) {
-        this.audioData.set(id, data);
-        
-        const ids = this._lastDraw.map(id => this.waveShapers.get(id))
-            .filter(ws => ws.segments.some(s => s.data === id))
-            .map(ws => ws.id);
-        
-        this.draw(ids, true);
+        if(!this.audioData.has(id)) {
+            this.audioData.set(id, data.getChannelData(0));
+            this.draw(this.activeWaveShapers, true);
+        }
     }
 
     /**
@@ -273,21 +272,21 @@ WaveShapeManager.prototype.getScrollWidth = function () {
  */
 WaveShapeManager.prototype.draw = function (ids, forceDraw) {
     const idsToDraw = ids == null ? this.activeWaveShapers == null ? this.waveShapers.keys() : this.activeWaveShapers : ids;
-    this._lastDraw = idsToDraw;
-    for (var id of idsToDraw) {
-        var wave = this.waveShapers.get(id);
+    for (var i = 0; i < idsToDraw.length; i++) {
+        var wave = this.waveShapers.get(idsToDraw[i]);
         wave.calculate(
             this.meterType, 
             this.resolution, 
             this.samplesPerPixel, 
             this.scrollPosition,
             this.samplerate,
-            forceDraw
+            forceDraw,
+            this.audioData
         );
     }
 
-    for (var id of idsToDraw) {
-        var wave = this.waveShapers.get(id);
+    for (var i = 0; i < idsToDraw.length; i++) {
+        var wave = this.waveShapers.get(idsToDraw[i]);
         wave.draw(this.drawStyle);
     }
 }

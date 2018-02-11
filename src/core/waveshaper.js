@@ -29,14 +29,16 @@ import { drawCanvasRect } from '../strategies/render/canvas/rect';
  * @param {HTMLCanvasElement} canvas
  * @param {Segment[]} segments 
  * @param {Interval[]} flattened
+ * @param {number} width
+ * @param {number} height
  */
-export function WaveShaper(id, element, segments) {
+export function WaveShaper(id, element, segments, width, height) {
     this.id = id;
     this.element = element;
     this.segments = segments;
     this.flatten();
-    this.element.width = element.clientWidth;
-    this.element.height = element.clientHeight;
+    this.element.width = width;
+    this.element.height = height;
     this.calculated;
 
     this.width = this.element.width;
@@ -106,10 +108,11 @@ WaveShaper.prototype.skipDraw = false;
  * @param {number} samplesPerPixel
  * @param {number} scrollPosition
  * @param {boolean} forceDraw
+ * @param {Map<string, Float32Array>} dataMap
  * @returns {Array} Two dimensional array, one entry for each pixel, for each pixel a min
  * and a max value.
  */
-WaveShaper.prototype.calculate = function (meterType, sampleSize, samplesPerPixel, scrollPosition, samplerate, forceDraw) {
+WaveShaper.prototype.calculate = function (meterType, sampleSize, samplesPerPixel, scrollPosition, samplerate, forceDraw, dataMap) {
     if (!forceDraw && this.lastValues.meterType === meterType && this.lastValues.sampleSize === sampleSize &&
         this.lastValues.samplesPerPixel === samplesPerPixel && this.lastValues.scrollPosition === scrollPosition &&
         this.lastValues.samplerate === samplerate) {
@@ -136,7 +139,8 @@ WaveShaper.prototype.calculate = function (meterType, sampleSize, samplesPerPixe
                 this.width,
                 this.flattened,
                 scrollPosition,
-                samplerate
+                samplerate,
+                dataMap
             );
             break;
         default:
@@ -146,7 +150,8 @@ WaveShaper.prototype.calculate = function (meterType, sampleSize, samplesPerPixe
                 this.width,
                 this.flattened,
                 scrollPosition,
-                samplerate
+                samplerate,
+                dataMap
             );
     }
     
