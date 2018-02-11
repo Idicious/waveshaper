@@ -32,8 +32,9 @@ import { drawCanvasRect } from '../strategies/render/canvas/rect';
  * @param {number} width
  * @param {number} height
  */
-export function WaveShaper(id, element, segments, width, height) {
+export function WaveShaper(id, element, segments, width, height, color) {
     this.id = id;
+    this.color = color;
     this.element = element;
     this.segments = segments;
     this.flatten();
@@ -170,7 +171,8 @@ WaveShaper.prototype.draw = function (drawStyle) {
             this.height,
             this.width,
             this.element,
-            drawStyle
+            drawStyle,
+            this.color
         );
     }
 }

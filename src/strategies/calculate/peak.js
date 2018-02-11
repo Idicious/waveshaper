@@ -35,16 +35,21 @@ export function calculatePeaks(sampleRatio, samplesPerPixel, width, intervals, s
             }
         }
         
-        if(interval == null || !dataMap.has(interval.source)) {
-            vals.push([negMax, posMax, false]);
+        if(interval == null) {
+            vals.push([0, 0, false, false]);
             continue;
         }
         
-        const buffer = dataMap.get(interval.source);
         let endOfInterval = false;
         if(currentSecond + secondsPerPixel > interval.end 
             || currentSecond - secondsPerPixel < interval.start) {
             endOfInterval = true;
+        }
+
+        const buffer = dataMap.get(interval.source);
+        if(buffer == null) {
+            vals.push([0, 0, endOfInterval, true]);
+            continue;
         }
 
         const offsetStart = interval.start - interval.originalStart;
@@ -63,7 +68,8 @@ export function calculatePeaks(sampleRatio, samplesPerPixel, width, intervals, s
                 negMax = val;
             }
         }
-        vals.push([negMax, posMax, endOfInterval]);
+
+        vals.push([negMax, posMax, endOfInterval, true]);
     }
     return vals;
 }

@@ -7,12 +7,29 @@
  * @param {number} width 
  * @param {HTMLCanvasElement} element 
  * @param {string} drawStyle 
+ * @param {string} color
  */
-export function drawCanvasLine(waveform, height, width, element, drawStyle) {
+export function drawCanvasLine(waveform, height, width, element, drawStyle, color) {
     const scale = height / 2;
     const ctx = element.getContext('2d');
-    
+    ctx.fillStyle = color;
+
+    let inSegment = false;
+    let segmentStart = 0;
+
     ctx.clearRect(0, 0, width, height);
+    for(let i = 0; i < waveform.length; i++) {
+        const pointInSegment = waveform[i][3];
+        if(!inSegment && pointInSegment) {
+            inSegment = true;
+            segmentStart = i;
+        } else if (inSegment && (!pointInSegment || i === waveform.length - 1)) {
+            inSegment = false;
+            ctx.fillRect(segmentStart, 0, i - segmentStart, height);
+        }
+    }
+    
+    ctx.fillStyle = 'black';
     ctx.beginPath();
     
     ctx.moveTo(0, scale);

@@ -178,10 +178,10 @@ export class WaveShapeManager {
      * @param {Segment[]} segments 
      * @memberof WaveShapeManager
      */
-    addWave(id, element, segments) {
+    addWave(id, element, segments, color) {
         if(!this.waveShapers.has(id)) {
             element.setAttribute('data-wave-id', id);
-            const wave = new WaveShaper(id, element, segments, this._width, this._height);
+            const wave = new WaveShaper(id, element, segments, this._width, this._height, color);
             this.waveShapers.set(id, wave);
         }
     }
