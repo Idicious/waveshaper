@@ -6,11 +6,9 @@ import * as Hammer from 'hammerjs';
  * Adds drag functionality to waveshaper
  * 
  * @param {WaveShapeManager} manager
- * @param {HTMLElement} container
+ * @param {Hammer} hammer
  */
-export const setupResize = function(manager, container) {
-    const hammer = new Hammer(container);
-
+export const setupResize = function(manager, hammer) {
     hammer.on('panstart', (ev) => { 
         if(manager.mode !== 'resize')
             return;

@@ -6,10 +6,10 @@ import * as Hammer from 'hammerjs';
  * Adds drag functionality to waveshaper
  * 
  * @param {WaveShapeManager} manager
+ * @param {Hammer} hammer
  * @param {HTMLElement} container
  */
-export const setupDrag = function(manager, container) {
-    const hammer = new Hammer(container);
+export const setupDrag = function(manager, hammer, container) {
 
     /**
      * Fires when the mouse moves into the canvas,

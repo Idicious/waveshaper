@@ -144,6 +144,9 @@ export class WaveShapeManager {
             throw new Error('samplerate cannot be null and must be a number');
         }
 
+        const hammer = new Hammer(container);
+        hammer.get('pinch').set({ enable: true });
+
         this._waveShapers = new Map();
         this._audioData = new Map();
         
@@ -164,10 +167,10 @@ export class WaveShapeManager {
          */
         this._lastDraw = new Array();
 
-        setupDrag(this, this._container);
-        setupResize(this, this._container);
-        setupCut(this, this._container);
-        setupPan(this, this._container);
+        setupDrag(this, hammer, container);
+        setupResize(this, hammer);
+        //setupCut(this, hammer);
+        setupPan(this, hammer);
     }
     
     /**

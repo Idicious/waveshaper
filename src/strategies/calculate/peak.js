@@ -36,7 +36,7 @@ export function calculatePeaks(sampleRatio, samplesPerPixel, width, intervals, s
         }
         
         if(interval == null) {
-            vals.push([0, 0, false, false]);
+            vals.push([0, 0, 0, 0]);
             continue;
         }
         
@@ -48,28 +48,28 @@ export function calculatePeaks(sampleRatio, samplesPerPixel, width, intervals, s
 
         const buffer = dataMap.get(interval.source);
         if(buffer == null) {
-            vals.push([0, 0, endOfInterval, true]);
+            vals.push([0, 0, endOfInterval ? 1 : 0, 1]);
             continue;
         }
 
         const offsetStart = interval.start - interval.originalStart;
         const secondsIntoInterval = currentSecond - interval.start;
         const startSample = Math.floor(((secondsIntoInterval + offsetStart) * sampleRate));
+        const loopEnd = startSample + samplesPerPixel;
+        const length = buffer.length;
+        const end = length < loopEnd ? length : loopEnd;
 
         // Cycle through the data-points relevant to the pixel
         // Don't cycle through more than sampleSize frames per pixel.
-        for (let j = startSample; j < startSample + samplesPerPixel && j < buffer.length; j += sampleSize) {
+        for (let j = startSample; j < end; j += sampleSize) {
             const val = buffer[j];
 
             // Keep track of positive and negative values separately
-            if (val > 0 && val > posMax) {
-                posMax = val;
-            } else if (val < negMax) {
-                negMax = val;
-            }
+            if (val > posMax) posMax = val;
+            else if (val < negMax) negMax = val;
         }
 
-        vals.push([negMax, posMax, endOfInterval, true]);
+        vals.push([negMax, posMax, endOfInterval ? 1 : 0, 1]);
     }
     return vals;
 }

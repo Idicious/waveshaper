@@ -37,42 +37,47 @@ export function calculateRms(sampleRatio, samplesPerPixel, width, segments, scro
         }
 
         if(interval == null) {
-            vals.push([posSum, negSum, false]);
+            vals.push([0, 0, 0, 0]);
             continue;
+        }
+        
+        let endOfInterval = false;
+        if(currentSecond + secondsPerPixel > interval.end 
+            || currentSecond - secondsPerPixel < interval.start) {
+            endOfInterval = true;
         }
 
         const buffer = dataMap.get(interval.source);
-        let endOfInterval = false;
-        if((currentSecond + secondsPerPixel) > interval.end 
-            || currentSecond - secondsPerPixel < interval.start) {
-            endOfInterval = true;
+        if(buffer == null) {
+            vals.push([0, 0, endOfInterval ? 1 : 0, 1]);
+            continue;
         }
 
         const offsetStart = interval.start - interval.originalStart;
         const secondsIntoInterval = currentSecond - interval.start;
         const startSample = Math.floor(((secondsIntoInterval + offsetStart) * sampleRate));
+        const length = buffer.length;
+        const loopEnd = startSample + samplesPerPixel;
+        const end = length < loopEnd ? length : loopEnd;
 
         // Cycle through the data-points relevant to the pixel
         // Don't cycle through more than sampleSize frames per pixel.
-        for (let j = 0; j < samplesPerPixel; j += sampleSize) {
-            const index = j + startSample;
-            if (index < buffer.length) {
-                const val = buffer[index];
+        for (let j = startSample; j < end; j += sampleSize) {
+            const val = buffer[j];
 
-                // Keep track of positive and negative values separately
-                if (val > 0) {
-                    posSum += val * val;
-                } else {
-                    negSum += val * val;
-                }
+            // Keep track of positive and negative values separately
+            if (val > 0) {
+                posSum += val * val;
+            } else {
+                negSum += val * val;
             }
         }
 
-        const samples = Math.round(samplesPerPixel / sampleSize);
-        const min = -Math.sqrt(negSum / samples * 2);
-        const max = Math.sqrt(posSum / samples * 2);
+        const samples = Math.min(samplesPerPixel / 2, Math.round(sampleRatio / 2));
+        const min = -Math.sqrt(negSum / samples);
+        const max = Math.sqrt(posSum / samples);
 
-        vals.push([min, max, endOfInterval]);
+        vals.push([min, max, endOfInterval ? 1 : 0, 1]);
     }
     return vals;
 }

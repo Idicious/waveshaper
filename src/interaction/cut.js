@@ -6,10 +6,9 @@ import * as Hammer from 'hammerjs';
  * Adds drag functionality to waveshaper
  * 
  * @param {WaveShapeManager} manager
- * @param {HTMLElement} container
+ * @param {Hammer} hammer
  */
-export const setupCut = function(manager, container) {
-    const hammer = new Hammer(container);
+export const setupCut = function(manager, hammer) {
 
     hammer.on('tap', (ev) => { 
         if(manager.mode !== 'cut')
@@ -26,6 +25,7 @@ export const setupCut = function(manager, container) {
             return;
 
         const segment = wave.segments.find(s => s.id === interval.id);
+
         const cutTime = time - segment.start;
 
         const newSegment = Object.assign({}, segment);
