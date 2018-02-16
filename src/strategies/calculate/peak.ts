@@ -15,6 +15,7 @@ import Interval from '../../models/interval';
  */
 export const calculatePeaks = (resolution: number, samplesPerPixel: number, width: number, intervals: Interval[], 
     scrollPosition: number, sampleRate: number, dataMap: Map<string, Float32Array>): number[][] => {
+        
     const sampleSize = Math.ceil(samplesPerPixel / resolution);
 
     const start = scrollPosition * samplesPerPixel;
@@ -22,58 +23,58 @@ export const calculatePeaks = (resolution: number, samplesPerPixel: number, widt
 
     const secondsPerPixel = samplesPerPixel / sampleRate;
 
-    const vals: number[][] = [];
+    const peaks: number[][] = [];
     // For each pixel we display
     for (let i = 0; i < width; i++) {
-        let posMax = 0;
-        let negMax = 0;
+        let max = 0;
+        let min = 0;
 
         const currentSecond = startSecond + ((i * samplesPerPixel) / sampleRate);
-        let interval;
+        let currentInterval;
         for (let i = 0; i < intervals.length; i++) {
-            const s = intervals[i];
-            if (s.start <= currentSecond && s.end >= currentSecond) {
-                interval = s;
+            const interval = intervals[i];
+            if (interval.start <= currentSecond && interval.end >= currentSecond) {
+                currentInterval = interval;
                 break;
             }
         }
 
-        if (interval == null) {
-            vals.push([0, 0, 0, 0]);
+        if (currentInterval == null) {
+            peaks.push([0, 0, 0, 0]);
             continue;
         }
 
         let endOfInterval = false;
-        if (currentSecond + secondsPerPixel > interval.end
-            || currentSecond - secondsPerPixel < interval.start) {
+        if (currentSecond + secondsPerPixel > currentInterval.end
+            || currentSecond - secondsPerPixel < currentInterval.start) {
             endOfInterval = true;
         }
 
-        const buffer = dataMap.get(interval.source);
+        const buffer = dataMap.get(currentInterval.source);
         if (buffer == null) {
-            vals.push([0, 0, endOfInterval ? 1 : 0, 1]);
+            peaks.push([0, 0, endOfInterval ? 1 : 0, 1]);
             continue;
         }
 
-        const offsetStart = interval.start - interval.originalStart;
-        const secondsIntoInterval = currentSecond - interval.start;
+        const offsetStart = currentInterval.start - currentInterval.originalStart;
+        const secondsIntoInterval = currentSecond - currentInterval.start;
         const startSample = Math.floor(((secondsIntoInterval + offsetStart) * sampleRate));
 
-        const loopEnd = startSample + samplesPerPixel;
+        const endSample = startSample + samplesPerPixel;
         const length = buffer.length;
-        const end = length < loopEnd ? length : loopEnd;
+        const loopEnd = length < endSample ? length : endSample;
 
         // Cycle through the data-points relevant to the pixel
         // Don't cycle through more than sampleSize frames per pixel.
-        for (let j = startSample; j < end; j += sampleSize) {
-            const val = buffer[j];
+        for (let j = startSample; j < loopEnd; j += sampleSize) {
+            const sample = buffer[j];
 
             // Keep track of positive and negative values separately
-            if (val > posMax) posMax = val;
-            else if (val < negMax) negMax = val;
+            if (sample > max) max = sample;
+            else if (sample < min) min = sample;
         }
 
-        vals.push([negMax, posMax, endOfInterval ? 1 : 0, 1]);
+        peaks.push([min, max, endOfInterval ? 1 : 0, 1]);
     }
-    return vals;
+    return peaks;
 }

@@ -2787,11 +2787,11 @@ var WaveShapeManager = /** @class */ (function () {
         this.mode = options.mode;
         //Setup interaction
         this.hammer = new Hammer(container, hammerconfig_1.default);
-        drag_1.setupDrag(this, this.hammer, container);
-        resize_1.setupResize(this, this.hammer);
-        cut_1.setupCut(this, this.hammer);
-        pan_1.setupPan(this, this.hammer);
-        zoom_1.setupZoom(this, this.hammer);
+        drag_1.default(this, this.hammer, container);
+        resize_1.default(this, this.hammer);
+        cut_1.default(this, this.hammer);
+        pan_1.default(this, this.hammer);
+        zoom_1.default(this, this.hammer);
     }
     /**
      * @description Adds a waveshaper to the manager
@@ -3061,53 +3061,53 @@ exports.calculatePeaks = function (resolution, samplesPerPixel, width, intervals
     var start = scrollPosition * samplesPerPixel;
     var startSecond = start / sampleRate;
     var secondsPerPixel = samplesPerPixel / sampleRate;
-    var vals = [];
+    var peaks = [];
     // For each pixel we display
     for (var i = 0; i < width; i++) {
-        var posMax = 0;
-        var negMax = 0;
+        var max = 0;
+        var min = 0;
         var currentSecond = startSecond + ((i * samplesPerPixel) / sampleRate);
-        var interval = void 0;
+        var currentInterval = void 0;
         for (var i_1 = 0; i_1 < intervals.length; i_1++) {
-            var s = intervals[i_1];
-            if (s.start <= currentSecond && s.end >= currentSecond) {
-                interval = s;
+            var interval = intervals[i_1];
+            if (interval.start <= currentSecond && interval.end >= currentSecond) {
+                currentInterval = interval;
                 break;
             }
         }
-        if (interval == null) {
-            vals.push([0, 0, 0, 0]);
+        if (currentInterval == null) {
+            peaks.push([0, 0, 0, 0]);
             continue;
         }
         var endOfInterval = false;
-        if (currentSecond + secondsPerPixel > interval.end
-            || currentSecond - secondsPerPixel < interval.start) {
+        if (currentSecond + secondsPerPixel > currentInterval.end
+            || currentSecond - secondsPerPixel < currentInterval.start) {
             endOfInterval = true;
         }
-        var buffer = dataMap.get(interval.source);
+        var buffer = dataMap.get(currentInterval.source);
         if (buffer == null) {
-            vals.push([0, 0, endOfInterval ? 1 : 0, 1]);
+            peaks.push([0, 0, endOfInterval ? 1 : 0, 1]);
             continue;
         }
-        var offsetStart = interval.start - interval.originalStart;
-        var secondsIntoInterval = currentSecond - interval.start;
+        var offsetStart = currentInterval.start - currentInterval.originalStart;
+        var secondsIntoInterval = currentSecond - currentInterval.start;
         var startSample = Math.floor(((secondsIntoInterval + offsetStart) * sampleRate));
-        var loopEnd = startSample + samplesPerPixel;
+        var endSample = startSample + samplesPerPixel;
         var length_1 = buffer.length;
-        var end = length_1 < loopEnd ? length_1 : loopEnd;
+        var loopEnd = length_1 < endSample ? length_1 : endSample;
         // Cycle through the data-points relevant to the pixel
         // Don't cycle through more than sampleSize frames per pixel.
-        for (var j = startSample; j < end; j += sampleSize) {
-            var val = buffer[j];
+        for (var j = startSample; j < loopEnd; j += sampleSize) {
+            var sample = buffer[j];
             // Keep track of positive and negative values separately
-            if (val > posMax)
-                posMax = val;
-            else if (val < negMax)
-                negMax = val;
+            if (sample > max)
+                max = sample;
+            else if (sample < min)
+                min = sample;
         }
-        vals.push([negMax, posMax, endOfInterval ? 1 : 0, 1]);
+        peaks.push([min, max, endOfInterval ? 1 : 0, 1]);
     }
-    return vals;
+    return peaks;
 };
 
 
@@ -3478,7 +3478,7 @@ var dragState = {
  * @param {HammerManager} hammer Hammer instance
  * @param {HTMLElement} container Container element
  */
-exports.setupDrag = function (manager, hammer, container) {
+exports.default = (function (manager, hammer, container) {
     /** @param {HammerInput} ev - Hammer event */
     var shouldHandle = function (ev) { return manager.mode === 'drag' && ev.target.classList.contains('waveshaper'); };
     /**
@@ -3571,7 +3571,7 @@ exports.setupDrag = function (manager, hammer, container) {
             || navigator.maxTouchPoints; // works on IE10/11 and Surface
     }
     ;
-};
+});
 
 
 /***/ }),
@@ -3594,7 +3594,7 @@ var resizeState = {
  * @param {WaveShapeManager} manager
  * @param {HammerManager} hammer
  */
-exports.setupResize = function (manager, hammer) {
+function default_1(manager, hammer) {
     /** @param {HammerInput} ev */
     var shouldHandle = function (ev) { return manager.mode === 'resize' && ev.target.classList.contains('waveshaper'); };
     hammer.on('panstart', function (ev) {
@@ -3654,7 +3654,8 @@ exports.setupResize = function (manager, hammer) {
         resizeState.activeSegmentSide = null;
         resizeState.dragWave = null;
     });
-};
+}
+exports.default = default_1;
 
 
 /***/ }),
@@ -3678,7 +3679,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @param {WaveShapeManager} manager
  * @param {HammerManager} hammer
  */
-exports.setupCut = function (manager, hammer) {
+exports.default = (function (manager, hammer) {
     var shouldHandle = function (ev) { return manager.mode === 'cut' && ev.target.classList.contains('waveshaper'); };
     hammer.on('tap', function (ev) {
         if (!shouldHandle(ev))
@@ -3700,7 +3701,7 @@ exports.setupCut = function (manager, hammer) {
         wave.flatten();
         manager.draw([wave.id], true);
     });
-};
+});
 
 
 /***/ }),
@@ -3721,7 +3722,7 @@ var panState = {
  * @param {WaveShapeManager} manager
  * @param {HammerManager} hammer
  */
-exports.setupPan = function (manager, hammer) {
+function default_1(manager, hammer) {
     /** @param {HammerInput} ev */
     var shouldHandle = function (ev) { return manager.mode === 'pan' && ev.target.classList.contains('waveshaper'); };
     hammer.on('panstart', function (ev) {
@@ -3747,7 +3748,8 @@ exports.setupPan = function (manager, hammer) {
         panState.panStart = 0;
         panState.panMax = 0;
     });
-};
+}
+exports.default = default_1;
 
 
 /***/ }),
@@ -3768,7 +3770,7 @@ var zoomState = {
  * @param {WaveShapeManager} manager
  * @param {HammerManager} hammer
  */
-exports.setupZoom = function (manager, hammer) {
+function default_1(manager, hammer) {
     var shouldHandle = function (ev) { return manager.mode === 'pan' && ev.target.classList.contains('waveshaper'); };
     hammer.on('pinchstart', function (ev) {
         if (!shouldHandle(ev))
@@ -3800,7 +3802,8 @@ exports.setupZoom = function (manager, hammer) {
         zoomState.sppStart = 0;
         zoomState.maxWidth = 0;
     });
-};
+}
+exports.default = default_1;
 
 
 /***/ }),

@@ -6,6 +6,8 @@
     "module": "commonjs",
     "target": "es5",
     "allowJs": false,
+    "allowUnreachableCode": false,
+    "alwaysStrict": true,
     "lib": ["es5", "es6", "dom"]
   }
 }
