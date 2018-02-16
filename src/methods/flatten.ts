@@ -1,5 +1,7 @@
-import { Segment } from "../models/segment";
-import { Interval } from "../models/interval";
+import Segment from "../models/segment";
+import Interval from "../models/interval";
+
+declare type IntervalMap = {[key: string] : Interval[]};
 
 /**
  * The algorithm first calculates real start and end times of each segment,
@@ -12,16 +14,22 @@ import { Interval } from "../models/interval";
  * @param {Segment[]} segments
  * @returns {Interval[]}
  */
-export function flattenSegments(segments) {
+export const flattenSegments = (segments: Segment[]): Interval[] => {
   var normalized = normalizeIndex(segments);
   var intervals = mapToIntervals(normalized);
   var sorted = sort(intervals);
-  var grouped = groupBy(sorted, "index");
+  var grouped = grouByIndex(sorted);
 
   return weightedMerge(grouped);
 }
 
-function normalizeIndex(segments) {
+/**
+ * When an element is altered the index is set very high,
+ * this functions normalizes to indexes back to 0
+ * 
+ * @param {Segment[]} segments 
+ */
+const normalizeIndex = (segments: Segment[]): Segment[] => {
   let index = 0;
   segments.sort((a, b) => cmp(a.index, b.index)).forEach(el => {
     if (el.index > index) {
@@ -34,7 +42,14 @@ function normalizeIndex(segments) {
   return segments;
 }
 
-function mapToIntervals(segments) {
+/**
+ * In order to preserve the original segments and allow for extra properties
+ * the segments are mapped to Intervals
+ * 
+ * @param {Segment[]} segments 
+ * @returns {Interval[]}
+ */
+const mapToIntervals = (segments: Segment[]): Interval[] => {
   return segments
     .map(s => {
       return {
@@ -48,27 +63,44 @@ function mapToIntervals(segments) {
     });
 }
 
-function sort(intervals) {
+/**
+ * Sorts the intervals by index, then by start
+ * 
+ * @param {Interval[]} intervals 
+ * @return {Interval[]}
+ */
+const sort = (intervals: Interval[]): Interval[] => {
   intervals.sort((a, b) => {
     return cmp(a.index, b.index) || cmp(a.start, b.start);
   });
   return intervals;
 }
 
-var groupBy = function(xs, key) {
-  return xs.reduce(function(rv, x) {
-    (rv[x[key]] = rv[x[key]] || []).push(x);
-    return rv;
-  }, {});
+/**
+ * Returns a map of intervals grouped by the key property
+ * 
+ * @param {Interval[]} intervals 
+ * @param {string} key 
+ * 
+ * @returns {{[key: string] : Interval[]}}
+ */
+const grouByIndex = (intervals: Interval[]): IntervalMap => {
+  return intervals.reduce((groups, interval) => {
+    (groups[interval.index] = groups[interval.index] || []).push(interval);
+    return groups;
+  }, <IntervalMap>{});
 };
 
 /**
+ * Merges all the groups by index
  * 
- * @param {Map<number, Interval[]} grouped 
+ * @param {IntervalMap} grouped 
+ * @returns {Interval[]}
  */
-function weightedMerge(grouped) {
-  var flattened;
-  for (var index of Object.keys(grouped)) {
+const weightedMerge = (grouped: IntervalMap): Interval[] => {
+  /** @type {Interval[]} */
+  let flattened;
+  for (let index of Object.keys(grouped)) {
     merge(grouped[index]);
     if (flattened == null) {
       flattened = grouped[index];
@@ -87,17 +119,17 @@ function weightedMerge(grouped) {
  * @param {Interval[]} intervals 
  * @returns {Interval[]}
  */
-function merge(intervals) {
+const merge = (intervals: Interval[]): Interval[] => {
   if (intervals == null || intervals.length <= 1) return intervals;
 
-  var result = [];
-  var prev = intervals[0];
-  for (var i = 1; i < intervals.length; i++) {
-    var curr = intervals[i];
+  const result: Interval[] = [];
+  let prev = intervals[0];
+  for (let i = 1; i < intervals.length; i++) {
+    const curr = intervals[i];
 
     if (prev.end >= curr.end) {
       // merged case
-      var merged = Object.assign({}, prev, { end: Math.max(prev.end, curr.end)});
+      const merged = Object.assign({}, prev, { end: Math.max(prev.end, curr.end)});
       prev = merged;
     } else {
       result.push(prev);
@@ -110,15 +142,18 @@ function merge(intervals) {
 }
 
 /**
- *
+ * Given two sets of intervals it merges them so the highIndexes set has priority
  *
  * @param {Interval[]} highIndexes
  * @param {Interval[]} lowIndexes
+ * 
+ * @returns {Interval[]}
  */
-function combine(highIndexes, lowIndexes) {
-  var highCount = 0;
-  var lowCount = 0;
-  var merged = [];
+const combine = (highIndexes: Interval[], lowIndexes: Interval[]): Interval[] => {
+  let highCount = 0;
+  let lowCount = 0;
+
+  const merged: Interval[] = [];
 
   while (highCount < highIndexes.length || lowCount < lowIndexes.length) {
     // Only low priority left so push it on the stack
@@ -165,7 +200,7 @@ function combine(highIndexes, lowIndexes) {
  * @param {number} a
  * @param {number} b
  */
-const cmp = (a, b) => {
+const cmp = (a: number, b: number): 1 | -1 | 0 => {
   if (a > b) return +1;
   if (a < b) return -1;
   return 0;

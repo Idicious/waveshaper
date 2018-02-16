@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1 initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="HandheldFriendly" content="true">
     <style>
         #canvas-container {
             height: 90%;
@@ -39,9 +41,6 @@
             height: 1px;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-    <script src="./scripts/touch-emulator.js"></script>
-    <!-- <script>TouchEmulator();</script> -->
 </head>
 
 <body>
@@ -80,13 +79,13 @@
             drawStyle: 'fill',
             meterType: 'peak',
             mode: 'pan',
-            height: 600,
+            height: 300,
             width: canvasContainer.clientWidth
         }
         
 
-        const schedular = new Schedular(16, audioContext);
-        schedular.start();
+        //const schedular = new Schedular(16, audioContext);
+        //schedular.start();
         
         const canvasWrapper = document.getElementById('canvas-wrapper');
         const canvasFragment = document.getElementById('canvas-fragment');
@@ -100,12 +99,19 @@
         const buffers = [];
         let buffersInView = [];
 
-        fetch('/examples/audio/GTR.WAV')
+        const loadAudio = (key, url) => {
+            fetch(url)
             .then(res => res.arrayBuffer())
             .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
             .then(audioBuffer => {
-                manager.addAudioData("1", audioBuffer);
-            });
+                manager.addAudioData(key, audioBuffer);
+            })
+            .catch(e => console.error(e));
+        }
+
+        loadAudio('1', '/examples/audio/GTR.WAV');
+        loadAudio('2', '/examples/audio/TOM.WAV');
+        loadAudio('3', '/examples/audio/13_ElecGtr01.mp3');
 
         for(let i = 0; i < 100; i++) {
             const canvas = document.createElement('canvas');
@@ -125,7 +131,7 @@
                     offsetStart: 10,
                     offsetEnd: 0,
                     index: 1,
-                    source: "1"
+                    source: "2"
                 },
                 {
                     id: "" + Math.random(),
@@ -133,8 +139,8 @@
                     duration: 136,
                     offsetStart: 10,
                     offsetEnd: 0,
-                    index: 1,
-                    source: "1"
+                    index: 2,
+                    source: "3"
                 },
                 {
                     id: "" + Math.random(),
@@ -142,7 +148,7 @@
                     duration: 136,
                     offsetStart: 10,
                     offsetEnd: 0,
-                    index: 1,
+                    index: 3,
                     source: "1"
                 },
                 {
@@ -151,8 +157,8 @@
                     duration: 136,
                     offsetStart: 10,
                     offsetEnd: 0,
-                    index: 0,
-                    source: "1"
+                    index: 4,
+                    source: "2"
                 },
                 {
                     id: "" + Math.random(),
@@ -160,13 +166,13 @@
                     duration: 136,
                     offsetStart: 10,
                     offsetEnd: 0,
-                    index: 2,
-                    source: "1"
+                    index: 5,
+                    source: "3"
                 }
             ]
 
             var waveShapeData = {
-                id: i,
+                id: i.toString(),
                 canvas,
                 segments,
                 color: '#f5f5f5'
@@ -197,7 +203,7 @@
         var scroller = document.getElementById('virtual-scroll-width');
         scroller.style.width = manager.getScrollWidth() + 'px';
 
-        const scrollHandle = schedular.getHandle();
+        //const scrollHandle = schedular.getHandle();
         document.getElementById('virtual-scroll').addEventListener('scroll', function (e) {
             manager.scrollPosition = e.target.scrollLeft;
 
@@ -205,7 +211,7 @@
         });
 
         let lastStartIndex = 0;
-        let handle = schedular.getHandle();
+        //let handle = schedular.getHandle();
         document.getElementById('canvas-container').addEventListener('scroll', function (e) {
             const scrollHeight = e.target.scrollTop;
             const startIndex = Math.floor(scrollHeight / elementHeight);

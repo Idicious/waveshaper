@@ -8,7 +8,7 @@
  * @param {HTMLCanvasElement} element 
  * @param {string} drawStyle 
  */
-export function drawCanvasRect(waveform, height, width, element, drawStyle) {
+export function drawCanvasRect(waveform: number[][], height: number, width: number, element: HTMLCanvasElement, drawStyle: string) {
     const scale = height / 2;
     const ctx = element.getContext('2d');
 

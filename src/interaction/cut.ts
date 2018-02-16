@@ -1,21 +1,24 @@
-import { WaveShaper } from '../core/waveshaper';
+import WaveShaper from '../core/waveshaper';
 import { WaveShapeManager } from '../core/manager';
-import * as Hammer from 'hammerjs';
+import Interval from '../models/interval';
+import Segment from '../models/segment';
 
 /**
  * Adds drag functionality to waveshaper
  * 
  * @param {WaveShapeManager} manager
- * @param {Hammer} hammer
+ * @param {HammerManager} hammer
  */
-export const setupCut = function(manager, hammer) {
+export default (manager: WaveShapeManager, hammer: HammerManager) => {
 
-    hammer.on('tap', (ev) => { 
-        if(manager.mode !== 'cut')
+    const shouldHandle = (ev: HammerInput) => manager.mode === 'cut' && ev.target.classList.contains('waveshaper');
+
+    hammer.on('tap', (ev: HammerInput) => { 
+        if(!shouldHandle(ev))
             return;
 
         const id = ev.target.getAttribute('data-wave-id');
-        const wave = manager.waveShapers.get(+id);
+        const wave = manager.waveShapers.get(id);
 
         const bb = ev.target.getBoundingClientRect();
         const time = (manager.scrollPosition + (ev.center.x - bb.left)) * manager.samplesPerPixel / manager.samplerate;
@@ -28,9 +31,9 @@ export const setupCut = function(manager, hammer) {
 
         const cutTime = time - segment.start;
 
-        const newSegment = Object.assign({}, segment);
+        const newSegment = { ...segment }
         newSegment.offsetStart = cutTime;
-        newSegment.id = Math.random();
+        newSegment.id = Math.random().toString();
 
         segment.offsetEnd = segment.duration - cutTime;
         wave.segments.push(newSegment);

@@ -8,5 +8,17 @@ module.exports = {
     filename: "waveshaper.bundle.js",
     publicPath: "/"
   },
-  devtool: 'source-map'
+  devtool: 'source-map',
+  module: {
+    rules: [
+      {
+        test: /\.ts?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      }
+    ]
+  },
+  resolve: {
+    extensions: [ '.ts', '.js' ]
+  }
 };

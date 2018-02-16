@@ -8,7 +8,7 @@
  * @param {SVGElement} element 
  * @param {string} drawStyle 
  */
-export function drawSvgPath(waveform, height, width, element, drawStyle) {
+export function drawSvgPath(waveform: number[][], height: number, width: number, element: SVGElement, drawStyle: string) {
     const factor = height / 2;
     let d = '';
     d += ` M0, ${factor}`;
@@ -28,10 +28,10 @@ export function drawSvgPath(waveform, height, width, element, drawStyle) {
     d += ` L${waveform.length}, ${factor}`;
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('height', element.height);
-    svg.setAttribute('width', element.width);
+    svg.setAttribute('height', element.style.height);
+    svg.setAttribute('width', element.style.width);
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('height', element.height);
+    path.setAttribute('height', element.style.height);
     path.setAttribute('stroke', 'black');
     svg.appendChild(path);
     path.setAttribute('d', d);
