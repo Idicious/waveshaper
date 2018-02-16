@@ -1,11 +1,11 @@
 import defaultoptions, { DrawStyle, MeterType } from '../config/managerconfig';
-import { calculatePeaks } from '../strategies/calculate/peak'
-import { calculateRms } from '../strategies/calculate/rms'
-import { drawCanvasLine } from '../strategies/render/canvas/line';
+import calculatePeaks from '../strategies/calculate/peak'
+import calculateRms from '../strategies/calculate/rms'
+import drawCanvasLine from '../strategies/render/canvas/line';
 import Segment from '../models/segment';
-import { flattenSegments } from '../methods/flatten';
+import flattenSegments from '../methods/flatten';
 import Interval from '../models/interval';
-import { drawCanvasRect } from '../strategies/render/canvas/rect';
+import drawCanvasRect from '../strategies/render/canvas/rect';
 
 interface LastDrawValues {
     meterType: MeterType;

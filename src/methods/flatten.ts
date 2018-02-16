@@ -14,7 +14,7 @@ declare type IntervalMap = {[key: string] : Interval[]};
  * @param {Segment[]} segments
  * @returns {Interval[]}
  */
-export const flattenSegments = (segments: Segment[]): Interval[] => {
+export default (segments: Segment[]): Interval[] => {
   var normalized = normalizeIndex(segments);
   var intervals = mapToIntervals(normalized);
   var sorted = sort(intervals);

@@ -8,7 +8,7 @@
  * @param {SVGElement} element 
  * @param {string} drawStyle 
  */
-export function drawSvgPath(waveform: number[][], height: number, width: number, element: SVGElement, drawStyle: string) {
+export default (waveform: number[][], height: number, width: number, element: SVGElement, drawStyle: string) => {
     const factor = height / 2;
     let d = '';
     d += ` M0, ${factor}`;

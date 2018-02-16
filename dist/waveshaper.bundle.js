@@ -2932,7 +2932,7 @@ var WaveShaper = /** @class */ (function () {
         this.segments = segments;
         this.width = width;
         this.height = height;
-        this.flattened = flatten_1.flattenSegments(this.segments);
+        this.flattened = flatten_1.default(this.segments);
         element.style.width = width + 'px';
         element.style.height = height + 'px';
         element.classList.add('waveshaper');
@@ -2943,7 +2943,7 @@ var WaveShaper = /** @class */ (function () {
         this.ctx.scale(scale, 1);
     }
     WaveShaper.prototype.flatten = function () {
-        this.flattened = flatten_1.flattenSegments(this.segments);
+        this.flattened = flatten_1.default(this.segments);
     };
     /**
      * Gets the duration of the audio in seconds
@@ -3013,10 +3013,10 @@ var WaveShaper = /** @class */ (function () {
         }
         switch (meterType) {
             case 'peak':
-                this.calculated = peak_1.calculatePeaks(sampleSize, samplesPerPixel, this.width, this.flattened, scrollPosition, samplerate, dataMap);
+                this.calculated = peak_1.default(sampleSize, samplesPerPixel, this.width, this.flattened, scrollPosition, samplerate, dataMap);
                 break;
             default:
-                this.calculated = rms_1.calculateRms(sampleSize, samplesPerPixel, this.width, this.flattened, scrollPosition, samplerate, dataMap);
+                this.calculated = rms_1.default(sampleSize, samplesPerPixel, this.width, this.flattened, scrollPosition, samplerate, dataMap);
         }
         return this.calculated;
     };
@@ -3027,7 +3027,7 @@ var WaveShaper = /** @class */ (function () {
      */
     WaveShaper.prototype.draw = function (drawStyle) {
         if (!this.skipDraw) {
-            line_1.drawCanvasLine(this.calculated, this.height, this.width, this.ctx, drawStyle, this.color);
+            line_1.default(this.calculated, this.height, this.width, this.ctx, drawStyle, this.color);
         }
     };
     return WaveShaper;
@@ -3056,7 +3056,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @param dataMap
  * @returns
  */
-exports.calculatePeaks = function (resolution, samplesPerPixel, width, intervals, scrollPosition, sampleRate, dataMap) {
+exports.default = (function (resolution, samplesPerPixel, width, intervals, scrollPosition, sampleRate, dataMap) {
     var sampleSize = Math.ceil(samplesPerPixel / resolution);
     var start = scrollPosition * samplesPerPixel;
     var startSecond = start / sampleRate;
@@ -3108,7 +3108,7 @@ exports.calculatePeaks = function (resolution, samplesPerPixel, width, intervals
         peaks.push([min, max, endOfInterval ? 1 : 0, 1]);
     }
     return peaks;
-};
+});
 
 
 /***/ }),
@@ -3131,7 +3131,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @param dataMap
  * @returns
  */
-exports.calculateRms = function (resolution, samplesPerPixel, width, intervals, scrollPosition, sampleRate, dataMap) {
+exports.default = (function (resolution, samplesPerPixel, width, intervals, scrollPosition, sampleRate, dataMap) {
     var sampleSize = Math.ceil(samplesPerPixel / resolution);
     var start = scrollPosition * samplesPerPixel;
     var startSecond = start / sampleRate;
@@ -3188,7 +3188,7 @@ exports.calculateRms = function (resolution, samplesPerPixel, width, intervals, 
         vals.push([min, max, endOfInterval ? 1 : 0, 1]);
     }
     return vals;
-};
+});
 
 
 /***/ }),
@@ -3209,7 +3209,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @param {string} drawStyle
  * @param {string} color
  */
-function drawCanvasLine(waveform, height, width, ctx, drawStyle, color) {
+exports.default = (function (waveform, height, width, ctx, drawStyle, color) {
     var scale = height / 2;
     ctx.fillStyle = color;
     ctx.strokeStyle = 'black';
@@ -3251,8 +3251,7 @@ function drawCanvasLine(waveform, height, width, ctx, drawStyle, color) {
         default:
             ctx.fill();
     }
-}
-exports.drawCanvasLine = drawCanvasLine;
+});
 
 
 /***/ }),
@@ -3273,13 +3272,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @param {Segment[]} segments
  * @returns {Interval[]}
  */
-exports.flattenSegments = function (segments) {
+exports.default = (function (segments) {
     var normalized = normalizeIndex(segments);
     var intervals = mapToIntervals(normalized);
     var sorted = sort(intervals);
     var grouped = grouByIndex(sorted);
     return weightedMerge(grouped);
-};
+});
 /**
  * When an element is altered the index is set very high,
  * this functions normalizes to indexes back to 0

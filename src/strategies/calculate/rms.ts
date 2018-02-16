@@ -13,7 +13,7 @@ import Interval from '../../models/interval';
  * @param dataMap
  * @returns 
  */
-export const calculateRms = (resolution: number, samplesPerPixel: number, width: number, intervals: Interval[], 
+export default (resolution: number, samplesPerPixel: number, width: number, intervals: Interval[], 
     scrollPosition: number, sampleRate: number, dataMap: Map<string, Float32Array>): number[][] => {
 
     const sampleSize = Math.ceil(samplesPerPixel / resolution);

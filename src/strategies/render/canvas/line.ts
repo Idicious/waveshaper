@@ -9,7 +9,7 @@
  * @param {string} drawStyle 
  * @param {string} color
  */
-export function drawCanvasLine(waveform: number[][], height: number, width: number, ctx: CanvasRenderingContext2D, drawStyle: string, color: string) {
+export default (waveform: number[][], height: number, width: number, ctx: CanvasRenderingContext2D, drawStyle: string, color: string) => {
     const scale = height / 2;
     ctx.fillStyle = color;
     ctx.strokeStyle = 'black';
