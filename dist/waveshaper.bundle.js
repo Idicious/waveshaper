@@ -2721,8 +2721,8 @@ if (true) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var manager_1 = __webpack_require__(2);
-exports.WaveShapeManager = manager_1.WaveShapeManager;
-window["WaveShapeManager"] = manager_1.WaveShapeManager;
+exports.WaveShapeManager = manager_1.default;
+window["WaveShapeManager"] = manager_1.default;
 
 
 /***/ }),
@@ -2909,7 +2909,7 @@ var WaveShapeManager = /** @class */ (function () {
     };
     return WaveShapeManager;
 }());
-exports.WaveShapeManager = WaveShapeManager;
+exports.default = WaveShapeManager;
 
 
 /***/ }),

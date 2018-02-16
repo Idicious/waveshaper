@@ -1,4 +1,4 @@
-import { WaveShapeManager } from "./src/core/manager";
+import WaveShapeManager from "./src/core/manager";
 
 export { WaveShapeManager };
 

@@ -1,5 +1,5 @@
 import WaveShaper from '../core/waveshaper';
-import { WaveShapeManager } from '../core/manager';
+import WaveShapeManager from '../core/manager';
 import Interval from '../models/interval';
 import Segment from '../models/segment';
 

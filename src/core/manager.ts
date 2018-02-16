@@ -15,7 +15,7 @@ import defaultOptions, { ManagerOptions, InteractionMode, MeterType, DrawStyle }
  * @class
  * @export
  */
-export class WaveShapeManager {
+export default class WaveShapeManager {
 
     /**
      * Map of waveshapers managed by the manager
