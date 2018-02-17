@@ -11,6 +11,10 @@
             transform: translateZ(0);
         }
 
+        svg {
+            shape-rendering: auto;
+        }
+
         #canvas-wrapper {
             width: 100%;
         }
@@ -68,7 +72,7 @@
         <option value="cut">Cut</option>
     </select>
 
-    <script src="/waveshaper.bundle.js"></script>
+    <script src="../dist/index.js"></script>
     <script>
         const audioContext = new AudioContext();
         const canvasContainer = document.getElementById('canvas-container');

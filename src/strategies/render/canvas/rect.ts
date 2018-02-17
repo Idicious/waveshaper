@@ -12,6 +12,8 @@ export default (waveform: number[][], height: number, width: number, element: HT
     const scale = height / 2;
     const ctx = element.getContext('2d');
 
+    if(ctx == null) return;
+
     ctx.clearRect(0, 0, width, height);
     ctx.beginPath();
 

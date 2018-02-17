@@ -2,10 +2,16 @@ import WaveShaper from '../core/waveshaper';
 import WaveShapeManager from '../core/manager';
 import Segment from '../models/segment';
 
-const dragState = {
-    activeSegment: <Segment>null,
+interface DragState {
+    activeSegment: Segment | null;
+    activeSegmentStart: number;
+    dragWave: WaveShaper | null;
+}
+
+const dragState: DragState = {
+    activeSegment: null,
     activeSegmentStart: 0,
-    dragWave: <WaveShaper>null
+    dragWave: null
 }
 
 /**
@@ -40,7 +46,10 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
             return;
 
         const id = ev.target.getAttribute('data-wave-id');
+        if(id == null) return;
+
         const wave = manager.waveShapers.get(id);
+        if(wave == null) return;
 
         const bb = ev.target.getBoundingClientRect();
         const time = (manager.scrollPosition + (ev.center.x - bb.left)) * manager.samplesPerPixel / manager.samplerate;
@@ -49,7 +58,10 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
         if (interval == null)
             return;
 
-        dragState.activeSegment = wave.segments.find(s => s.id === interval.id);
+        const segment = wave.segments.find(s => s.id === interval.id);
+        if(segment == null) return;
+
+        dragState.activeSegment = segment;
         dragState.activeSegmentStart = dragState.activeSegment.start;
 
         dragState.activeSegment.index = 1000;
@@ -60,7 +72,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
         if (!shouldHandle(ev))
             return;
 
-        if (dragState.activeSegment == null)
+        if (dragState.activeSegment == null || dragState.dragWave == null)
             return;
 
         const change = (ev.deltaX * manager.samplesPerPixel) / manager.samplerate;
@@ -96,7 +108,10 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
             return;
 
         const id = canvas.getAttribute('data-wave-id');
+        if(id == null) return;
+
         const wave = manager.waveShapers.get(id);
+        if(wave == null) return;
 
         if (dragState.dragWave.id !== id) {
             const index = dragState.dragWave.segments.indexOf(dragState.activeSegment);

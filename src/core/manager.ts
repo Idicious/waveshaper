@@ -206,7 +206,8 @@ export default class WaveShapeManager {
      * @memberof WaveShapeManager
      */
     flatten(id: string) {
-        this.waveShapers.get(id).flatten();
+        const waveShaper = this.waveShapers.get(id)
+        if(waveShaper != null) waveShaper.flatten();
     }
 
     /**
@@ -264,10 +265,12 @@ export default class WaveShapeManager {
      * 
      * @memberof WaveShapeManager
      */
-    draw(ids: string[], forceDraw: boolean) {
+    draw(ids: string[] | null, forceDraw: boolean) {
         const idsToDraw = ids == null ? this.activeWaveShapers == null ? Array.from(this.waveShapers.keys()) : this.activeWaveShapers : ids;
         for (var i = 0; i < idsToDraw.length; i++) {
             var wave = this.waveShapers.get(idsToDraw[i]);
+            if(wave == null) continue;
+
             wave.calculate(
                 this.meterType, 
                 this.resolution, 
@@ -281,6 +284,8 @@ export default class WaveShapeManager {
     
         for (var i = 0; i < idsToDraw.length; i++) {
             var wave = this.waveShapers.get(idsToDraw[i]);
+            if(wave == null) continue;
+
             wave.draw(this.drawStyle);
         }
     }

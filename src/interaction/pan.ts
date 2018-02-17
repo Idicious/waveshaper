@@ -1,9 +1,13 @@
-import WaveShaper from '../core/waveshaper';
 import WaveShapeManager from '../core/manager';
 
 const endMargin = 500;
 
-const panState = {
+interface PanState {
+    panStart: number;
+    panMax: number;
+}
+
+const panState: PanState = {
     panStart: 0,
     panMax: 0
 }

@@ -8,37 +8,42 @@
  * @param {SVGElement} element 
  * @param {string} drawStyle 
  */
-export default (waveform: number[][], height: number, width: number, element: SVGElement, drawStyle: string) => {
+export default (waveform: number[][], height: number, width: number, element: HTMLElement, drawStyle: string) => {
     const factor = height / 2;
+    const length = waveform.length;
     let d = '';
     d += ` M0, ${factor}`;
 
     // "for" is used for faster iteration
-    for (let i = 0; i < waveform.length; i++) {
-        d += ` L${~~(i)}, ${(waveform[i][0] * factor) + factor}`;
+    for (let i = 0; i < length; i++) {
+        d += ` L${~~(i)}, ${(Math.round(waveform[i][0] * factor) + factor)}`;
     }
-    d += ` L${waveform.length}, ${factor}`;
+    d += ` L${length}, ${factor}`;
 
     d += ` M0, ${factor}`;
 
-    for (let i = 0; i < waveform.length; i++) {
-        d += ` L${~~(i)}, ${(waveform[i][1] * factor) + factor}`;
+    for (let i = 0; i < length; i++) {
+        d += ` L${~~(i)}, ${(Math.round(waveform[i][1] * factor) + factor)}`;
     }
 
-    d += ` L${waveform.length}, ${factor}`;
+    d += ` L${length}, ${factor}`;
+
+    if(element.firstChild != null) {
+        const svg = <SVGSVGElement> element.firstChild;
+        if(svg != null) {
+            const path = <SVGPathElement>svg.firstChild;
+            path.setAttribute('d', d);
+            return;
+        }
+    }
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('height', element.style.height);
-    svg.setAttribute('width', element.style.width);
+    svg.setAttribute('height', height.toString());
+    svg.setAttribute('width', width.toString());
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('height', element.style.height);
     path.setAttribute('stroke', 'black');
     svg.appendChild(path);
     path.setAttribute('d', d);
-
-    if(element.firstChild != null) {
-        element.replaceChild(svg, element.firstChild);
-    } else {
-        element.appendChild(svg);
-    }
+    
+    element.appendChild(svg);
 }

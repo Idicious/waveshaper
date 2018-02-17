@@ -99,7 +99,7 @@ const grouByIndex = (intervals: Interval[]): IntervalMap => {
  */
 const weightedMerge = (grouped: IntervalMap): Interval[] => {
   /** @type {Interval[]} */
-  let flattened;
+  let flattened: Interval[] = [];
   for (let index of Object.keys(grouped)) {
     merge(grouped[index]);
     if (flattened == null) {

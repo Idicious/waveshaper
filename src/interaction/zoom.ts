@@ -1,9 +1,13 @@
-import WaveShaper from '../core/waveshaper';
 import WaveShapeManager from '../core/manager';
 
 const endMargin = 500;
 
-const zoomState = {
+interface ZoomState {
+    maxWidth: number;
+    sppStart: number;
+}
+
+const zoomState: ZoomState = {
     maxWidth: 0,
     sppStart: 0
 }
