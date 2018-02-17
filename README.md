@@ -1,5 +1,3 @@
-#Work in progress
-
 # WaveShaper
 Waveform drawing and interaction library.
 
@@ -25,28 +23,28 @@ Each WaveShaper manages a canvas. It can be compared to a Track in a DAW. A wave
 ## Segment
 A segment represents a portion of audio, it has the following properties:
 
-| property | values | description
-| -------- | ---- | -----------
-| id       | string | Unique identifier
-| index    | number | Used to resolve overlapping Segments within a WaveShaper, higher segments have priority.
-| start    | number, >= 0 - offsetStart | Start time in seconds
-| duration | number, > 0 | Duration in seconds
-| offsetStart | number, >= 0 & < duration - offsetEnd | Offset from start in seconds
-| offsetEnd | number, >= 0 & < offsetStart | Offset from end in seconds
-| source | string | id of audio file
+| property | values | constraints | description
+| -------- | ---- | -----------   | -----------
+| id       | string | | Unique identifier
+| index    | number | >= 0 | Used to resolve overlapping Segments within a WaveShaper, higher indexes have priority.
+| start    | number | >= 0 - offsetStart | Start time in seconds
+| duration | number | > 0 | Duration in seconds
+| offsetStart | number | >= 0 & < duration - offsetEnd | Offset from start in seconds
+| offsetEnd | number | >= 0 & < offsetStart | Offset from end in seconds
+| source | string | | id of audio file
 
 ## WaveShapeManager
 This is the the class you use to manage the settings for all the WaveShapers and to draw them. It has the following properties:
 
-| property | values | description
-| -------- | ---- | -----------
-| samplesPerPixel | number, greater than 0 | Zoom level, higher to zoom out, lower to zoom in.
-| resolution    | number, greater than 0 | Detail level, higher for move detail
-| width    | number, greater than 0 | Width in pixels of canvasses
-| height | number, greater than 0 | Height in pixels of canvasses
-| scrollPosition | number, 0 or higher | Change to pan, position in pixels
-| meterType | 'peak', 'rms' | Method of calculating display values
-| mode | 'pan', 'drag', 'cut', 'resize' | Interaction mode, pan includes pinch-zoom
+| property | type | constraints | description
+| -------- | ---- | -----------   | -----------
+| samplesPerPixel | number | > 0 | Zoom level, higher to zoom out, lower to zoom in.
+| resolution    | number | > 0 | Detail level, higher for more detail
+| width    | number | > 0 | Width in pixels of canvasses
+| height | number | > 0 | Height in pixels of canvasses
+| scrollPosition | number | >= 0 | Change to pan, position in pixels
+| meterType | string | 'peak', 'rms' | Method of calculating display values
+| mode | string | 'pan', 'drag', 'cut', 'resize' | Interaction mode, pan includes pinch-zoom
 
 ## Code example
 ```
