@@ -9,7 +9,7 @@
  * @param {string} drawStyle 
  * @param {string} color
  */
-export default (waveform: number[][], height: number, width: number, ctx: CanvasRenderingContext2D, drawStyle: string, color: string) => {
+export default (waveform: number[][], height: number, width: number, ctx: CanvasRenderingContext2D, color: string) => {
     const scale = height / 2;
     ctx.fillStyle = color;
     ctx.strokeStyle = 'black';
@@ -49,13 +49,6 @@ export default (waveform: number[][], height: number, width: number, ctx: Canvas
             ctx.rect(i-1, 0, 1, height);
         }
     }
-
     
-    switch (drawStyle) { 
-        case 'stroke':
-            ctx.stroke();
-            break;
-        default:
-            ctx.fill();
-    }
+    ctx.fill();
 }

@@ -42,15 +42,15 @@ export default (resolution: number, samplesPerPixel: number, width: number, inte
             continue;
         }
         
-        let endOfInterval = false;
+        let intervalBorder = 0;
         if(currentSecond + secondsPerPixel > interval.end 
             || currentSecond - secondsPerPixel < interval.start) {
-            endOfInterval = true;
+            intervalBorder = 1;
         }
 
         const buffer = dataMap.get(interval.source);
         if(buffer == null) {
-            vals.push([0, 0, endOfInterval ? 1 : 0, 1]);
+            vals.push([0, 0, intervalBorder, 1]);
             continue;
         }
 
@@ -78,7 +78,7 @@ export default (resolution: number, samplesPerPixel: number, width: number, inte
         const min = -Math.sqrt(negSum / samples);
         const max = Math.sqrt(posSum / samples);
 
-        vals.push([min, max, endOfInterval ? 1 : 0, 1]);
+        vals.push([min, max, intervalBorder, 1]);
     }
     return vals;
 }

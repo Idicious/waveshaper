@@ -33,7 +33,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager) => {
 
         const newSegment = { ...segment }
         newSegment.offsetStart = cutTime;
-        newSegment.id = Math.random().toString();
+        newSegment.id = manager.generateId();
 
         segment.offsetEnd = segment.duration - cutTime;
         wave.segments.push(newSegment);

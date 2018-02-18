@@ -1,7 +1,7 @@
-import { DrawStyle, MeterType } from '../config/managerconfig';
+import { MeterType } from '../config/managerconfig';
 import calculatePeaks from '../strategies/calculate/peak'
 import calculateRms from '../strategies/calculate/rms'
-import drawCanvasLine from '../strategies/render/canvas/line';
+import drawCanvasLine from '../strategies/render/line';
 import Segment from '../models/segment';
 import flattenSegments from '../methods/flatten';
 import Interval from '../models/interval';
@@ -17,7 +17,7 @@ export interface LastDrawValues {
 export default class WaveShaper {
     id: string;
     color: string;
-    element: HTMLCanvasElement | HTMLElement;
+    element: HTMLCanvasElement
     segments: Segment[];
     flattened: Interval[];
     ctx: CanvasRenderingContext2D;
@@ -27,29 +27,27 @@ export default class WaveShaper {
     skipDraw: boolean = false;
     lastValues: LastDrawValues;
 
-    constructor(id: string, element: HTMLCanvasElement | HTMLElement, segments: Segment[], width: number, height: number, color: string) {
+    constructor(id: string, segments: Segment[], width: number, height: number, color: string) {
+        this.element = document.createElement('canvas');
+        this.element.setAttribute('data-wave-id', id);
+
         this.id = id;
         this.color = color;
-        this.element = element;
         this.segments = segments;
         this.width = width;
         this.height = height;
 
-        this.flattened = flattenSegments(this.segments);
+        this.flatten();
 
-        element.style.width = width + 'px';
-        element.style.height = height + 'px';
-        element.classList.add('waveshaper');
+        this.element.style.width = width + 'px';
+        this.element.style.height = height + 'px';
+        this.element.classList.add('waveshaper');
 
-        if(element instanceof HTMLCanvasElement) {
-            const canvas = <HTMLCanvasElement> element;
-
-            canvas.width = width * devicePixelRatio;
-            canvas.height = height;
-            this.ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
-            const scale = (devicePixelRatio || 1) < 1 ? 1 : (devicePixelRatio || 1);
-            this.ctx.scale(scale, 1);
-        }
+        this.element.width = width * devicePixelRatio;
+        this.element.height = height;
+        this.ctx = <CanvasRenderingContext2D>this.element.getContext('2d');
+        const scale = (devicePixelRatio || 1) < 1 ? 1 : (devicePixelRatio || 1);
+        this.ctx.scale(scale, 1);
     }
 
     flatten() {
@@ -157,14 +155,13 @@ export default class WaveShaper {
      * 
      * @param {string} drawStyle
      */
-    draw(drawStyle: DrawStyle) {
+    draw() {
         if (!this.skipDraw) {
             drawCanvasLine(
                 this.calculated,
                 this.height,
                 this.width,
                 this.ctx,
-                drawStyle,
                 this.color
             );
         }

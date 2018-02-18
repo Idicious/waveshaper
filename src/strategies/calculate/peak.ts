@@ -44,15 +44,15 @@ export default (resolution: number, samplesPerPixel: number, width: number, inte
             continue;
         }
 
-        let endOfInterval = false;
+        let intervalBorder = 0;
         if (currentSecond + secondsPerPixel > currentInterval.end
             || currentSecond - secondsPerPixel < currentInterval.start) {
-            endOfInterval = true;
+            intervalBorder = 1;
         }
 
         const buffer = dataMap.get(currentInterval.source);
         if (buffer == null) {
-            peaks.push([0, 0, endOfInterval ? 1 : 0, 1]);
+            peaks.push([0, 0, intervalBorder, 1]);
             continue;
         }
 
@@ -74,7 +74,7 @@ export default (resolution: number, samplesPerPixel: number, width: number, inte
             else if (sample < min) min = sample;
         }
 
-        peaks.push([min, max, endOfInterval ? 1 : 0, 1]);
+        peaks.push([min, max, intervalBorder, 1]);
     }
     return peaks;
 }

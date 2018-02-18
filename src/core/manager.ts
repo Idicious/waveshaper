@@ -7,7 +7,7 @@ import setupPan from '../interaction/pan';
 import setupZoom from '../interaction/zoom';
 import * as Hammer from 'hammerjs';
 import hammerconfig from '../config/hammerconfig';
-import defaultOptions, { ManagerOptions, InteractionMode, MeterType, DrawStyle } from '../config/managerconfig';
+import defaultOptions, { ManagerOptions, InteractionMode, MeterType, GenerateId } from '../config/managerconfig';
 
 /**
  * 
@@ -90,13 +90,6 @@ export default class WaveShapeManager {
     public scrollPosition: number;
 
     /**
-     * @description Draw style of waveform, either filled or stroked
-     * 
-     * @memberof WaveShapeManager
-     */
-    public drawStyle: DrawStyle;
-
-    /**
      * @description Calculation method used to determine value of sample range
      * @example Peak get the peak values of the range, RMS is similar to average https://en.wikipedia.org/wiki/Root_mean_square
      * 
@@ -119,6 +112,13 @@ export default class WaveShapeManager {
     public mode: InteractionMode;
 
     /**
+     * @description Method used to generate new id's
+     * 
+     * @memberof WaveShapeManager
+     */
+    public generateId: GenerateId;
+
+    /**
      * @param {number} samplerate Audio samplerate
      * @param {HTMLElement} container Container element
      * @param {ManagerOptions} [options=defaultOptions] Initial options
@@ -129,21 +129,22 @@ export default class WaveShapeManager {
         if(samplerate == null || isNaN(samplerate)) {
             throw new Error('samplerate cannot be null and must be a number');
         }
+
+        // Merge options and default options so ommited properties are set
+        options = { ...defaultOptions, ...options };
         
         // Setup readonly properties
-        
         this.samplerate = samplerate;
         this.width = options.width;
         this.height = options.height;
         
         // Setup variable properties
-
         this.resolution = options.resolution;
         this.samplesPerPixel = options.samplesPerPixel;
         this.scrollPosition = options.scrollPosition;
-        this.drawStyle = options.drawStyle;
         this.meterType = options.meterType;
         this.mode = options.mode;
+        this.generateId = options.generateId;
 
         //Setup interaction
         this.hammer = new Hammer(container, hammerconfig);
@@ -165,12 +166,20 @@ export default class WaveShapeManager {
      * 
      * @memberof WaveShapeManager
      */
-    addWave(id: string, element: HTMLCanvasElement, segments: Segment[], color: string) {
-        if(!this.waveShapers.has(id)) {
-            element.setAttribute('data-wave-id', id);
-            const wave = new WaveShaper(id, element, segments, this.width, this.height, color);
+    addWaveShaper(id: string, segments: Segment[], color: string): WaveShaper {
+        const foundWave = this.waveShapers.get('id');
+        if(foundWave == null) {
+            const wave = new WaveShaper(id, segments, this.width, this.height, color);
             this.waveShapers.set(id, wave);
-        }
+
+            return wave;
+        } 
+        
+        return foundWave;
+    }
+
+    getWaveShaper(id: string): WaveShaper | undefined {
+        return this.waveShapers.get(id);
     }
 
     /**
@@ -286,7 +295,7 @@ export default class WaveShapeManager {
             var wave = this.waveShapers.get(idsToDraw[i]);
             if(wave == null) continue;
 
-            wave.draw(this.drawStyle);
+            wave.draw();
         }
     }
 }

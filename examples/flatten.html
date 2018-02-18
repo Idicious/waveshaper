@@ -72,7 +72,7 @@
         <option value="cut">Cut</option>
     </select>
 
-    <script src="../dist/index.js"></script>
+    <script src="../index.js"></script>
     <script>
         const audioContext = new AudioContext();
         const canvasContainer = document.getElementById('canvas-container');
@@ -80,11 +80,11 @@
             scrollPosition: 0,
             samplesPerPixel: 1024,
             resolution: 10,
-            drawStyle: 'fill',
             meterType: 'peak',
             mode: 'pan',
             height: 300,
-            width: canvasContainer.clientWidth
+            width: canvasContainer.clientWidth,
+            generateId: function() { return Math.random().toString(); }
         }
         
 
@@ -118,7 +118,6 @@
         loadAudio('3', '/examples/audio/13_ElecGtr01.mp3');
 
         for(let i = 0; i < 100; i++) {
-            const canvas = document.createElement('canvas');
             const segments = [{
                     id: "" + Math.random(),
                     start: 0,
@@ -177,18 +176,17 @@
 
             var waveShapeData = {
                 id: i.toString(),
-                canvas,
                 segments,
                 color: '#f5f5f5'
             };
 
             buffers.push(waveShapeData);
-            manager.addWave(waveShapeData.id, waveShapeData.canvas, waveShapeData.segments, waveShapeData.color);
+            const waveShaper = manager.addWaveShaper(waveShapeData.id, waveShapeData.segments, waveShapeData.color);
             canvasWrapper.style.height = buffers.length * elementHeight + 'px';
 
             if (buffers.length <= fitInElement) {
                 buffersInView.push(waveShapeData);
-                canvasFragment.appendChild(waveShapeData.canvas);
+                canvasFragment.appendChild(waveShaper.element);
                 
                 manager.activeWaveShapers = buffersInView.map(b => b.id);
                 requestAnimationFrame(() => manager.draw());
@@ -237,7 +235,10 @@
             manager.activeWaveShapers = buffersInView.map(b => b.id);
 
             for(const buffer of buffersInView) {
-               containerDiv.appendChild(buffer.canvas);
+               const waveShaper = manager.getWaveShaper(buffer.id);
+               if(waveShaper != null) {
+                containerDiv.appendChild(waveShaper.element);
+               }
             }
 
             requestAnimationFrame(() => manager.draw());

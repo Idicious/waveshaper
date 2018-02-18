@@ -75,6 +75,11 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
         if (dragState.activeSegment == null || dragState.dragWave == null)
             return;
 
+        // If the target has moved it is handled by the mouse/touch move manager
+        const id = ev.target.getAttribute('data-wave-id');
+        if(id !== dragState.dragWave.id)
+            return;
+
         const change = (ev.deltaX * manager.samplesPerPixel) / manager.samplerate;
         let newTime = dragState.activeSegmentStart + change;
 

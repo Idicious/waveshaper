@@ -60,632 +60,134 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
+"use strict";
 
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+var peak_1 = __webpack_require__(4);
+var rms_1 = __webpack_require__(5);
+var line_1 = __webpack_require__(6);
+var flatten_1 = __webpack_require__(7);
+var WaveShaper = /** @class */ (function () {
+    function WaveShaper(id, element, segments, width, height, color) {
+        this.skipDraw = false;
+        this.id = id;
+        this.color = color;
+        this.element = element;
+        this.segments = segments;
+        this.width = width;
+        this.height = height;
+        this.flatten();
+        element.style.width = width + 'px';
+        element.style.height = height + 'px';
+        element.classList.add('waveshaper');
+        element.width = width * devicePixelRatio;
+        element.height = height;
+        this.ctx = element.getContext('2d');
+        var scale = (devicePixelRatio || 1) < 1 ? 1 : (devicePixelRatio || 1);
+        this.ctx.scale(scale, 1);
+    }
+    WaveShaper.prototype.flatten = function () {
+        this.flattened = flatten_1.default(this.segments);
+    };
+    /**
+     * Gets the duration of the audio in seconds
+     *
+     * @returns {number} Decimal value of total duration in seconds
+     */
+    WaveShaper.prototype.getDuration = function () {
+        var maxLength = 0;
+        for (var _i = 0, _a = this.segments; _i < _a.length; _i++) {
+            var segment = _a[_i];
+            var end = segment.start + segment.duration;
+            if (end > maxLength) {
+                maxLength = end;
+            }
+        }
+        return maxLength;
+    };
+    /**
+     * Gets the duration of the audio as a date
+     *
+     * @returns {Date} Date containing audio length
+     */
+    WaveShaper.prototype.getDurationAsDate = function () {
+        var date = new Date(0);
+        date.setTime(this.getDuration() * 1000);
+        return date;
+    };
+    /**
+     * Gets the width of scrollbar needed to scroll through the entire audio file
+     *
+     * @param {number} samplesPerPixel
+     * @param {number} samplerate
+     * @returns {number} Scroll width in pixels for the entire audio file
+     */
+    WaveShaper.prototype.getScrollWidth = function (samplesPerPixel, samplerate) {
+        var maxLength = this.getDuration();
+        return maxLength * samplerate / samplesPerPixel;
+    };
+    /**
+     * Gets the summerized values for the current settings
+     *
+     * @param {string} meterType
+     * @param {number} sampleSize
+     * @param {number} samplesPerPixel
+     * @param {number} scrollPosition
+     * @param {boolean} forceDraw
+     * @param {Map<string, Float32Array>} dataMap
+     * @returns {Array} Two dimensional array, one entry for each pixel, for each pixel a min
+     * and a max value.
+     */
+    WaveShaper.prototype.calculate = function (meterType, sampleSize, samplesPerPixel, scrollPosition, samplerate, forceDraw, dataMap) {
+        if (!forceDraw && this.lastValues != null && this.lastValues.meterType === meterType && this.lastValues.sampleSize === sampleSize &&
+            this.lastValues.samplesPerPixel === samplesPerPixel && this.lastValues.scrollPosition === scrollPosition &&
+            this.lastValues.samplerate === samplerate) {
+            this.skipDraw = true;
+            return this.calculated;
+        }
+        else {
+            this.skipDraw = false;
+            this.lastValues = {
+                meterType: meterType,
+                sampleSize: sampleSize,
+                samplesPerPixel: samplesPerPixel,
+                scrollPosition: scrollPosition,
+                samplerate: samplerate
+            };
+        }
+        switch (meterType) {
+            case 'peak':
+                this.calculated = peak_1.default(sampleSize, samplesPerPixel, this.width, this.flattened, scrollPosition, samplerate, dataMap);
+                break;
+            default:
+                this.calculated = rms_1.default(sampleSize, samplesPerPixel, this.width, this.flattened, scrollPosition, samplerate, dataMap);
+        }
+        return this.calculated;
+    };
+    /**
+     * Draws the waveform to the canvas with current settings
+     *
+     * @param {string} drawStyle
+     */
+    WaveShaper.prototype.draw = function (drawStyle) {
+        if (!this.skipDraw) {
+            line_1.default(this.calculated, this.height, this.width, this.ctx, drawStyle, this.color);
+        }
+    };
+    return WaveShaper;
+}());
+exports.default = WaveShaper;
 
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
 
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
-
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
-
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
-
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
-
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
-
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.7 - 2016-04-22
@@ -3335,31 +2837,33 @@ if (true) {
 
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var manager_1 = __webpack_require__(2);
-exports.WaveShapeManager = manager_1.default;
-window["WaveShapeManager"] = manager_1.default;
-
-
-/***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var waveshaper_1 = __webpack_require__(3);
+var manager_1 = __webpack_require__(3);
+exports.WaveShapeManager = manager_1.default;
+var waveshaper_1 = __webpack_require__(0);
+exports.WaveShaper = waveshaper_1.default;
+window["WaveShapeManager"] = manager_1.default;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var waveshaper_1 = __webpack_require__(0);
 var drag_1 = __webpack_require__(8);
 var resize_1 = __webpack_require__(9);
 var cut_1 = __webpack_require__(10);
 var pan_1 = __webpack_require__(11);
 var zoom_1 = __webpack_require__(12);
-var Hammer = __webpack_require__(0);
+var Hammer = __webpack_require__(1);
 var hammerconfig_1 = __webpack_require__(13);
 var managerconfig_1 = __webpack_require__(14);
 /**
@@ -3406,6 +2910,7 @@ var WaveShapeManager = /** @class */ (function () {
         this.drawStyle = options.drawStyle;
         this.meterType = options.meterType;
         this.mode = options.mode;
+        this.generateId = options.generateId;
         //Setup interaction
         this.hammer = new Hammer(container, hammerconfig_1.default);
         drag_1.default(this, this.hammer, container);
@@ -3424,10 +2929,11 @@ var WaveShapeManager = /** @class */ (function () {
      *
      * @memberof WaveShapeManager
      */
-    WaveShapeManager.prototype.addWave = function (id, element, segments, color) {
+    WaveShapeManager.prototype.addWave = function (id, segments, color) {
         if (!this.waveShapers.has(id)) {
-            element.setAttribute('data-wave-id', id);
-            var wave = new waveshaper_1.default(id, element, segments, this.width, this.height, color);
+            var canvas = document.createElement('canvas');
+            canvas.setAttribute('data-wave-id', id);
+            var wave = new waveshaper_1.default(id, canvas, segments, this.width, this.height, color);
             this.waveShapers.set(id, wave);
         }
     };
@@ -3537,132 +3043,6 @@ var WaveShapeManager = /** @class */ (function () {
     return WaveShapeManager;
 }());
 exports.default = WaveShapeManager;
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var peak_1 = __webpack_require__(4);
-var rms_1 = __webpack_require__(5);
-var line_1 = __webpack_require__(6);
-var flatten_1 = __webpack_require__(7);
-var WaveShaper = /** @class */ (function () {
-    function WaveShaper(id, element, segments, width, height, color) {
-        this.skipDraw = false;
-        this.id = id;
-        this.color = color;
-        this.element = element;
-        this.segments = segments;
-        this.width = width;
-        this.height = height;
-        this.flattened = flatten_1.default(this.segments);
-        element.style.width = width + 'px';
-        element.style.height = height + 'px';
-        element.classList.add('waveshaper');
-        if (element instanceof HTMLCanvasElement) {
-            var canvas = element;
-            canvas.width = width * devicePixelRatio;
-            canvas.height = height;
-            this.ctx = canvas.getContext('2d');
-            var scale = (devicePixelRatio || 1) < 1 ? 1 : (devicePixelRatio || 1);
-            this.ctx.scale(scale, 1);
-        }
-    }
-    WaveShaper.prototype.flatten = function () {
-        this.flattened = flatten_1.default(this.segments);
-    };
-    /**
-     * Gets the duration of the audio in seconds
-     *
-     * @returns {number} Decimal value of total duration in seconds
-     */
-    WaveShaper.prototype.getDuration = function () {
-        var maxLength = 0;
-        for (var _i = 0, _a = this.segments; _i < _a.length; _i++) {
-            var segment = _a[_i];
-            var end = segment.start + segment.duration;
-            if (end > maxLength) {
-                maxLength = end;
-            }
-        }
-        return maxLength;
-    };
-    /**
-     * Gets the duration of the audio as a date
-     *
-     * @returns {Date} Date containing audio length
-     */
-    WaveShaper.prototype.getDurationAsDate = function () {
-        var date = new Date(0);
-        date.setTime(this.getDuration() * 1000);
-        return date;
-    };
-    /**
-     * Gets the width of scrollbar needed to scroll through the entire audio file
-     *
-     * @param {number} samplesPerPixel
-     * @param {number} samplerate
-     * @returns {number} Scroll width in pixels for the entire audio file
-     */
-    WaveShaper.prototype.getScrollWidth = function (samplesPerPixel, samplerate) {
-        var maxLength = this.getDuration();
-        return maxLength * samplerate / samplesPerPixel;
-    };
-    /**
-     * Gets the summerized values for the current settings
-     *
-     * @param {string} meterType
-     * @param {number} sampleSize
-     * @param {number} samplesPerPixel
-     * @param {number} scrollPosition
-     * @param {boolean} forceDraw
-     * @param {Map<string, Float32Array>} dataMap
-     * @returns {Array} Two dimensional array, one entry for each pixel, for each pixel a min
-     * and a max value.
-     */
-    WaveShaper.prototype.calculate = function (meterType, sampleSize, samplesPerPixel, scrollPosition, samplerate, forceDraw, dataMap) {
-        if (!forceDraw && this.lastValues != null && this.lastValues.meterType === meterType && this.lastValues.sampleSize === sampleSize &&
-            this.lastValues.samplesPerPixel === samplesPerPixel && this.lastValues.scrollPosition === scrollPosition &&
-            this.lastValues.samplerate === samplerate) {
-            this.skipDraw = true;
-            return this.calculated;
-        }
-        else {
-            this.skipDraw = false;
-            this.lastValues = {
-                meterType: meterType,
-                sampleSize: sampleSize,
-                samplesPerPixel: samplesPerPixel,
-                scrollPosition: scrollPosition,
-                samplerate: samplerate
-            };
-        }
-        switch (meterType) {
-            case 'peak':
-                this.calculated = peak_1.default(sampleSize, samplesPerPixel, this.width, this.flattened, scrollPosition, samplerate, dataMap);
-                break;
-            default:
-                this.calculated = rms_1.default(sampleSize, samplesPerPixel, this.width, this.flattened, scrollPosition, samplerate, dataMap);
-        }
-        return this.calculated;
-    };
-    /**
-     * Draws the waveform to the canvas with current settings
-     *
-     * @param {string} drawStyle
-     */
-    WaveShaper.prototype.draw = function (drawStyle) {
-        if (!this.skipDraw) {
-            line_1.default(this.calculated, this.height, this.width, this.ctx, drawStyle, this.color);
-        }
-    };
-    return WaveShaper;
-}());
-exports.default = WaveShaper;
 
 
 /***/ }),
@@ -4346,7 +3726,7 @@ exports.default = (function (manager, hammer) {
         var cutTime = time - segment.start;
         var newSegment = __assign({}, segment);
         newSegment.offsetStart = cutTime;
-        newSegment.id = Math.random().toString();
+        newSegment.id = manager.generateId();
         segment.offsetEnd = segment.duration - cutTime;
         wave.segments.push(newSegment);
         wave.flatten();
@@ -4464,7 +3844,7 @@ exports.default = default_1;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Hammer = __webpack_require__(0);
+var Hammer = __webpack_require__(1);
 var hammerOptions = {
     touchAction: 'pan-y',
     recognizers: [
@@ -4486,51 +3866,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var defaultOptions = {
     scrollPosition: 0,
     samplesPerPixel: 1024,
-    resolution: 1,
+    resolution: 10,
     drawStyle: 'fill',
     meterType: 'rms',
     mode: 'pan',
     width: 300,
-    height: 150
+    height: 150,
+    generateId: function () { return Math.random.toString(); }
 };
 exports.default = defaultOptions;
 
-
-/***/ })
-/******/ ]);
-//# sourceMappingURL=index.js.map
-
-/***/ })
-/******/ ]);
-//# sourceMappingURL=index.js.map
-
-/***/ })
-/******/ ]);
-//# sourceMappingURL=index.js.map
-
-/***/ })
-/******/ ]);
-//# sourceMappingURL=index.js.map
-
-/***/ })
-/******/ ]);
-//# sourceMappingURL=index.js.map
-
-/***/ })
-/******/ ]);
-//# sourceMappingURL=index.js.map
-
-/***/ })
-/******/ ]);
-//# sourceMappingURL=index.js.map
-
-/***/ })
-/******/ ]);
-//# sourceMappingURL=index.js.map
-
-/***/ })
-/******/ ]);
-//# sourceMappingURL=index.js.map
 
 /***/ })
 /******/ ]);
