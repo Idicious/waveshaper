@@ -1,6 +1,6 @@
 {
   "name": "waveshaper",
-  "version": "1.0.7",
+  "version": "0.0.1",
   "description": "Waveform drawing library",
   "main": "dist/index.js",
   "types": "dist/typings/index.d.ts",
@@ -21,7 +21,13 @@
     "waveform",
     "drawing"
   ],
-  "author": "David Sherman",
+  "author": {
+    "name": "David Sherman",
+    "email": "thedcsherman@gmail.com"
+  },
+  "repository": {
+    "url": "https://github.com/Idicious/waveshaper"
+  },
   "license": "MIT",
   "devDependencies": {
     "@types/hammerjs": "^2.0.35",

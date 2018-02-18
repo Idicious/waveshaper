@@ -122,14 +122,11 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
             const index = dragState.dragWave.segments.indexOf(dragState.activeSegment);
             dragState.dragWave.segments.splice(index, 1);
 
-            dragState.dragWave.flatten();
-            manager.draw([dragState.dragWave.id], true);
-
             wave.segments.push(dragState.activeSegment);
             dragState.activeSegment.index = 1000;
 
-            wave.flatten();
-            manager.draw([wave.id], true);
+            manager.flatten([wave.id, dragState.dragWave.id])
+            manager.draw([wave.id, dragState.dragWave.id], true);
 
             dragState.dragWave = wave;
         }

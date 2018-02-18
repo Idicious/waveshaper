@@ -75,21 +75,22 @@ var rms_1 = __webpack_require__(5);
 var line_1 = __webpack_require__(6);
 var flatten_1 = __webpack_require__(7);
 var WaveShaper = /** @class */ (function () {
-    function WaveShaper(id, element, segments, width, height, color) {
+    function WaveShaper(id, segments, width, height, color) {
         this.skipDraw = false;
+        this.element = document.createElement('canvas');
+        this.element.setAttribute('data-wave-id', id);
         this.id = id;
         this.color = color;
-        this.element = element;
         this.segments = segments;
         this.width = width;
         this.height = height;
         this.flatten();
-        element.style.width = width + 'px';
-        element.style.height = height + 'px';
-        element.classList.add('waveshaper');
-        element.width = width * devicePixelRatio;
-        element.height = height;
-        this.ctx = element.getContext('2d');
+        this.element.style.width = width + 'px';
+        this.element.style.height = height + 'px';
+        this.element.classList.add('waveshaper');
+        this.element.width = width * devicePixelRatio;
+        this.element.height = height;
+        this.ctx = this.element.getContext('2d');
         var scale = (devicePixelRatio || 1) < 1 ? 1 : (devicePixelRatio || 1);
         this.ctx.scale(scale, 1);
     }
@@ -176,9 +177,9 @@ var WaveShaper = /** @class */ (function () {
      *
      * @param {string} drawStyle
      */
-    WaveShaper.prototype.draw = function (drawStyle) {
+    WaveShaper.prototype.draw = function () {
         if (!this.skipDraw) {
-            line_1.default(this.calculated, this.height, this.width, this.ctx, drawStyle, this.color);
+            line_1.default(this.calculated, this.height, this.width, this.ctx, this.color);
         }
     };
     return WaveShaper;
@@ -2856,6 +2857,14 @@ window["WaveShapeManager"] = manager_1.default;
 
 "use strict";
 
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var waveshaper_1 = __webpack_require__(0);
 var drag_1 = __webpack_require__(8);
@@ -2899,6 +2908,8 @@ var WaveShapeManager = /** @class */ (function () {
         if (samplerate == null || isNaN(samplerate)) {
             throw new Error('samplerate cannot be null and must be a number');
         }
+        // Merge options and default options so ommited properties are set
+        options = __assign({}, managerconfig_1.default, options);
         // Setup readonly properties
         this.samplerate = samplerate;
         this.width = options.width;
@@ -2907,7 +2918,6 @@ var WaveShapeManager = /** @class */ (function () {
         this.resolution = options.resolution;
         this.samplesPerPixel = options.samplesPerPixel;
         this.scrollPosition = options.scrollPosition;
-        this.drawStyle = options.drawStyle;
         this.meterType = options.meterType;
         this.mode = options.mode;
         this.generateId = options.generateId;
@@ -2929,13 +2939,17 @@ var WaveShapeManager = /** @class */ (function () {
      *
      * @memberof WaveShapeManager
      */
-    WaveShapeManager.prototype.addWave = function (id, segments, color) {
-        if (!this.waveShapers.has(id)) {
-            var canvas = document.createElement('canvas');
-            canvas.setAttribute('data-wave-id', id);
-            var wave = new waveshaper_1.default(id, canvas, segments, this.width, this.height, color);
+    WaveShapeManager.prototype.addWaveShaper = function (id, segments, color) {
+        var foundWave = this.waveShapers.get('id');
+        if (foundWave == null) {
+            var wave = new waveshaper_1.default(id, segments, this.width, this.height, color);
             this.waveShapers.set(id, wave);
+            return wave;
         }
+        return foundWave;
+    };
+    WaveShapeManager.prototype.getWaveShaper = function (id) {
+        return this.waveShapers.get(id);
     };
     /**
      * @description Adds audio data to the waveshaper and redraws waveshapers using it
@@ -3037,7 +3051,7 @@ var WaveShapeManager = /** @class */ (function () {
             var wave = this.waveShapers.get(idsToDraw[i]);
             if (wave == null)
                 continue;
-            wave.draw(this.drawStyle);
+            wave.draw();
         }
     };
     return WaveShapeManager;
@@ -3088,14 +3102,14 @@ exports.default = (function (resolution, samplesPerPixel, width, intervals, scro
             peaks.push([0, 0, 0, 0]);
             continue;
         }
-        var endOfInterval = false;
+        var intervalBorder = 0;
         if (currentSecond + secondsPerPixel > currentInterval.end
             || currentSecond - secondsPerPixel < currentInterval.start) {
-            endOfInterval = true;
+            intervalBorder = 1;
         }
         var buffer = dataMap.get(currentInterval.source);
         if (buffer == null) {
-            peaks.push([0, 0, endOfInterval ? 1 : 0, 1]);
+            peaks.push([0, 0, intervalBorder, 1]);
             continue;
         }
         var offsetStart = currentInterval.start - currentInterval.originalStart;
@@ -3114,7 +3128,7 @@ exports.default = (function (resolution, samplesPerPixel, width, intervals, scro
             else if (sample < min)
                 min = sample;
         }
-        peaks.push([min, max, endOfInterval ? 1 : 0, 1]);
+        peaks.push([min, max, intervalBorder, 1]);
     }
     return peaks;
 });
@@ -3163,14 +3177,14 @@ exports.default = (function (resolution, samplesPerPixel, width, intervals, scro
             vals.push([0, 0, 0, 0]);
             continue;
         }
-        var endOfInterval = false;
+        var intervalBorder = 0;
         if (currentSecond + secondsPerPixel > interval.end
             || currentSecond - secondsPerPixel < interval.start) {
-            endOfInterval = true;
+            intervalBorder = 1;
         }
         var buffer = dataMap.get(interval.source);
         if (buffer == null) {
-            vals.push([0, 0, endOfInterval ? 1 : 0, 1]);
+            vals.push([0, 0, intervalBorder, 1]);
             continue;
         }
         var offsetStart = interval.start - interval.originalStart;
@@ -3194,7 +3208,7 @@ exports.default = (function (resolution, samplesPerPixel, width, intervals, scro
         var samples = Math.min(samplesPerPixel / 2, Math.round(resolution / 2));
         var min = -Math.sqrt(negSum / samples);
         var max = Math.sqrt(posSum / samples);
-        vals.push([min, max, endOfInterval ? 1 : 0, 1]);
+        vals.push([min, max, intervalBorder, 1]);
     }
     return vals;
 });
@@ -3218,7 +3232,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @param {string} drawStyle
  * @param {string} color
  */
-exports.default = (function (waveform, height, width, ctx, drawStyle, color) {
+exports.default = (function (waveform, height, width, ctx, color) {
     var scale = height / 2;
     ctx.fillStyle = color;
     ctx.strokeStyle = 'black';
@@ -3253,13 +3267,7 @@ exports.default = (function (waveform, height, width, ctx, drawStyle, color) {
             ctx.rect(i - 1, 0, 1, height);
         }
     }
-    switch (drawStyle) {
-        case 'stroke':
-            ctx.stroke();
-            break;
-        default:
-            ctx.fill();
-    }
+    ctx.fill();
 });
 
 
@@ -3530,6 +3538,10 @@ exports.default = (function (manager, hammer, container) {
         if (!shouldHandle(ev))
             return;
         if (dragState.activeSegment == null || dragState.dragWave == null)
+            return;
+        // If the target has moved it is handled by the mouse/touch move manager
+        var id = ev.target.getAttribute('data-wave-id');
+        if (id !== dragState.dragWave.id)
             return;
         var change = (ev.deltaX * manager.samplesPerPixel) / manager.samplerate;
         var newTime = dragState.activeSegmentStart + change;
@@ -3867,7 +3879,6 @@ var defaultOptions = {
     scrollPosition: 0,
     samplesPerPixel: 1024,
     resolution: 10,
-    drawStyle: 'fill',
     meterType: 'rms',
     mode: 'pan',
     width: 300,

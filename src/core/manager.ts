@@ -214,9 +214,12 @@ export default class WaveShapeManager {
      * @param id 
      * @memberof WaveShapeManager
      */
-    flatten(id: string) {
-        const waveShaper = this.waveShapers.get(id)
-        if(waveShaper != null) waveShaper.flatten();
+    flatten(ids: string[]) {
+        for(let i = 0; i < ids.length; i++) {
+            const id = ids[i];
+            const waveShaper = this.waveShapers.get(id)
+            if(waveShaper != null) waveShaper.flatten();
+        }
     }
 
     /**
