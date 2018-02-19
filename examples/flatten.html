@@ -72,7 +72,8 @@
         <option value="cut">Cut</option>
     </select>
 
-    <script src="../index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.js"></script>
+    <script src="../waveshaper.js"></script>
     <script>
         const audioContext = new AudioContext();
         const canvasContainer = document.getElementById('canvas-container');
@@ -87,14 +88,10 @@
             generateId: function() { return Math.random().toString(); }
         }
         
-
-        //const schedular = new Schedular(16, audioContext);
-        //schedular.start();
-        
         const canvasWrapper = document.getElementById('canvas-wrapper');
         const canvasFragment = document.getElementById('canvas-fragment');
 
-        const manager = new WaveShapeManager(audioContext.sampleRate, canvasWrapper, options);
+        const manager = new WaveShaper.WaveShapeManager(audioContext.sampleRate, canvasWrapper, options);
 
         const elementHeight = options.height;
         const ownHeight = canvasContainer.clientHeight;
@@ -205,7 +202,6 @@
         var scroller = document.getElementById('virtual-scroll-width');
         scroller.style.width = manager.getScrollWidth() + 'px';
 
-        //const scrollHandle = schedular.getHandle();
         document.getElementById('virtual-scroll').addEventListener('scroll', function (e) {
             manager.scrollPosition = e.target.scrollLeft;
 
@@ -213,7 +209,6 @@
         });
 
         let lastStartIndex = 0;
-        //let handle = schedular.getHandle();
         document.getElementById('canvas-container').addEventListener('scroll', function (e) {
             const scrollHeight = e.target.scrollTop;
             const startIndex = Math.floor(scrollHeight / elementHeight);

@@ -2,10 +2,21 @@ var path = require("path");
 var webpack = require("webpack");
 
 module.exports = {
-  entry: path.resolve(__dirname, "./src/"),
+  entry: path.join(__dirname, "src"),
+  externals: {
+    hammerjs : {
+      root: "Hammer",
+      commonjs2: "hammerjs",
+      commonjs: "hammerjs",
+      amd: "hammerjs",
+      umd: "hammerjs"
+    }
+  },
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "index.js",
+    path: path.join(__dirname, "dist"),
+    filename: "waveshaper.js",
+    library: 'WaveShaper',
+    libraryTarget: 'umd',
     publicPath: "/"
   },
   devtool: 'source-map',
