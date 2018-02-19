@@ -33,11 +33,11 @@
   "devDependencies": {
     "@types/hammerjs": "^2.0.35",
     "@types/jasmine": "^2.8.6",
+    "jasmine-core": "^2.99.1",
     "jasmine-ts": "^0.2.1",
     "karma": "^2.0.0",
-    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "^1.1.1",
-    "karma-jasmine-html-reporter": "^0.2.2",
     "karma-typescript": "^3.0.12",
     "ts-loader": "^3.5.0",
     "typescript": "^2.7.2",
