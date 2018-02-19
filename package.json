@@ -14,7 +14,8 @@
     "start": "webpack-dev-server --hot --inline",
     "start:prod": "webpack-dev-server",
     "serve": "yarn build && yarn start",
-    "serve:prod": "yarn build:prod && yarn start:prod"
+    "serve:prod": "yarn build:prod && yarn start:prod",
+    "test": "yarn karma start"
   },
   "keywords": [
     "audio",
@@ -31,6 +32,13 @@
   "license": "MIT",
   "devDependencies": {
     "@types/hammerjs": "^2.0.35",
+    "@types/jasmine": "^2.8.6",
+    "jasmine-ts": "^0.2.1",
+    "karma": "^2.0.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-jasmine": "^1.1.1",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-typescript": "^3.0.12",
     "ts-loader": "^3.5.0",
     "typescript": "^2.7.2",
     "webpack": "^3.8.1",

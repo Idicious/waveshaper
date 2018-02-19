@@ -102,7 +102,7 @@ export default class WaveShapeManager {
      * 
      * @memberof WaveShapeManager
      */
-    public activeWaveShapers: string[];
+    public activeWaveShapers: string[] | null;
 
     /**
      * @description Interaction mode of the the waveforms
@@ -160,7 +160,6 @@ export default class WaveShapeManager {
      * @description Adds a waveshaper to the manager
      * 
      * @param id id of WaveShaper
-     * @param element Html draw element
      * @param segments Segments in wave
      * @param color Background color of segments
      * 
