@@ -32,7 +32,7 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
     const shouldHandle = (ev: HammerInput) => manager.mode === 'resize' && ev != null && ev.target.classList.contains('waveshaper');
 
     hammer.on('panstart', (ev) => { 
-        if(!shouldHandle(ev) || resizeState.activeSegment == null)
+        if(!shouldHandle(ev))
             return;
 
         const id = ev.target.getAttribute('data-wave-id');
