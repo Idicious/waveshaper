@@ -1,4 +1,4 @@
-![build status](https://travis-ci.org/Idicious/waveshaper.svg?branch=master)
+[![Build Status](https://travis-ci.org/Idicious/waveshaper.svg?branch=master)](https://travis-ci.org/Idicious/waveshaper)
 
 # WaveShaper
 Waveform drawing and interaction library. The library offers high performance drawing of audio files to multiple canvasses while providing the following functionality:
