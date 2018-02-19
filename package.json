@@ -1,8 +1,8 @@
 {
   "name": "waveshaper",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Waveform drawing library",
-  "main": "dist/waveshaper.bundle.js",
+  "main": "dist/waveshaper.js",
   "types": "dist/typings/index.d.ts",
   "files": [
     "dist",
