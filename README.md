@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Idicious/waveshaper.svg?branch=master)](https://travis-ci.org/Idicious/waveshaper)
+
 # WaveShaper
 Waveform drawing and interaction library. The library offers high performance drawing of audio files to multiple canvasses while providing the following functionality:
 
@@ -9,7 +11,7 @@ Waveform drawing and interaction library. The library offers high performance dr
 
 The interaction supports touch devices as well as programmatically setting the values.
 
-##Installation
+## Installation
 ``` 
 npm install waveshaper
 ```
