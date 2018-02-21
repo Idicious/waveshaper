@@ -823,8 +823,11 @@ const line_1 = __webpack_require__(15);
  * @param manager
  * @param container
  */
-exports.addInteraction = (manager) => {
-    const hammer = new Hammer(window.document.body, hammerconfig_1.default);
+exports.addInteraction = (manager, elementId) => {
+    const element = document.getElementById(elementId);
+    if (element == null)
+        throw Error('Interaction container element could not be found.');
+    const hammer = new Hammer(element, hammerconfig_1.default);
     drag_1.default(manager, hammer, window.document.body);
     cut_1.default(manager, hammer);
     pan_1.default(manager, hammer);
@@ -922,7 +925,6 @@ exports.default = (manager, hammer) => {
         const options = manager.options;
         if (options == null || !shouldHandle(ev, options))
             return;
-        ev.srcEvent.stopPropagation();
         const id = ev.target.getAttribute('data-wave-id');
         if (id == null)
             return;
@@ -986,9 +988,8 @@ exports.default = (manager, hammer, container) => {
      */
     hammer.on('panstart', (ev) => {
         const options = manager.options;
-        if (options == null || !shouldHandle(ev, options))
+        if (!shouldHandle(ev, options))
             return;
-        ev.srcEvent.stopPropagation();
         const id = ev.target.getAttribute('data-wave-id');
         if (id == null)
             return;
@@ -1012,13 +1013,17 @@ exports.default = (manager, hammer, container) => {
     hammer.on('panmove', (ev) => {
         if (dragState.options == null || !shouldHandle(ev, dragState.options))
             return;
-        ev.srcEvent.stopPropagation();
         if (dragState.activeSegment == null || dragState.dragWave == null)
             return;
-        // If the target has moved it is handled by the mouse/touch move manager
-        const id = ev.target.getAttribute('data-wave-id');
-        if (id !== dragState.dragWave.id)
-            return;
+        /**
+         * TODO below implementation stops all updates on touch devices on new track (tested on Samsung Galaxy s8),
+         * when dragged back to original keeps working. Works on desktop, it's a small performance improvement as
+         * it prevents a single track flatten + process when transferring a segment between tracks.
+         */
+        //// If the target has moved it is handled by the mouseHover function
+        // const id = ev.target.getAttribute('data-wave-id');
+        // if(id !== dragState.dragWave.id)
+        //     return;
         const change = (ev.deltaX * dragState.options.samplesPerPixel) / dragState.options.samplerate;
         let newTime = dragState.activeSegmentStart + change;
         if (newTime + dragState.activeSegment.offsetStart < 0) {
@@ -1031,7 +1036,6 @@ exports.default = (manager, hammer, container) => {
     hammer.on('panend', (ev) => {
         if (dragState.options == null || !shouldHandle(ev, dragState.options))
             return;
-        ev.srcEvent.stopPropagation();
         dragState.activeSegment = null;
         dragState.activeSegmentStart = 0;
         dragState.dragWave = null;
@@ -1040,7 +1044,6 @@ exports.default = (manager, hammer, container) => {
     const mouseHover = (ev) => {
         if (dragState.options == null || dragState.options.mode !== 'drag')
             return;
-        ev.stopPropagation();
         if (dragState.activeSegment == null || dragState.dragWave == null)
             return;
         const canvas = getTouchMouseTargetElement(ev);
@@ -1057,9 +1060,10 @@ exports.default = (manager, hammer, container) => {
             dragState.dragWave.segments.splice(index, 1);
             wave.segments.push(dragState.activeSegment);
             dragState.activeSegment.index = 1000;
-            manager.flatten(wave.id, dragState.dragWave.id);
-            manager.process(wave.id, dragState.dragWave.id);
+            const currentId = dragState.dragWave.id;
             dragState.dragWave = wave;
+            manager.flatten(wave.id, currentId);
+            manager.process(wave.id, currentId);
         }
     };
     /**
@@ -1068,9 +1072,7 @@ exports.default = (manager, hammer, container) => {
      */
     const getTouchMouseTargetElement = (ev) => {
         if (ev instanceof TouchEvent) {
-            /** @type {TouchEvent} */
-            const touch = ev;
-            return document.elementFromPoint(touch.touches[0].pageX, touch.touches[0].pageY);
+            return document.elementFromPoint(ev.touches[0].pageX, ev.touches[0].pageY);
         }
         return ev.target;
     };
@@ -1105,16 +1107,13 @@ function default_1(manager, hammer) {
         const options = manager.options;
         if (!shouldHandle(ev, options))
             return;
-        ev.srcEvent.stopPropagation();
-        panState.options = options;
         panState.panMax = manager.getScrollWidth() + endMargin;
         panState.panStart = options.scrollPosition;
     });
     hammer.on('panmove', (ev) => {
         panState.options = manager.options;
-        if (panState.options == null || !shouldHandle(ev, panState.options))
+        if (!shouldHandle(ev, panState.options))
             return;
-        ev.srcEvent.stopPropagation();
         const position = panState.panStart - ev.deltaX;
         const newPosition = position > 0 ? position : 0;
         // If it was and is still 0 no need to update
@@ -1127,7 +1126,6 @@ function default_1(manager, hammer) {
     hammer.on('panend', (ev) => {
         if (panState.options == null || !shouldHandle(ev, panState.options))
             return;
-        ev.srcEvent.stopPropagation();
         panState.options = null;
         panState.panStart = 0;
         panState.panMax = 0;
@@ -1159,8 +1157,6 @@ function default_1(manager, hammer) {
         const options = manager.options;
         if (!shouldHandle(ev, options))
             return;
-        ev.srcEvent.stopPropagation();
-        zoomState.options = options;
         zoomState.sppStart = options.samplesPerPixel;
         zoomState.maxWidth = manager.getScrollWidth() + endMargin;
     });
@@ -1168,16 +1164,14 @@ function default_1(manager, hammer) {
         zoomState.options = manager.options;
         if (zoomState.options == null || !shouldHandle(ev, zoomState.options))
             return;
-        ev.srcEvent.stopPropagation();
-        const options = manager.options;
-        const sampleAtLeft = options.scrollPosition * options.samplesPerPixel;
-        const samplesInView = options.width * options.samplesPerPixel;
+        const sampleAtLeft = zoomState.options.scrollPosition * zoomState.options.samplesPerPixel;
+        const samplesInView = zoomState.options.width * zoomState.options.samplesPerPixel;
         const samplesToCenter = samplesInView / 2;
         const newSpp = zoomState.sppStart * ev.scale;
-        const newSamplesInView = options.width * newSpp;
+        const newSamplesInView = zoomState.options.width * newSpp;
         const newSamplesToCenter = newSamplesInView / 2;
         const maxWidth = manager.getScrollWidth() + endMargin;
-        const maxSamplesInView = maxWidth * options.samplerate;
+        const maxSamplesInView = maxWidth * zoomState.options.samplerate;
         if (newSamplesInView >= maxSamplesInView)
             return;
         const newScroll = (sampleAtLeft + samplesToCenter - newSamplesToCenter) / newSpp;
@@ -1189,7 +1183,6 @@ function default_1(manager, hammer) {
     hammer.on('pinchend', (ev) => {
         if (zoomState.options == null || !shouldHandle(ev, zoomState.options))
             return;
-        ev.srcEvent.stopPropagation();
         zoomState.sppStart = 0;
         zoomState.maxWidth = 0;
         zoomState.options = null;
@@ -1223,7 +1216,6 @@ function default_1(manager, hammer) {
         const options = manager.options;
         if (!shouldHandle(ev, options))
             return;
-        ev.srcEvent.stopPropagation();
         const id = ev.target.getAttribute('data-wave-id');
         if (id == null)
             return;
@@ -1252,7 +1244,6 @@ function default_1(manager, hammer) {
     hammer.on('panmove', (ev) => {
         if (resizeState.dragWave == null || resizeState.options == null || !shouldHandle(ev, resizeState.options))
             return;
-        ev.srcEvent.stopPropagation();
         const options = manager.options;
         if (resizeState.activeSegment == null)
             return;
@@ -1281,7 +1272,6 @@ function default_1(manager, hammer) {
     hammer.on('panend', (ev) => {
         if (resizeState.options == null || !shouldHandle(ev, resizeState.options))
             return;
-        ev.srcEvent.stopPropagation();
         resizeState.activeSegment = null;
         resizeState.activeSegmentOffsetStart = 0;
         resizeState.activeSegmentOffsetEnd = 0;
