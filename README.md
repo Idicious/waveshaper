@@ -58,6 +58,8 @@ This is the the class you use to manage the settings for all the WaveShapers and
 
 ## Code example
 ```
+
+// Container is used for delegated events, the canvasses should be rendered as direct or indirect children of the container element
 var container = document.getElementById('container');
 var ctx = new AudioContext();
 
@@ -74,17 +76,25 @@ const managerConfig = {
 
 const manager = new WaveShapeManager(ctx.sampleRate, container, managerConfig);
 
+// Add a waveshaper with segment data
+const waveShaper = manager.addWaveShaper('1', [
+    { id: '1', index: '0', start: 0, duration: audiobuffer.duration, offsetStart: 0, offsetEnd: 0, source: '1'},
+    { id: '2', index: '1', start: 20, duration: audiobuffer.duration, offsetStart: 10.145, offsetEnd: 13.34, source: '2'}
+], 'whitesmoke');
+
+// Append the canvas to container element
+container.appendChild(waveShaper.element);
+
+// Draw renders outlines of segments when there is no audio data
+manager.draw();
+
+// Fetch audio data
 fetch('audiofile.wav')
     .then(res => res.arrayBuffer())
     .then(buffer => ctx.decodeAudioData(buffer))
     .then(audiobuffer => {
+        // This will trigger a rerender of all active waveshapers and render the actual waveforms for the segments using it
         manager.addAudioData('1', audiobuffer);
-        const waveShaper = manager.addWaveShaper('1', [
-            { id: '1', index: '0', start: 0, duration: audiobuffer.duration, offsetStart: 0, offsetEnd: 0, source: '1'},
-            { id: '2', index: '1', start: 20, duration: audiobuffer.duration, offsetStart: 10.145, offsetEnd: 13.34, source: '1'}
-        ], 'whitesmoke');
-
-        container.appendChild(waveShaper.element);
     });
 ```
 
