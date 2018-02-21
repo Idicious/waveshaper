@@ -36,7 +36,7 @@ export default function(manager: DomRenderWaveShapeManager, hammer: HammerManage
 
     hammer.on('panmove', (ev) =>  {
         panState.options = manager.options;
-        if(panState.options == null || !shouldHandle(ev, panState.options))
+        if(!shouldHandle(ev, panState.options))
             return;
 
         const position = panState.panStart - ev.deltaX;

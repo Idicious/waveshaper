@@ -98,7 +98,6 @@ describe('Tests of the flatten methods', () => {
         const intervals: Interval[] = [
             { id: '1', start: 5, end: 25, index: 1, originalStart: 0, source: '1' },
             { id: '2', start: 0, end: 30, index: 1, originalStart: 7, source: '1' }
-            
         ];
 
         expect(() => merge(intervals)).toThrow();
@@ -108,7 +107,6 @@ describe('Tests of the flatten methods', () => {
         const intervals: Interval[] = [
             { id: '1', start: 0, end: 30, index: 1, originalStart: 0, source: '1' },
             { id: '2', start: 5, end: 20, index: 2, originalStart: 7, source: '1' }
-            
         ];
 
         expect(() => merge(intervals)).toThrow();
