@@ -85,13 +85,15 @@
             mode: 'pan',
             height: 300,
             width: canvasContainer.clientWidth,
+            samplerate: audioContext.sampleRate,
             generateId: function() { return Math.random().toString(); }
         }
         
         const canvasWrapper = document.getElementById('canvas-wrapper');
         const canvasFragment = document.getElementById('canvas-fragment');
 
-        const manager = new WaveShaper.WaveShapeManager(audioContext.sampleRate, canvasWrapper, options);
+        const manager = new WaveShaper.DomRenderWaveShapeManager(options);
+        WaveShaper.addInteraction(manager, 'canvas-wrapper');
 
         const elementHeight = options.height;
         const ownHeight = canvasContainer.clientHeight;
@@ -99,13 +101,14 @@
 
         const buffers = [];
         let buffersInView = [];
+        const subscriptions = [];
 
         const loadAudio = (key, url) => {
             fetch(url)
             .then(res => res.arrayBuffer())
             .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
             .then(audioBuffer => {
-                manager.addAudioData(key, audioBuffer);
+                manager.addData({ id: key, data: audioBuffer }).process();
             })
             .catch(e => console.error(e));
         }
@@ -174,19 +177,24 @@
             var waveShapeData = {
                 id: i.toString(),
                 segments,
+                canvas: document.createElement('canvas'),
                 color: '#f5f5f5'
             };
 
             buffers.push(waveShapeData);
-            const waveShaper = manager.addWaveShaper(waveShapeData.id, waveShapeData.segments, waveShapeData.color);
+            const waveShaper = manager.setTracks({ id: waveShapeData.id, segments: waveShapeData.segments });
             canvasWrapper.style.height = buffers.length * elementHeight + 'px';
-
+            
             if (buffers.length <= fitInElement) {
                 buffersInView.push(waveShapeData);
-                canvasFragment.appendChild(waveShaper.element);
                 
-                manager.activeWaveShapers = buffersInView.map(b => b.id);
-                requestAnimationFrame(() => manager.draw());
+                const subscription = manager.registerCanvas(waveShapeData.id, waveShapeData.canvas, waveShapeData.color);
+                subscriptions.push(subscription);
+
+                canvasFragment.appendChild(waveShapeData.canvas);
+                
+                manager.setActive(...buffersInView.map(b => b.id));
+                requestAnimationFrame(() => manager.process());
             }
         }
 
@@ -196,20 +204,28 @@
             ' : ' + duration.getMilliseconds();
 
         var sppDiv = document.getElementById('samples-per-pixel');
-        sppDiv.innerText = 'Samples per pixel: ' + manager.samplesPerPixel;
+        sppDiv.innerText = 'Samples per pixel: ' + options.samplesPerPixel;
 
         // Set scroll width to the total draw length of the audio file
         var scroller = document.getElementById('virtual-scroll-width');
         scroller.style.width = manager.getScrollWidth() + 'px';
 
+        let lastVirtualScroll = false;
         document.getElementById('virtual-scroll').addEventListener('scroll', function (e) {
-            manager.scrollPosition = e.target.scrollLeft;
-
-            requestAnimationFrame(() => manager.draw());
+            if(lastVirtualScroll) return;
+            
+            lastVirtualScroll = true;
+            requestAnimationFrame(() => {
+                manager.set({ scrollPosition: e.target.scrollLeft }).process();
+                lastVirtualScroll = false;
+            });
         });
 
         let lastStartIndex = 0;
+        let lastScroll = false;
         document.getElementById('canvas-container').addEventListener('scroll', function (e) {
+            if(lastScroll) return;
+
             const scrollHeight = e.target.scrollTop;
             const startIndex = Math.floor(scrollHeight / elementHeight);
             const offset = startIndex * elementHeight;
@@ -217,55 +233,63 @@
             if (startIndex === lastStartIndex) {
                 return;
             }
+            
+            lastScroll = true;
+
+            // Unsubscribe to existing canvas draw callbacks
+            while(subscriptions.length > 0) subscriptions.pop()();
 
             const containerDiv = document.createElement('div');
             containerDiv.style.transform = 'translateY(' + offset + 'px)';
             containerDiv.classList.add('canvas-fragment');
 
-            const oldNode = canvasWrapper.firstChild;
-            canvasWrapper.replaceChild(containerDiv, oldNode);
-
             const inView = buffersInView.length;
             buffersInView = buffers.slice(startIndex, startIndex + fitInElement);
-            manager.activeWaveShapers = buffersInView.map(b => b.id);
+            manager.setActive(...buffersInView.map(b => b.id));
 
             for(const buffer of buffersInView) {
-               const waveShaper = manager.getWaveShaper(buffer.id);
-               if(waveShaper != null) {
-                containerDiv.appendChild(waveShaper.element);
-               }
+                const sub = manager.registerCanvas(buffer.id, buffer.canvas, buffer.color);
+                subscriptions.push(sub);
+
+                containerDiv.appendChild(buffer.canvas);
             }
 
-            requestAnimationFrame(() => manager.draw());
+            const oldNode = canvasWrapper.firstChild;
+            canvasWrapper.replaceChild(containerDiv, oldNode);
+            
             lastStartIndex = startIndex;
+            requestAnimationFrame(() => {
+                manager.process();
+                lastScroll = false;
+            });
         });
 
         document.getElementById('zoom-in').addEventListener('click', function (e) {
-            var currentZoom = manager.samplesPerPixel;
-            var newZoom = currentZoom / 2;
+            const { samplesPerPixel } = manager.options;
+            var newZoom = samplesPerPixel / 2;
 
-            manager.samplesPerPixel = newZoom;
+            sppDiv.innerText = 'Samples per pixel: ' + newZoom;
 
-            sppDiv.innerText = 'Samples per pixel: ' + manager.samplesPerPixel;
-            scroller.style.width = manager.getScrollWidth() + 'px';
-
-            requestAnimationFrame(() => manager.draw());
+            requestAnimationFrame(() => {
+                manager.set({ samplesPerPixel: newZoom }).process();
+                scroller.style.width = manager.getScrollWidth() + 'px';
+            });
         });
 
         document.getElementById('zoom-out').addEventListener('click', function (e) {
-            var currentZoom = manager.samplesPerPixel;
-            var newZoom = currentZoom * 2;
+            const { samplesPerPixel } = manager.options;
+            var newZoom = samplesPerPixel * 2;
 
-            manager.samplesPerPixel = newZoom;
+            sppDiv.innerText = 'Samples per pixel: ' + newZoom;
 
-            sppDiv.innerText = 'Samples per pixel: ' + manager.samplesPerPixel;
-            scroller.style.width = manager.getScrollWidth() + 'px';
-
-            requestAnimationFrame(() => manager.draw());
+            requestAnimationFrame(() => {
+                manager.set({ samplesPerPixel: newZoom }).process();
+                scroller.style.width = manager.getScrollWidth() + 'px';
+            });
         });
 
         document.getElementById('mode').addEventListener('change', function(e) {
-            manager.mode = e.target.value;
+            manager.set({mode: e.target.value}).process();
         });
     </script>
 </body>

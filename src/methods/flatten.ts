@@ -18,7 +18,7 @@ export default (segments: Segment[]): Interval[] => {
   var normalized = normalizeIndex(segments);
   var intervals = mapToIntervals(normalized);
   var sorted = sort(intervals);
-  var grouped = grouByIndex(sorted);
+  var grouped = groupByIndex(sorted);
 
   return weightedMerge(grouped);
 }
@@ -29,10 +29,12 @@ export default (segments: Segment[]): Interval[] => {
  * 
  * @param {Segment[]} segments 
  */
-const normalizeIndex = (segments: Segment[]): Segment[] => {
+export const normalizeIndex = (segments: Segment[]): Segment[] => {
   let index = 0;
+  let preNormalizeIndex = Number.MIN_SAFE_INTEGER;
   segments.sort((a, b) => cmp(a.index, b.index)).forEach(el => {
-    if (el.index > index) {
+    if (el.index > preNormalizeIndex) {
+      preNormalizeIndex = el.index;
       el.index = ++index;
     }
     else {
@@ -49,9 +51,8 @@ const normalizeIndex = (segments: Segment[]): Segment[] => {
  * @param {Segment[]} segments 
  * @returns {Interval[]}
  */
-const mapToIntervals = (segments: Segment[]): Interval[] => {
-  return segments
-    .map(s => {
+export const mapToIntervals = (segments: Segment[]): Interval[] => {
+  return segments.map(s => {
       return {
         id: s.id,
         start: s.start + s.offsetStart,
@@ -69,7 +70,7 @@ const mapToIntervals = (segments: Segment[]): Interval[] => {
  * @param {Interval[]} intervals 
  * @return {Interval[]}
  */
-const sort = (intervals: Interval[]): Interval[] => {
+export const sort = (intervals: Interval[]): Interval[] => {
   intervals.sort((a, b) => {
     return cmp(a.index, b.index) || cmp(a.start, b.start);
   });
@@ -84,7 +85,7 @@ const sort = (intervals: Interval[]): Interval[] => {
  * 
  * @returns {{[key: string] : Interval[]}}
  */
-const grouByIndex = (intervals: Interval[]): IntervalMap => {
+export const groupByIndex = (intervals: Interval[]): IntervalMap => {
   return intervals.reduce((groups, interval) => {
     (groups[interval.index] = groups[interval.index] || []).push(interval);
     return groups;
@@ -97,7 +98,7 @@ const grouByIndex = (intervals: Interval[]): IntervalMap => {
  * @param {IntervalMap} grouped 
  * @returns {Interval[]}
  */
-const weightedMerge = (grouped: IntervalMap): Interval[] => {
+export const weightedMerge = (grouped: IntervalMap): Interval[] => {
   /** @type {Interval[]} */
   let flattened: Interval[] | null = null;
   for (let index of Object.keys(grouped)) {
@@ -119,13 +120,18 @@ const weightedMerge = (grouped: IntervalMap): Interval[] => {
  * @param {Interval[]} intervals 
  * @returns {Interval[]}
  */
-const merge = (intervals: Interval[]): Interval[] => {
+export const merge = (intervals: Interval[]): Interval[] => {
   if (intervals == null || intervals.length <= 1) return intervals;
 
   const result: Interval[] = [];
   let prev = intervals[0];
   for (let i = 1; i < intervals.length; i++) {
     const curr = intervals[i];
+
+    // Sanity check
+    if(curr.start < prev.start || curr.index != prev.index) {
+      throw Error('Interval must be sorted at this point.');
+    }
 
     if (prev.end >= curr.end) {
       // merged case
@@ -149,7 +155,7 @@ const merge = (intervals: Interval[]): Interval[] => {
  * 
  * @returns {Interval[]}
  */
-const combine = (highIndexes: Interval[], lowIndexes: Interval[]): Interval[] => {
+export const combine = (highIndexes: Interval[], lowIndexes: Interval[]): Interval[] => {
   let highCount = 0;
   let lowCount = 0;
 
@@ -200,7 +206,7 @@ const combine = (highIndexes: Interval[], lowIndexes: Interval[]): Interval[] =>
  * @param {number} a
  * @param {number} b
  */
-const cmp = (a: number, b: number): 1 | -1 | 0 => {
+export const cmp = (a: number, b: number): 1 | -1 | 0 => {
   if (a > b) return +1;
   if (a < b) return -1;
   return 0;

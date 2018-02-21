@@ -1,6 +1,7 @@
 import WaveShaper from '../core/waveshaper';
 import WaveShapeManager from '../core/manager';
 import Segment from '../models/segment';
+import { ManagerOptions } from '../config/managerconfig';
 
 declare type SegmentSide = 'left' | 'right';
 
@@ -10,6 +11,7 @@ interface ResizeState {
     activeSegmentOffsetStart: number;
     activeSegmentOffsetEnd: number;
     dragWave: WaveShaper | null;
+    options: ManagerOptions | null;
 }
 
 const resizeState: ResizeState = {
@@ -17,7 +19,8 @@ const resizeState: ResizeState = {
     activeSegmentSide: null,
     activeSegmentOffsetStart: 0,
     activeSegmentOffsetEnd: 0,
-    dragWave: null
+    dragWave: null,
+    options: null
 }
 
 /**
@@ -28,21 +31,21 @@ const resizeState: ResizeState = {
  */
 export default function(manager: WaveShapeManager, hammer: HammerManager) {
 
-    /** @param {HammerInput} ev */
-    const shouldHandle = (ev: HammerInput) => manager.mode === 'resize' && ev != null && ev.target.classList.contains('waveshaper');
+    const shouldHandle = (ev: HammerInput, options: ManagerOptions) => options.mode === 'resize' && ev != null && ev.target.hasAttribute('data-wave-id');
 
     hammer.on('panstart', (ev) => { 
-        if(!shouldHandle(ev))
+        const options = manager.options;
+        if(!shouldHandle(ev, options))
             return;
 
         const id = ev.target.getAttribute('data-wave-id');
         if(id == null) return;
 
-        const wave = manager.waveShapers.get(id);
+        const wave = manager.getTrack(id);
         if(wave == null) return;
 
         const bb = ev.target.getBoundingClientRect();
-        const time = (manager.scrollPosition + (ev.center.x - bb.left)) * manager.samplesPerPixel / manager.samplerate;
+        const time = (options.scrollPosition + (ev.center.x - bb.left)) * options.samplesPerPixel / options.samplerate;
 
         const interval = wave.flattened.find(i => i.start <= time && i.end >= time);
 
@@ -57,6 +60,7 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
         const segment = wave.segments.find(s => s.id === interval.id);
         if(segment == null) return;
 
+        resizeState.options = options;
         resizeState.activeSegment = segment;
 
         resizeState.activeSegmentOffsetStart = segment.offsetStart;
@@ -67,13 +71,15 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
     });
 
     hammer.on('panmove', (ev) =>  {
-        if(!shouldHandle(ev) || resizeState.dragWave == null)
+        if(resizeState.dragWave == null || resizeState.options == null || !shouldHandle(ev, resizeState.options))
             return;
+
+        const options = manager.options;
             
         if(resizeState.activeSegment == null)
             return;
 
-        const change = (ev.deltaX * manager.samplesPerPixel) / manager.samplerate;
+        const change = (ev.deltaX * options.samplesPerPixel) / options.samplerate;
         let newTime = resizeState.activeSegmentSide === 'left' ?
             resizeState.activeSegmentOffsetStart + change :
             resizeState.activeSegmentOffsetEnd - change;
@@ -97,12 +103,12 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
             active.offsetStart = newTime :
             active.offsetEnd = newTime;
 
-        resizeState.dragWave.flatten();
-        manager.draw([resizeState.dragWave.id], true);
+        manager.flatten(resizeState.dragWave.id);
+        manager.process(resizeState.dragWave.id);
     });
 
     hammer.on('panend', (ev) => {
-        if(!shouldHandle(ev))
+        if(resizeState.options == null || !shouldHandle(ev, resizeState.options))
             return;
 
         resizeState.activeSegment = null;
@@ -110,5 +116,6 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
         resizeState.activeSegmentOffsetEnd = 0;
         resizeState.activeSegmentSide = null;
         resizeState.dragWave = null;
+        resizeState.options = null;
     });
 }

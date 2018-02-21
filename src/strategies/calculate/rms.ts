@@ -1,4 +1,5 @@
 import Interval from '../../models/interval';
+import { ManagerOptions } from '../../config/managerconfig';
 
 /**
  * Calculate rms values
@@ -13,21 +14,22 @@ import Interval from '../../models/interval';
  * @param dataMap
  * @returns 
  */
-export default (resolution: number, samplesPerPixel: number, width: number, intervals: Interval[], 
-    scrollPosition: number, sampleRate: number, dataMap: Map<string, Float32Array>): number[][] => {
+export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<string, Float32Array>): Float32Array => {
 
-    const sampleSize = Math.ceil(samplesPerPixel / resolution);
-    const start = scrollPosition * samplesPerPixel;
-    const startSecond = start / sampleRate;
-    const secondsPerPixel = samplesPerPixel / sampleRate;
+    const sampleSize = Math.ceil(options.samplesPerPixel / options.resolution);
+    const start = options.scrollPosition * options.samplesPerPixel;
+    const startSecond = start / options.samplerate;
+    const secondsPerPixel = options.samplesPerPixel / options.samplerate;
 
-    const vals : number[][] = [];
+    const peaks = new Float32Array(options.width * 4);
+
     // For each pixel we display
-    for (let i = 0; i < width; i++) {
+    for (let i = 0; i < options.width; i++) {
+        const index = i * 4;
         let posSum = 0;
         let negSum = 0;
 
-        const currentSecond = startSecond + ((i * samplesPerPixel) / sampleRate);
+        const currentSecond = startSecond + ((i * options.samplesPerPixel) / options.samplerate);
         let interval;
         for(let i = 0; i < intervals.length; i++) {
             const s = intervals[i];
@@ -38,7 +40,7 @@ export default (resolution: number, samplesPerPixel: number, width: number, inte
         }
 
         if(interval == null) {
-            vals.push([0, 0, 0, 0]);
+            peaks.set([0, 0, 0, 0], index);
             continue;
         }
         
@@ -50,15 +52,15 @@ export default (resolution: number, samplesPerPixel: number, width: number, inte
 
         const buffer = dataMap.get(interval.source);
         if(buffer == null) {
-            vals.push([0, 0, intervalBorder, 1]);
+            peaks.set([0, 0, intervalBorder, 1], index);
             continue;
         }
 
         const offsetStart = interval.start - interval.originalStart;
         const secondsIntoInterval = currentSecond - interval.start;
-        const startSample = Math.floor(((secondsIntoInterval + offsetStart) * sampleRate));
+        const startSample = Math.floor(((secondsIntoInterval + offsetStart) * options.samplerate));
         const length = buffer.length;
-        const loopEnd = startSample + samplesPerPixel;
+        const loopEnd = startSample + options.samplesPerPixel;
         const end = length < loopEnd ? length : loopEnd;
 
         // Cycle through the data-points relevant to the pixel
@@ -74,11 +76,12 @@ export default (resolution: number, samplesPerPixel: number, width: number, inte
             }
         }
 
-        const samples = Math.min(samplesPerPixel / 2, Math.round(resolution / 2));
+        const samples = Math.min(options.samplesPerPixel / 2, Math.round(options.resolution / 2));
+
         const min = -Math.sqrt(negSum / samples);
         const max = Math.sqrt(posSum / samples);
 
-        vals.push([min, max, intervalBorder, 1]);
+        peaks.set([min, max, intervalBorder, 1], index);
     }
-    return vals;
+    return peaks;
 }

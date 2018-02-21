@@ -1,13 +1,9 @@
 import WaveShaper from './waveshaper';
 import Segment from '../models/segment';
-import setupDrag from '../interaction/drag';
-import setupResize from '../interaction/resize';
-import setupCut from '../interaction/cut';
-import setupPan from '../interaction/pan';
-import setupZoom from '../interaction/zoom';
-import * as Hammer from 'hammerjs';
-import hammerconfig from '../config/hammerconfig';
-import defaultOptions, { ManagerOptions, InteractionMode, MeterType, GenerateId } from '../config/managerconfig';
+import defaultOptions, { ManagerOptions, ManagerInput } from '../config/managerconfig';
+
+export declare type WaveShaperCallback = (options: ManagerOptions, data: Float32Array) => void;
+export declare type ProcessResult = { options: ManagerOptions, data: { id: string, peaks: Float32Array }[] };
 
 /**
  * 
@@ -16,14 +12,14 @@ import defaultOptions, { ManagerOptions, InteractionMode, MeterType, GenerateId 
  * @export
  */
 export default class WaveShapeManager {
-
+    
     /**
      * Map of waveshapers managed by the manager
      * 
      * @readonly
      * @memberof WaveShapeManager
      */
-    public readonly waveShapers = new Map<string, WaveShaper>();
+    protected readonly waveShapers = new Map<string, WaveShaper>();
 
     /**
      * Map of audio data
@@ -31,129 +27,127 @@ export default class WaveShapeManager {
      * @readonly
      * @memberof WaveShapeManager
      */
-    public readonly audioData = new Map<string, Float32Array>();
-
-    /**
-     * @description Audio samplerate
-     * 
-     * @readonly
-     * @memberof WaveShapeManager
-     */
-    public readonly samplerate: number;
-
-    /**
-     * @description Gesture recogniser
-     * 
-     * @memberof WaveShapeManager
-     */
-    public readonly hammer: HammerManager;
-
-    /**
-     * @description Width of draw area in pixels
-     * 
-     * @readonly
-     * @memberof WaveShapeManager
-     */
-    public readonly width: number;
-
-     /**
-     * @description Height of draw area in pixels
-     * 
-     * @readonly
-     * @memberof WaveShapeManager
-     */
-    public readonly height: number;
-
-
-    /**
-     * @description Sample range per pixel, zoom level
-     * @example Lower value to zoom in, increase to zoom out
-     * 
-     * @memberof WaveShapeManager
-     */
-    public samplesPerPixel: number;
-
-    /**
-     * @description Sample size per pixel, determines accuracy
-     * @example Lower value to decrease accuracy and increase performance
-     * 
-     * @memberof WaveShapeManager
-     */
-    public resolution: number;
-
-    /**
-     * @description Virtual scrolling is used, changing this value pans the waveform
-     * @example Lower value to pan left, increase to pan right
-     * 
-     * @memberof WaveShapeManager
-     */
-    public scrollPosition: number;
-
-    /**
-     * @description Calculation method used to determine value of sample range
-     * @example Peak get the peak values of the range, RMS is similar to average https://en.wikipedia.org/wiki/Root_mean_square
-     * 
-     * @memberof WaveShapeManager
-     */
-    public meterType: MeterType;
-
+    protected readonly audioData = new Map<string, Float32Array>();
+    
     /**
      * @description Active id's, redraws when draw is called without argument
      * 
      * @memberof WaveShapeManager
      */
-    public activeWaveShapers: string[] | null;
+    protected activeWaveShapers: string[] | null;
 
     /**
-     * @description Interaction mode of the the waveforms
+     * @description Map of callback functions
      * 
+     * @readonly
+     * @private
      * @memberof WaveShapeManager
      */
-    public mode: InteractionMode;
-
+    protected readonly callbackMap = new Map<string, WaveShaperCallback[]>();
+    
     /**
-     * @description Method used to generate new id's
+     * @description Currect settings
      * 
+     * @readonly
      * @memberof WaveShapeManager
      */
-    public generateId: GenerateId;
+    public get options(): ManagerOptions { return {...this._options} }
+    protected _options: ManagerOptions;
+
+    
+    /**
+     * @description Last result of calling process, argument given to all callbacks
+     * 
+     * @readonly
+     * @memberof WaveShapeManager
+     */
+    public get lastProcessResult(): ProcessResult | null { return this._lastProcessResult; }
+    protected _lastProcessResult: ProcessResult | null
+
+    
+    /**
+     * @description Total duration of all tracks
+     * 
+     * @readonly
+     * @memberof WaveShapeManager
+     */
+    public get duration() { return this._duration; }
+    protected _duration: number;
 
     /**
-     * @param {number} samplerate Audio samplerate
-     * @param {HTMLElement} container Container element
-     * @param {ManagerOptions} [options=defaultOptions] Initial options
+     * @param {ManagerInput} [options=defaultOptions] Initial options
      * @throws {Error} Throws an error if samplerate is null or NaN
      * @constructor 
      */
-    constructor(samplerate: number, container: HTMLElement, options: ManagerOptions = defaultOptions) {
-        if(samplerate == null || isNaN(samplerate)) {
-            throw new Error('samplerate cannot be null and must be a number');
+    constructor(options: ManagerInput = defaultOptions) {
+        if(!this.optionsValid(options)) {
+            throw new Error(`Invalid options given: ${JSON.stringify(options)}`);
         }
 
-        // Merge options and default options so ommited properties are set
-        options = { ...defaultOptions, ...options };
-        
-        // Setup readonly properties
-        this.samplerate = samplerate;
-        this.width = options.width;
-        this.height = options.height;
-        
-        // Setup variable properties
-        this.resolution = options.resolution;
-        this.samplesPerPixel = options.samplesPerPixel;
-        this.scrollPosition = options.scrollPosition;
-        this.meterType = options.meterType;
-        this.mode = options.mode;
-        this.generateId = options.generateId;
+        this._options = { ...defaultOptions, ...options };
+    }
 
-        //Setup interaction
-        this.hammer = new Hammer(container, hammerconfig);
+    /**
+     * @description Merges the given options into the current and returns updated options
+     * 
+     * @param options A (partial) ManagerOptions object
+     * @returns A copy of the updated options
+     */
+    set(options: ManagerInput): WaveShapeManager {
+        if(!this.optionsValid(options)) {
+            throw new Error(`Invalid options given: ${JSON.stringify(options)}`);
+        }
 
-        setupDrag(this, this.hammer, container);
-        setupResize(this, this.hammer);
-        setupCut(this, this.hammer);
-        setupPan(this, this.hammer);
-        setupZoom(this, this.hammer);
+        this._options = { ...this.options, ...options };
+
+        return this;
+    }
+    
+    /**
+     * Registers a callback that fires when the track with given id is processed
+     * 
+     * @param id id of Track to register to
+     * @param callBack will be invoked when the given track is processed
+     */
+    on(id: string, callBack: WaveShaperCallback): WaveShapeManager {
+        let callbackArray = this.callbackMap.get(id);
+        if(callbackArray == null) {
+            this.callbackMap.set(id, [callBack]);
+        } else {
+            callbackArray.push(callBack)
+        };
+
+        return this;
+    }
+
+    /**
+     * Unregisters a callback from the given track, will no longer be called
+     * 
+     * @param id id of Track to unregister from
+     * @param callBack callback to remove
+     */
+    off(id: string, callBack: WaveShaperCallback): WaveShapeManager {
+        let callbackArray = this.callbackMap.get(id);
+        if(callbackArray == null) return this;
+
+        const index = callbackArray.indexOf(callBack);
+        if(index < 0) return this;
+
+        callbackArray = callbackArray.splice(index, 1);
+
+        return this;
+    }
+
+    /**
+     * The given id's are set as the active waveshapers, process only processes these when set,
+     * call with no values to allways process all values (default)
+     * 
+     * @param ids Waveshaper id's to set as active
+     */
+    setActive(...ids: string[]): WaveShapeManager {
+        this.activeWaveShapers = ids;
+
+        return this;
     }
     
     /**
@@ -165,19 +159,38 @@ export default class WaveShapeManager {
      * 
      * @memberof WaveShapeManager
      */
-    addWaveShaper(id: string, segments: Segment[], color: string): WaveShaper {
-        const foundWave = this.waveShapers.get('id');
-        if(foundWave == null) {
-            const wave = new WaveShaper(id, segments, this.width, this.height, color);
-            this.waveShapers.set(id, wave);
-
-            return wave;
-        } 
-        
-        return foundWave;
+    setTracks(...tracks: {id: string, segments: Segment[]}[]): WaveShapeManager {
+        tracks.forEach(track => {
+            const foundWave = this.getTrack(track.id);
+            if(foundWave == null) {
+                const wave = new WaveShaper(track.id, track.segments);
+                this.waveShapers.set(track.id, wave);
+            } else {
+                foundWave.segments = track.segments;
+                foundWave.flatten();
+            }
+        });
+        this._duration = this.getDuration();
+        return this;
     }
 
-    getWaveShaper(id: string): WaveShaper | undefined {
+    /**
+     * @description Removes the waves and all callbacks with given id from the manager
+     * 
+     * @param id 
+     * 
+     * @memberof WaveShapeManager
+     */
+    removeTracks(...ids: string[]): WaveShapeManager {
+        ids.forEach(id => {
+            this.removeCallbacksById(id);
+            this.waveShapers.delete(id);
+        });
+
+        return this;
+    }
+
+    getTrack(id: string): WaveShaper | undefined {
         return this.waveShapers.get(id);
     }
 
@@ -189,22 +202,12 @@ export default class WaveShapeManager {
      * 
      * @memberof WaveShapeManager
      */
-    addAudioData(id: string, data: AudioBuffer) {
-        if(!this.audioData.has(id)) {
-            this.audioData.set(id, data.getChannelData(0));
-            this.draw(this.activeWaveShapers, true);
-        }
-    }
-
-    /**
-     * @description Removes the wave with given id from the manager
-     * 
-     * @param id 
-     * 
-     * @memberof WaveShapeManager
-     */
-    removeWave(id: string) {
-        this.waveShapers.delete(id);
+    addData(...data: {id: string, data: AudioBuffer}[]) {
+        data.forEach(d => {
+            this.audioData.set(d.id, d.data.getChannelData(0));
+        });
+        
+        return this;
     }
 
     /**
@@ -213,12 +216,90 @@ export default class WaveShapeManager {
      * @param id 
      * @memberof WaveShapeManager
      */
-    flatten(ids: string[]) {
-        for(let i = 0; i < ids.length; i++) {
-            const id = ids[i];
-            const waveShaper = this.waveShapers.get(id)
+    flatten(...ids: string[]): WaveShapeManager {
+        this.getProcessIds(...ids).forEach(id => {
+            const waveShaper = this.getTrack(id);
             if(waveShaper != null) waveShaper.flatten();
+        });
+
+        return this;
+    }
+
+    /**
+     * Processes all relevant WaveShapers and invokes registered callbacks
+     * 
+     * @param ids Options array of id's to draw
+     * @param forceDraw Force redraw of the given waves
+     * 
+     * @memberof WaveShapeManager
+     */
+    process(...ids: string[]): WaveShapeManager {
+        const toProcess = this.getProcessIds(...ids);
+        const options = { ...this.options };
+
+        const data: { id: string, peaks: Float32Array }[] = [];
+        for(let i = 0; i < toProcess.length; i++) {
+            const id = toProcess[i];
+
+            const wave = this.getTrack(id);
+            if(wave == null) continue;
+
+            const peaks = wave.calculate(options, this.audioData);
+            data.push({ id, peaks });
         }
+
+        // Invoke callbacks after returning value.
+        this._lastProcessResult = { options, data };
+        this.invokeCallbacks(this._lastProcessResult);
+
+        return this;
+    }
+
+    protected optionsValid(options: ManagerInput) {
+        return (options.samplesPerPixel === undefined || options.samplesPerPixel > 0) &&
+            (options.meterType === undefined || options.meterType) &&
+            (options.resolution === undefined || options.resolution > 0) &&
+            (options.width === undefined || options.width > 0) &&
+            (options.scrollPosition === undefined || options.scrollPosition >= 0) &&
+            (options.samplerate === undefined || options.samplerate > 0);
+    }
+
+    /**
+     * Invokes all registered callbacks registered to a waveshaper id in the data list
+     * 
+     * @param options 
+     * @param data 
+     */
+    protected invokeCallbacks(result: ProcessResult) {
+        for(let i = 0; i < result.data.length; i++) {
+            const trackResult = result.data[i];
+
+            const callbacks = this.callbackMap.get(trackResult.id);
+            if(callbacks == null) continue;
+
+            for(let j = 0; j < callbacks.length; j++) {
+                const callback = callbacks[j];
+                callback(result.options, new Float32Array(trackResult.peaks));
+            }
+        }
+    }
+
+    protected getProcessIds(...ids: string[]) : string[] {
+        if(ids.length > 0) 
+            return ids;
+
+        if(this.activeWaveShapers && this.activeWaveShapers.length > 0) 
+            return this.activeWaveShapers;
+
+        return Array.from(this.waveShapers.keys());
+    }
+
+    protected removeCallbacksById(id: string) {
+        const callbackArray = this.callbackMap.get(id);
+        if(callbackArray == null) return;
+
+        callbackArray.splice(0, callbackArray.length);
+        this.callbackMap.delete(id);
     }
 
     /**
@@ -227,77 +308,10 @@ export default class WaveShapeManager {
      * @returns Maximum duration in seconds
      * @memberof WaveShapeManager
      */
-    getDuration(): number {
-        var maxDuration = 0;
-        for (var wave of Array.from(this.waveShapers.values())) {
-            var duration = wave.getDuration();
-            if (duration > maxDuration) {
-                maxDuration = duration;
-            }
-        }
-        return maxDuration;
-    }
-
-    /**
-     * Gets the duration of the audio as a date
-     * 
-     * @returns Date containing audio length
-     * @memberof WaveShapeManager
-     */
-    getDurationAsDate(): Date {
-        var date = new Date(0);
-        date.setTime(this.getDuration() * 1000);
-        return date;
-    }
-
-    /**
-     * @description Gets the width of scrollbar needed to scroll through the entire audio file
-     * 
-     * @returns Scroll width in pixels for the entire audio file
-     * @memberof WaveShapeManager
-     */
-    getScrollWidth(): number {
-        var maxWidth = 0;
-        for (var wave of Array.from(this.waveShapers.values())) {
-            const width = wave.getScrollWidth(this.samplesPerPixel, this.samplerate);
-            if (width > maxWidth) {
-                maxWidth = width;
-            }
-        }
-    
-        return maxWidth;
-    }
-
-    /**
-     * Draws the waveform to the canvas with current settings, defaults to drawing all activeWaveShapers
-     * 
-     * @param ids Options array of id's to draw
-     * @param forceDraw Force redraw of the given waves
-     * 
-     * @memberof WaveShapeManager
-     */
-    draw(ids: string[] | null, forceDraw: boolean) {
-        const idsToDraw = ids == null ? this.activeWaveShapers == null ? Array.from(this.waveShapers.keys()) : this.activeWaveShapers : ids;
-        for (var i = 0; i < idsToDraw.length; i++) {
-            var wave = this.waveShapers.get(idsToDraw[i]);
-            if(wave == null) continue;
-
-            wave.calculate(
-                this.meterType, 
-                this.resolution, 
-                this.samplesPerPixel, 
-                this.scrollPosition,
-                this.samplerate,
-                forceDraw,
-                this.audioData
-            );
-        }
-    
-        for (var i = 0; i < idsToDraw.length; i++) {
-            var wave = this.waveShapers.get(idsToDraw[i]);
-            if(wave == null) continue;
-
-            wave.draw();
-        }
+    protected getDuration(): number {
+        return Array.from(this.waveShapers.values()).reduce((maxDuration, waveShaper) => {
+            const duration = waveShaper.getDuration();
+            return duration > maxDuration ? duration : maxDuration;
+        }, 0);
     }
 }
