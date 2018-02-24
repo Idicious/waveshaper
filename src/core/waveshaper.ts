@@ -1,6 +1,6 @@
 import { MeterType, ManagerOptions } from '../config/managerconfig';
-import calculatePeaks from '../strategies/calculate/peak'
-import calculateRms from '../strategies/calculate/rms'
+import calculatePeaks from '../strategies/peak'
+import calculateRms from '../strategies/rms'
 import Segment from '../models/segment';
 import flattenSegments from '../methods/flatten';
 import Interval from '../models/interval';
@@ -27,7 +27,7 @@ export default class WaveShaper {
     /**
      * Gets the duration of the audio in seconds
      * 
-     * @returns {number} Decimal value of total duration in seconds
+     * @returns Decimal value of total duration in seconds
      */
     getDuration(): number {
         let maxLength = 0;
@@ -43,13 +43,9 @@ export default class WaveShaper {
     /**
      * Gets the summerized values for the current settings
      * 
-     * @param {string} meterType
-     * @param {number} sampleSize
-     * @param {number} samplesPerPixel
-     * @param {number} scrollPosition
-     * @param {boolean} forceDraw
-     * @param {Map<string, Float32Array>} dataMap
-     * @returns {Array} Two dimensional array, one entry for each pixel, for each pixel a min
+     * @param options
+     * @param dataMap
+     * @returns Two dimensional array, one entry for each pixel, for each pixel a min
      * and a max value.
      */
     calculate(options: ManagerOptions, dataMap: Map<string, Float32Array>): Float32Array {

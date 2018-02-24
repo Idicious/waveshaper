@@ -28,7 +28,8 @@ module.exports = function (config) {
       'src/**/*.ts',
       'spec/**/*.ts',
       { pattern: 'spec/**/*.wav', included: false, served: true },
-      { pattern: 'spec/**/*.mp3', included: false, served: true }
+      { pattern: 'spec/**/*.mp3', included: false, served: true },
+      { pattern: 'spec/**/*.json', included: false, served: true }
     ],
 
     proxies: {

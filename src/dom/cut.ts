@@ -1,11 +1,12 @@
 import WaveShapeManager from '../core/manager';
 import { ManagerOptions } from '../config/managerconfig';
+import Segment from '../models/segment';
 
 /**
  * Adds drag functionality to waveshaper
  * 
- * @param {WaveShapeManager} manager
- * @param {HammerManager} hammer
+ * @param manager
+ * @param hammer
  */
 export default (manager: WaveShapeManager, hammer: HammerManager) => {
 
@@ -33,7 +34,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager) => {
 
         const cutTime = time - segment.start;
 
-        const newSegment = { ...segment }
+        const newSegment: Segment = { ...segment }
         newSegment.offsetStart = cutTime;
         newSegment.id = options.generateId();
 

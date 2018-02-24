@@ -18,8 +18,8 @@ const zoomState: ZoomState = {
 /**
  * Adds pinch zoom functionality to waveshaper
  * 
- * @param {WaveShapeManager} manager
- * @param {HammerManager} hammer
+ * @param manager
+ * @param hammer
  */
 export default function(manager: DomRenderWaveShapeManager, hammer: HammerManager) {
 

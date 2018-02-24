@@ -18,8 +18,8 @@ const panState: PanState = {
 /**
  * Adds pan functionality to waveshaper
  * 
- * @param {WaveShapeManager} manager
- * @param {HammerManager} hammer
+ * @param manager
+ * @param hammer
  */
 export default function(manager: DomRenderWaveShapeManager, hammer: HammerManager) {
 

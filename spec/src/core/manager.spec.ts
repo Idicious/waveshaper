@@ -1,6 +1,4 @@
-import { WaveShapeManager, Segment } from "../../../src/";
-import defaultConfig from '../../../src/config/managerconfig';
-import defaultOptions from "../../../src/config/managerconfig";
+import { WaveShapeManager, Segment, defaultConfig } from "../../../src";
 
 describe('WaveShapeManager class tests', () => {
 
@@ -56,7 +54,7 @@ describe('WaveShapeManager class tests', () => {
             { id: 'def', start: 40, duration: 30, index: 2, offsetEnd: 0, offsetStart: 0, source: '2' },
             { id: 'ghi', start: 600, duration: 30, index: 3, offsetEnd: 0, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1',  '2'].map(id => ({ id, segments }));
+        const tracks = ['1', '2'].map(id => ({ id, segments }));
 
         const ctx = new AudioContext();
         const manager = new WaveShapeManager({ samplerate: ctx.sampleRate, width: 10000 });
@@ -194,7 +192,7 @@ describe('WaveShapeManager class tests', () => {
 
     it('Updates values with set.', () => {
         const manager = new WaveShapeManager();
-        expect(manager.options.samplesPerPixel).toBe(defaultOptions.samplesPerPixel);
+        expect(manager.options.samplesPerPixel).toBe(defaultConfig.samplesPerPixel);
 
         manager.set({ samplesPerPixel: 1024 });
         expect(manager.options.samplesPerPixel).toBe(1024);

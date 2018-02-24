@@ -8,21 +8,23 @@ interface DragState {
     activeSegmentStart: number;
     dragWave: WaveShaper | null;
     options: ManagerOptions | null;
+    dragging: boolean;
 }
 
 const dragState: DragState = {
     activeSegment: null,
     activeSegmentStart: 0,
     dragWave: null,
-    options: null
+    options: null,
+    dragging: false
 }
 
 /**
  * Adds drag functionality to waveshaper
  * 
- * @param {WaveShapeManager} manager Waveshape Manager
- * @param {HammerManager} hammer Hammer instance
- * @param {HTMLElement} container Container element
+ * @param manager Waveshape Manager
+ * @param hammer Hammer instance
+ * @param container Container element
  */
 export default (manager: WaveShapeManager, hammer: HammerManager, container: HTMLElement) => {
 
@@ -80,6 +82,11 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
         if (dragState.activeSegment == null || dragState.dragWave == null)
             return;
 
+        if (dragState.dragging)
+            return;
+
+        dragState.dragging = true;
+
         /** 
          * TODO below implementation stops all updates on touch devices on new track (tested on Samsung Galaxy s8),
          * when dragged back to original keeps working. Works on desktop, it's a small performance improvement as
@@ -102,6 +109,8 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
 
         manager.flatten(dragState.dragWave.id);
         manager.process(dragState.dragWave.id);
+
+        dragState.dragging = false;
     });
 
     hammer.on('panend', (ev: HammerInput) => {
@@ -148,7 +157,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
 
     /**
      * Gets the actual target from a pointer event
-     * @param {TouchEvent | MouseEvent} ev 
+     * @param ev 
      */
     const getTouchMouseTargetElement = (ev: TouchEvent | MouseEvent) => {
         if (ev instanceof TouchEvent) {

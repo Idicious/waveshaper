@@ -8,7 +8,6 @@ export declare type ProcessResult = { options: ManagerOptions, data: { id: strin
 /**
  * 
  * 
- * @class
  * @export
  */
 export default class WaveShapeManager {
@@ -40,7 +39,6 @@ export default class WaveShapeManager {
      * @description Map of callback functions
      * 
      * @readonly
-     * @private
      * @memberof WaveShapeManager
      */
     protected readonly callbackMap = new Map<string, WaveShaperCallback[]>();
@@ -75,9 +73,8 @@ export default class WaveShapeManager {
     protected _duration: number;
 
     /**
-     * @param {ManagerInput} [options=defaultOptions] Initial options
-     * @throws {Error} Throws an error if samplerate is null or NaN
-     * @constructor 
+     * @param [options=defaultOptions] Initial options
+     * @throws Throws an error if samplerate is null or NaN
      */
     constructor(options: ManagerInput = defaultOptions) {
         if(!this.optionsValid(options)) {
@@ -115,7 +112,7 @@ export default class WaveShapeManager {
             this.callbackMap.set(id, [callBack]);
         } else {
             callbackArray.push(callBack)
-        };
+        }
 
         return this;
     }
@@ -235,7 +232,7 @@ export default class WaveShapeManager {
      */
     process(...ids: string[]): WaveShapeManager {
         const toProcess = this.getProcessIds(...ids);
-        const options = { ...this.options };
+        const options: ManagerOptions = { ...this.options };
 
         const data: { id: string, peaks: Float32Array }[] = [];
         for(let i = 0; i < toProcess.length; i++) {

@@ -4,20 +4,16 @@ import { ManagerOptions } from "../config/managerconfig";
  * 
  * 
  * @export
- * @param {number[][]} waveform Sampled data for each pixel, max at 0, min at 1 
- * @param {number} height 
- * @param {number} width 
- * @param {CanvasRenderingContext2D} ctx 
- * @param {string} drawStyle 
- * @param {string} color
+ * @param waveform Sampled data for each pixel, max at 0, min at 1 
+ * @param options
+ * @param ctx 
+ * @param color
  */
 export default (waveform: Float32Array, options: ManagerOptions, ctx: CanvasRenderingContext2D, color: string) => {
     const scale = options.height / 2;
     const width = options.width;
     
     ctx.fillStyle = color;
-    ctx.strokeStyle = 'black';
-
     ctx.clearRect(0, 0, width, options.height);
     
     for(let i = 0, inSegment = false, segmentStart = 0; i < width; i++) {

@@ -26,8 +26,8 @@ const resizeState: ResizeState = {
 /**
  * Adds drag functionality to waveshaper
  * 
- * @param {WaveShapeManager} manager
- * @param {HammerManager} hammer
+ * @param manager
+ * @param hammer
  */
 export default function(manager: WaveShapeManager, hammer: HammerManager) {
 
