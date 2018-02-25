@@ -1,5 +1,6 @@
-import Interval from '../models/interval';
+//import Interval from '../models/interval';
 import { ManagerOptions } from '../config/managerconfig';
+import Interval from '../models/interval';
 
 /**
  * Calculates peak values
@@ -24,7 +25,7 @@ export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<str
 
     const peaks = new Float32Array(options.width * 4);
 
-    let currentIntervalIndex = intervals.findIndex(i => i.end > startSecond && i.start < endSecond);
+    let currentIntervalIndex = intervals.findIndex(i => i.end > startSecond && i.start + i.offsetStart < endSecond);
 
     // There are no intervals in this range so return empty array
     if(currentIntervalIndex === -1)
@@ -39,11 +40,11 @@ export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<str
     for (let i = 0; i < options.width; i++) {
 
         const currentSecond = startSecond + (i * secondsPerPixel);
-        if (currentInterval.start > currentSecond) {
+        if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
             continue;
         }
 
-        const startBorder = currentSecond - secondsPerPixel <= currentInterval.start
+        const startBorder = currentSecond - secondsPerPixel <= currentInterval.start + currentInterval.offsetStart;
         const endBorder = currentSecond + secondsPerPixel >= currentInterval.end;
         const intervalBorder = startBorder || endBorder ? 1 : 0;
 
@@ -52,9 +53,8 @@ export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<str
             continue;
         }
 
-        const offsetStart = currentInterval.start - currentInterval.originalStart;
         const secondsIntoInterval = currentSecond - currentInterval.start;
-        const startSample = Math.floor(((secondsIntoInterval + offsetStart) * options.samplerate));
+        const startSample = Math.floor(secondsIntoInterval * options.samplerate);
 
         const endSample = startSample + options.samplesPerPixel;
         const length = buffer.length;

@@ -1,13 +1,14 @@
 import WaveShaper from '../core/waveshaper';
 import WaveShapeManager from '../core/manager';
-import Segment from '../models/segment';
+import Interval from '../models/interval';
 import { ManagerOptions } from '../config/managerconfig';
 
 interface DragState {
-    activeSegment: Segment | null;
+    activeSegment: Interval | null;
     activeSegmentStart: number;
     dragWave: WaveShaper | null;
     options: ManagerOptions | null;
+    duration: number;
     dragging: boolean;
 }
 
@@ -16,6 +17,7 @@ const dragState: DragState = {
     activeSegmentStart: 0,
     dragWave: null,
     options: null,
+    duration: 0,
     dragging: false
 }
 
@@ -58,7 +60,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
 
         const bb = ev.target.getBoundingClientRect();
         const time = (options.scrollPosition + (ev.center.x - bb.left)) * (options.samplesPerPixel / options.samplerate);
-        const interval = wave.flattened.find(i => i.start <= time && i.end >= time);
+        const interval = wave.flattened.find(i => i.start + i.offsetStart <= time && i.end >= time);
 
         if (interval == null)
             return;
@@ -70,6 +72,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
 
         dragState.activeSegment = segment;
         dragState.activeSegmentStart = dragState.activeSegment.start;
+        dragState.duration = segment.end - segment.start;
 
         dragState.activeSegment.index = 1000;
         dragState.dragWave = wave;
@@ -106,6 +109,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
         }
 
         dragState.activeSegment.start = newTime;
+        dragState.activeSegment.end = newTime + dragState.duration;
 
         manager.flatten(dragState.dragWave.id);
         manager.process(dragState.dragWave.id);
@@ -121,6 +125,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
         dragState.activeSegmentStart = 0;
         dragState.dragWave = null;
         dragState.options = null;
+        dragState.duration = 0;
     });
 
     const mouseHover = (ev: TouchEvent | MouseEvent) => {

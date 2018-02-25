@@ -1,4 +1,4 @@
-import { WaveShapeManager, Segment, defaultConfig } from "../../../src";
+import { WaveShapeManager, Interval, defaultConfig } from "../../../src";
 
 describe('WaveShapeManager class tests', () => {
 
@@ -38,8 +38,8 @@ describe('WaveShapeManager class tests', () => {
     });
 
     it('Can add WaveShapers', () => {
-        const segments: Segment[] = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+        const segments: Interval[] = [
+            { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' }
         ];
 
         const manager = new WaveShapeManager();
@@ -49,10 +49,10 @@ describe('WaveShapeManager class tests', () => {
     });
 
     it('Can add AudioData.', (done) => {
-        const segments = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 40, duration: 30, index: 2, offsetEnd: 0, offsetStart: 0, source: '2' },
-            { id: 'ghi', start: 600, duration: 30, index: 3, offsetEnd: 0, offsetStart: 0, source: '1' }
+        const segments: Interval[] = [
+            { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
+            { id: 'def', start: 40, end: 70, index: 2, offsetStart: 0, source: '2' },
+            { id: 'ghi', start: 600, end: 630, index: 3, offsetStart: 0, source: '1' }
         ];
         const tracks = ['1', '2'].map(id => ({ id, segments }));
 
@@ -74,12 +74,12 @@ describe('WaveShapeManager class tests', () => {
 
     it('Respects activeWaveShapers property.', () => {
         const segments = [
-            { id: 'abc', start: 0, duration: 30, index: 2, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 5, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'ghi', start: 100, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'jkl', start: 110, duration: 30, index: 2, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'jkl', start: 111, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'mno', start: 200, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 30, index: 2, offsetStart: 0, source: '1' },
+            { id: 'def', start: 5, end: 35, index: 1, offsetStart: 0, source: '1' },
+            { id: 'ghi', start: 100, end: 130, index: 1, offsetStart: 0, source: '1' },
+            { id: 'jkl', start: 110, end: 140, index: 2, offsetStart: 0, source: '1' },
+            { id: 'jkl', start: 111, end: 141, index: 1, offsetStart: 0, source: '1' },
+            { id: 'mno', start: 200, end: 230, index: 1, offsetStart: 0, source: '1' }
         ];
         const tracks = ['1',  '2'].map(id => ({ id, segments }));
 
@@ -128,8 +128,8 @@ describe('WaveShapeManager class tests', () => {
 
     it('Call callbacks correctly', () => {
         const segments = [
-            { id: 'abc', start: 0, duration: 33, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 1, duration: 30, index: 2, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 33, index: 1, offsetStart: 0, source: '1' },
+            { id: 'def', start: 1, end: 31, index: 2, offsetStart: 0, source: '1' }
         ];
         const tracks = ['1', '2'].map(id => ({ id, segments }));
 
@@ -145,8 +145,8 @@ describe('WaveShapeManager class tests', () => {
 
     it('Removes callbacks when off is called', () => {
         const segments = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
+            { id: 'def', start: 0, end: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
         ];
         const tracks = ['1', '2'].map(id => ({ id, segments }));
 
@@ -166,8 +166,8 @@ describe('WaveShapeManager class tests', () => {
 
     it('Stores the last process result.', () => {
         const segments = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
+            { id: 'def', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' }
         ];
         const tracks = ['1', '2'].map(id => ({ id, segments }));
         const manager = new WaveShapeManager();
@@ -180,8 +180,8 @@ describe('WaveShapeManager class tests', () => {
 
     it('Calculates duration correctly.', () => {
         const segments = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 20, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
+            { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
         const tracks = ['1', '2'].map(id => ({ id, segments }));
         const manager = new WaveShapeManager();
@@ -200,8 +200,8 @@ describe('WaveShapeManager class tests', () => {
 
     it('Updates segments when setTrack is called with same id more than once', () => {
         let segments = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
+            { id: 'def', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' }
         ];
         let tracks = ['1', '2'].map(id => ({ id, segments }));
         const manager = new WaveShapeManager();
@@ -210,8 +210,8 @@ describe('WaveShapeManager class tests', () => {
         expect(manager.duration).toBe(30);
 
         segments = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 20, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
+            { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
         tracks = ['1', '2'].map(id => ({ id, segments }));
 
@@ -221,8 +221,8 @@ describe('WaveShapeManager class tests', () => {
 
     it('Removes a track succesfully', () => {
         const segments = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 20, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
+            { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
         const tracks = ['1', '2'].map(id => ({ id, segments }));
         const manager = new WaveShapeManager();
@@ -235,8 +235,8 @@ describe('WaveShapeManager class tests', () => {
 
     it('Removes callbacks when removing tracks', () => {
         const segments = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 20, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
+            { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
         const tracks = ['1', '2'].map(id => ({ id, segments }));
         const manager = new WaveShapeManager();
@@ -252,8 +252,8 @@ describe('WaveShapeManager class tests', () => {
 
     it('Ignores off requests to non existant tracks and callbacks', () => {
         const segments = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 20, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
+            { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
         const tracks = ['1', '2'].map(id => ({ id, segments }));
         const noop = () => { };
@@ -274,8 +274,8 @@ describe('WaveShapeManager class tests', () => {
 
     it('Flattens existing tracks', () => {
         const segments = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 20, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
+            { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
         const tracks = ['1', '2'].map(id => ({ id, segments }));
 
@@ -287,8 +287,8 @@ describe('WaveShapeManager class tests', () => {
 
     it('Ignores flatten on non existant tracks', () => {
         const segments = [
-            { id: 'abc', start: 0, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
-            { id: 'def', start: 20, duration: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
+            { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
+            { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
         const tracks = ['1', '2'].map(id => ({ id, segments }));
 

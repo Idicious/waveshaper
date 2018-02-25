@@ -1,12 +1,12 @@
 import WaveShaper from '../core/waveshaper';
 import WaveShapeManager from '../core/manager';
-import Segment from '../models/segment';
+import Interval from '../models/interval';
 import { ManagerOptions } from '../config/managerconfig';
 
 declare type SegmentSide = 'left' | 'right';
 
 interface ResizeState {
-    activeSegment: Segment | null;
+    activeSegment: Interval | null;
     activeSegmentSide: SegmentSide | null;
     activeSegmentOffsetStart: number;
     activeSegmentOffsetEnd: number;
@@ -47,13 +47,13 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
         const bb = ev.target.getBoundingClientRect();
         const time = (options.scrollPosition + (ev.center.x - bb.left)) * options.samplesPerPixel / options.samplerate;
 
-        const interval = wave.flattened.find(i => i.start <= time && i.end >= time);
+        const interval = wave.flattened.find(i => i.start + i.offsetStart <= time && i.end >= time);
 
         if(interval == null) 
             return;
 
         resizeState.activeSegmentSide = 
-            time < interval.start + ((interval.end - interval.start) / 2) ? 
+            time < interval.start + interval.offsetStart + ((interval.end - interval.start + interval.offsetStart) / 2) ? 
                 'left' : 
                 'right';
 
@@ -64,7 +64,7 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
         resizeState.activeSegment = segment;
 
         resizeState.activeSegmentOffsetStart = segment.offsetStart;
-        resizeState.activeSegmentOffsetEnd = segment.offsetEnd;
+        resizeState.activeSegmentOffsetEnd = segment.end;
 
         segment.index = 1000;
         resizeState.dragWave = wave;
@@ -82,7 +82,7 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
         const change = (ev.deltaX * options.samplesPerPixel) / options.samplerate;
         let newTime = resizeState.activeSegmentSide === 'left' ?
             resizeState.activeSegmentOffsetStart + change :
-            resizeState.activeSegmentOffsetEnd - change;
+            resizeState.activeSegmentOffsetEnd + change;
 
         // Don't allow offset to become less than 0
         if(newTime < 0) {
@@ -91,8 +91,8 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
 
         const active = resizeState.activeSegment;
         const newDuration = resizeState.activeSegmentSide === 'left' ?
-            (active.start + active.duration) - active.start - newTime - active.offsetEnd :
-            (active.start + active.duration) - active.start - active.offsetStart - newTime;
+            active.end - newTime :
+            newTime - active.start - active.offsetStart;
 
         // Do not allow resizing 
         if(newDuration <= 2) {
@@ -101,7 +101,7 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
         
         resizeState.activeSegmentSide === 'left' ?
             active.offsetStart = newTime :
-            active.offsetEnd = newTime;
+            active.end = newTime;
 
         manager.flatten(resizeState.dragWave.id);
         manager.process(resizeState.dragWave.id);

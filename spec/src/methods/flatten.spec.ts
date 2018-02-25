@@ -1,4 +1,4 @@
-import flatten from '../../../src/methods/flatten';
+import {flatten} from '../../../src';
 import testData from '../../assets/data/flatten';
 
 describe('Tests the merging of intervals to a flat array.', () => {
@@ -13,8 +13,9 @@ describe('Tests the merging of intervals to a flat array.', () => {
                 expect(actual[i].id).toBe(expected[i].id);
                 expect(actual[i].start).toBe(expected[i].start);
                 expect(actual[i].end).toBe(expected[i].end);
+                expect(actual[i].offsetStart).toBe(expected[i].offsetStart);
                 expect(actual[i].index).toBe(expected[i].index);
-                expect(actual[i].originalStart).toBe(expected[i].originalStart);
+                expect(actual[i].source).toBe(expected[i].source);
             }
         });
     });

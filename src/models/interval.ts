@@ -5,7 +5,7 @@ export default interface Interval {
     id: string;
     start: number;
     end: number;
+    offsetStart: number;
     index: number;
-    originalStart: number;
     source: string;
 }

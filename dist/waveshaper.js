@@ -407,28 +407,19 @@ var rms_1 = __webpack_require__(6);
 var flatten_1 = __webpack_require__(7);
 var WaveShaper = /** @class */ (function () {
     function WaveShaper(id, segments) {
+        var _this = this;
         this.id = id;
         this.segments = segments;
+        /**
+         * Gets the duration of the audio in seconds
+         *
+         * @returns Decimal value of total duration in seconds
+         */
+        this.getDuration = function () { return Math.max.apply(Math, _this.segments.map(function (s) { return s.end; })); };
         this.flatten();
     }
     WaveShaper.prototype.flatten = function () {
         this.flattened = flatten_1.default(this.segments);
-    };
-    /**
-     * Gets the duration of the audio in seconds
-     *
-     * @returns Decimal value of total duration in seconds
-     */
-    WaveShaper.prototype.getDuration = function () {
-        var maxLength = 0;
-        for (var _i = 0, _a = this.segments; _i < _a.length; _i++) {
-            var segment = _a[_i];
-            var end = segment.start + segment.duration;
-            if (end > maxLength) {
-                maxLength = end;
-            }
-        }
-        return maxLength;
     };
     /**
      * Gets the summerized values for the current settings
@@ -440,10 +431,10 @@ var WaveShaper = /** @class */ (function () {
      */
     WaveShaper.prototype.calculate = function (options, dataMap) {
         switch (options.meterType) {
-            case 'rms':
-                return rms_1.default(options, this.flattened, dataMap);
-            default:
+            case 'peak':
                 return peak_1.default(options, this.flattened, dataMap);
+            default:
+                return rms_1.default(options, this.flattened, dataMap);
         }
     };
     return WaveShaper;
@@ -516,34 +507,36 @@ exports.default = (function (options, intervals, dataMap) {
     var start = options.scrollPosition * options.samplesPerPixel;
     var startSecond = start / options.samplerate;
     var secondsPerPixel = options.samplesPerPixel / options.samplerate;
-    var endSecond = startSecond + (secondsPerPixel * options.width);
+    var endSecond = startSecond + (options.width * secondsPerPixel);
     var peaks = new Float32Array(options.width * 4);
-    var currentInterval = intervals.find(function (i) { return i.end >= startSecond; });
-    if (currentInterval == undefined)
+    var currentIntervalIndex = intervals.findIndex(function (i) { return i.end > startSecond && i.start + i.offsetStart < endSecond; });
+    // There are no intervals in this range so return empty array
+    if (currentIntervalIndex === -1)
         return peaks;
+    var maxIntervalIncrementIndex = intervals.length - 1;
+    var currentInterval = intervals[currentIntervalIndex];
     var buffer = dataMap.get(currentInterval.source);
-    var intervalStart = (Math.max(currentInterval.start, startSecond) - startSecond) / secondsPerPixel;
-    var intervalEnd = (Math.min(currentInterval.end, endSecond) - startSecond) / secondsPerPixel;
-    var intervalIndex = intervals.indexOf(currentInterval);
     // For each pixel we display
-    for (var i = intervalStart; i < options.width; i++) {
-        var index = i * 4;
-        var intervalBorder = (i === Math.floor(intervalStart) || i === Math.ceil(intervalEnd)) ? 1 : 0;
-        if (buffer == null) {
-            peaks.set([0, 0, intervalBorder, 1], index);
+    for (var i = 0; i < options.width; i++) {
+        var currentSecond = startSecond + (i * secondsPerPixel);
+        if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
             continue;
         }
-        var min = 0;
-        var max = 0;
-        var currentSecond = startSecond + ((i * options.samplesPerPixel) / options.samplerate);
-        var offsetStart = currentInterval.start - currentInterval.originalStart;
+        var startBorder = currentSecond - secondsPerPixel <= currentInterval.start + currentInterval.offsetStart;
+        var endBorder = currentSecond + secondsPerPixel >= currentInterval.end;
+        var intervalBorder = startBorder || endBorder ? 1 : 0;
+        if (buffer == null) {
+            peaks.set([0, 0, intervalBorder, 1], (i * 4));
+            continue;
+        }
         var secondsIntoInterval = currentSecond - currentInterval.start;
-        var startSample = Math.floor(((secondsIntoInterval + offsetStart) * options.samplerate));
+        var startSample = Math.floor(secondsIntoInterval * options.samplerate);
         var endSample = startSample + options.samplesPerPixel;
         var length_1 = buffer.length;
         var loopEnd = length_1 < endSample ? length_1 : endSample;
         // Cycle through the data-points relevant to the pixel
         // Don't cycle through more than sampleSize frames per pixel.
+        var min = 0, max = 0;
         for (var j = startSample; j < loopEnd; j += sampleSize) {
             var sample = buffer[j];
             // Keep track of positive and negative values separately
@@ -552,15 +545,15 @@ exports.default = (function (options, intervals, dataMap) {
             else if (sample < min)
                 min = sample;
         }
-        peaks.set([min, max, intervalBorder, 1], index);
-        if (i > intervalEnd - 1) {
-            if (intervalIndex === intervals.length - 1)
+        peaks.set([min, max, intervalBorder, 1], (i * 4));
+        if (currentSecond + secondsPerPixel >= currentInterval.end) {
+            if (currentIntervalIndex === maxIntervalIncrementIndex) {
                 return peaks;
-            currentInterval = intervals[++intervalIndex];
-            buffer = dataMap.get(currentInterval.source);
-            intervalStart = (Math.max(currentInterval.start, startSecond) - startSecond) / secondsPerPixel;
-            intervalEnd = (Math.min(currentInterval.end, endSecond) - startSecond) / secondsPerPixel;
-            i = Math.floor(intervalStart);
+            }
+            else {
+                currentInterval = intervals[++currentIntervalIndex];
+                buffer = dataMap.get(currentInterval.source);
+            }
         }
     }
     return peaks;
@@ -590,44 +583,37 @@ exports.default = (function (options, intervals, dataMap) {
     var start = options.scrollPosition * options.samplesPerPixel;
     var startSecond = start / options.samplerate;
     var secondsPerPixel = options.samplesPerPixel / options.samplerate;
+    var endSecond = startSecond + (options.width * secondsPerPixel);
     var peaks = new Float32Array(options.width * 4);
+    var currentIntervalIndex = intervals.findIndex(function (i) { return i.end > startSecond && i.start + i.offsetStart < endSecond; });
+    // There are no intervals in this range so return empty array
+    if (currentIntervalIndex === -1)
+        return peaks;
+    var maxIntervalIncrementIndex = intervals.length - 1;
+    var currentInterval = intervals[currentIntervalIndex];
+    var buffer = dataMap.get(currentInterval.source);
     // For each pixel we display
     for (var i = 0; i < options.width; i++) {
-        var index = i * 4;
-        var posSum = 0;
-        var negSum = 0;
-        var currentSecond = startSecond + ((i * options.samplesPerPixel) / options.samplerate);
-        var interval = void 0;
-        for (var i_1 = 0; i_1 < intervals.length; i_1++) {
-            var s = intervals[i_1];
-            if (s.start <= currentSecond && s.end >= currentSecond) {
-                interval = s;
-                break;
-            }
-        }
-        if (interval == null) {
-            peaks.set([0, 0, 0, 0], index);
+        var currentSecond = startSecond + (i * secondsPerPixel);
+        if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
             continue;
         }
-        var intervalBorder = 0;
-        if (currentSecond + secondsPerPixel > interval.end
-            || currentSecond - secondsPerPixel < interval.start) {
-            intervalBorder = 1;
-        }
-        var buffer = dataMap.get(interval.source);
+        var startBorder = currentSecond - secondsPerPixel <= currentInterval.start + currentInterval.offsetStart;
+        var endBorder = currentSecond + secondsPerPixel >= currentInterval.end;
+        var intervalBorder = startBorder || endBorder ? 1 : 0;
         if (buffer == null) {
-            peaks.set([0, 0, intervalBorder, 1], index);
+            peaks.set([0, 0, intervalBorder, 1], (i * 4));
             continue;
         }
-        var offsetStart = interval.start - interval.originalStart;
-        var secondsIntoInterval = currentSecond - interval.start;
-        var startSample = Math.floor(((secondsIntoInterval + offsetStart) * options.samplerate));
+        var secondsIntoInterval = currentSecond - currentInterval.start;
+        var startSample = Math.floor(secondsIntoInterval * options.samplerate);
+        var endSample = startSample + options.samplesPerPixel;
         var length_1 = buffer.length;
-        var loopEnd = startSample + options.samplesPerPixel;
-        var end = length_1 < loopEnd ? length_1 : loopEnd;
+        var loopEnd = length_1 < endSample ? length_1 : endSample;
         // Cycle through the data-points relevant to the pixel
         // Don't cycle through more than sampleSize frames per pixel.
-        for (var j = startSample; j < end; j += sampleSize) {
+        var posSum = 0, negSum = 0;
+        for (var j = startSample; j < loopEnd; j += sampleSize) {
             var val = buffer[j];
             // Keep track of positive and negative values separately
             if (val > 0) {
@@ -640,7 +626,16 @@ exports.default = (function (options, intervals, dataMap) {
         var samples = Math.min(options.samplesPerPixel / 2, Math.round(options.resolution / 2));
         var min = -Math.sqrt(negSum / samples);
         var max = Math.sqrt(posSum / samples);
-        peaks.set([min, max, intervalBorder, 1], index);
+        peaks.set([min, max, intervalBorder, 1], (i * 4));
+        if (currentSecond + secondsPerPixel >= currentInterval.end) {
+            if (currentIntervalIndex === maxIntervalIncrementIndex) {
+                return peaks;
+            }
+            else {
+                currentInterval = intervals[++currentIntervalIndex];
+                buffer = dataMap.get(currentInterval.source);
+            }
+        }
     }
     return peaks;
 });
@@ -659,6 +654,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var start = function (segment) { return segment.start + segment.offsetStart; };
 /**
  * The algorithm first calculates real start and end times of each segment,
  * sorts them by priority, then start time.
@@ -671,10 +667,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @returns flattened Interval array
  */
 exports.default = (function (segments) {
-    var normalized = normalizeIndex(segments);
-    var intervals = mapToIntervals(normalized);
-    var sorted = sort(intervals);
-    var grouped = groupByIndex(sorted);
+    var sorted = sort(segments);
+    var normalized = normalizeIndex(sorted);
+    var grouped = groupByIndex(normalized);
     return weightedMerge(grouped);
 });
 /**
@@ -686,7 +681,7 @@ exports.default = (function (segments) {
 var normalizeIndex = function (segments) {
     var index = 0;
     var preNormalizeIndex = Number.MIN_SAFE_INTEGER;
-    segments.sort(function (a, b) { return cmp(a.index, b.index); }).forEach(function (el) {
+    segments.forEach(function (el) {
         if (el.index > preNormalizeIndex) {
             preNormalizeIndex = el.index;
             el.index = ++index;
@@ -698,30 +693,13 @@ var normalizeIndex = function (segments) {
     return segments;
 };
 /**
- * In order to preserve the original segments and allow for extra properties
- * the segments are mapped to Intervals
- *
- * @param segments
- * @returns Interval array
- */
-var mapToIntervals = function (segments) {
-    return segments.map(function (s) { return ({
-        id: s.id,
-        start: s.start + s.offsetStart,
-        end: s.start + s.duration - s.offsetEnd,
-        index: s.index,
-        originalStart: s.start,
-        source: s.source
-    }); });
-};
-/**
  * Sorts the intervals by index, then by start
  *
  * @param intervals
  * @return Interval array
  */
 var sort = function (intervals) {
-    return intervals.sort(function (a, b) { return cmp(a.index, b.index) || cmp(a.start, b.start); });
+    return intervals.sort(function (a, b) { return cmp(a.index, b.index) || cmp(start(a), start(b)); });
 };
 /**
  * Returns a map of intervals grouped by the key property
@@ -775,8 +753,8 @@ var merge = function (intervals) {
             continue;
             // Resolves partial overlaps by setting end of current to start of next
         }
-        else if (next.start < current.end) {
-            result.push(__assign({}, current, { end: next.start }));
+        else if (start(next) < current.end) {
+            result.push(__assign({}, current, { end: start(next) }));
             current = next;
         }
         else {
@@ -814,17 +792,17 @@ var combine = function (highIndexes, lowIndexes) {
             highIndex++;
             // High priority start before or at same time as low
         }
-        else if (high.start <= low.start) {
+        else if (start(high) <= start(low)) {
             // No overlap between low and high
             // low:                 ----------------------
             // high: ---------------
-            if (high.end <= low.start) {
+            if (high.end <= start(low)) {
                 // Partial overlap where high ends after low
                 // low:                 ----------------------
                 // high: ----------------------
             }
             else if (high.end < low.end) {
-                low.start = high.end;
+                low.offsetStart = high.end - low.start;
                 // Low index completely overlapped, dismiss it
                 // low:               -----------
                 // high: -------------------------------------
@@ -840,7 +818,7 @@ var combine = function (highIndexes, lowIndexes) {
             // No overlap between low and high intervals
             // low: ---------------
             // high                ----------------------
-            if (low.end <= high.start) {
+            if (low.end <= start(high)) {
                 merged.push(__assign({}, low));
                 lowIndex++;
                 // Partial overlap where high ends after low
@@ -848,15 +826,15 @@ var combine = function (highIndexes, lowIndexes) {
                 // high                ----------------------
             }
             else if (high.end > low.end) {
-                merged.push(__assign({}, low, { end: high.start }));
+                merged.push(__assign({}, low, { end: start(high) }));
                 lowIndex++;
                 // Partial overlap where high ends before low
                 // low: -------------------------------------
                 // high             -----------
             }
             else {
-                merged.push(__assign({}, low, { end: high.start }));
-                low.start = high.end;
+                merged.push(__assign({}, low, { end: start(high) }));
+                low.offsetStart = high.end - low.start;
             }
         }
     }
@@ -1032,17 +1010,15 @@ exports.default = (function (manager, hammer) {
             return;
         var bb = ev.target.getBoundingClientRect();
         var time = (options.scrollPosition + (ev.center.x - bb.left)) * options.samplesPerPixel / options.samplerate;
-        var interval = wave.flattened.find(function (i) { return i.start <= time && i.end >= time; });
+        var interval = wave.flattened.find(function (i) { return i.start + i.offsetStart <= time && i.end >= time; });
         if (interval == null)
             return;
         var segment = wave.segments.find(function (s) { return s.id === interval.id; });
         if (segment == null)
             return;
-        var cutTime = time - segment.start;
-        var newSegment = __assign({}, segment);
-        newSegment.offsetStart = cutTime;
-        newSegment.id = options.generateId();
-        segment.offsetEnd = segment.duration - cutTime;
+        var segmentSplitTime = time - segment.start;
+        var newSegment = __assign({}, segment, { offsetStart: segmentSplitTime, id: options.generateId() });
+        segment.end = segmentSplitTime;
         wave.segments.push(newSegment);
         manager.flatten(wave.id);
         manager.process(wave.id);
@@ -1060,6 +1036,7 @@ var dragState = {
     activeSegmentStart: 0,
     dragWave: null,
     options: null,
+    duration: 0,
     dragging: false
 };
 /**
@@ -1098,7 +1075,7 @@ exports.default = (function (manager, hammer, container) {
             return;
         var bb = ev.target.getBoundingClientRect();
         var time = (options.scrollPosition + (ev.center.x - bb.left)) * (options.samplesPerPixel / options.samplerate);
-        var interval = wave.flattened.find(function (i) { return i.start <= time && i.end >= time; });
+        var interval = wave.flattened.find(function (i) { return i.start + i.offsetStart <= time && i.end >= time; });
         if (interval == null)
             return;
         var segment = wave.segments.find(function (s) { return s.id === interval.id; });
@@ -1107,6 +1084,7 @@ exports.default = (function (manager, hammer, container) {
         dragState.options = options;
         dragState.activeSegment = segment;
         dragState.activeSegmentStart = dragState.activeSegment.start;
+        dragState.duration = segment.end - segment.start;
         dragState.activeSegment.index = 1000;
         dragState.dragWave = wave;
     });
@@ -1133,6 +1111,7 @@ exports.default = (function (manager, hammer, container) {
             newTime = -dragState.activeSegment.offsetStart;
         }
         dragState.activeSegment.start = newTime;
+        dragState.activeSegment.end = newTime + dragState.duration;
         manager.flatten(dragState.dragWave.id);
         manager.process(dragState.dragWave.id);
         dragState.dragging = false;
@@ -1144,6 +1123,7 @@ exports.default = (function (manager, hammer, container) {
         dragState.activeSegmentStart = 0;
         dragState.dragWave = null;
         dragState.options = null;
+        dragState.duration = 0;
     });
     var mouseHover = function (ev) {
         if (dragState.options == null || dragState.options.mode !== 'drag')
@@ -1328,11 +1308,11 @@ function default_1(manager, hammer) {
             return;
         var bb = ev.target.getBoundingClientRect();
         var time = (options.scrollPosition + (ev.center.x - bb.left)) * options.samplesPerPixel / options.samplerate;
-        var interval = wave.flattened.find(function (i) { return i.start <= time && i.end >= time; });
+        var interval = wave.flattened.find(function (i) { return i.start + i.offsetStart <= time && i.end >= time; });
         if (interval == null)
             return;
         resizeState.activeSegmentSide =
-            time < interval.start + ((interval.end - interval.start) / 2) ?
+            time < interval.start + interval.offsetStart + ((interval.end - interval.start + interval.offsetStart) / 2) ?
                 'left' :
                 'right';
         var segment = wave.segments.find(function (s) { return s.id === interval.id; });
@@ -1341,7 +1321,7 @@ function default_1(manager, hammer) {
         resizeState.options = options;
         resizeState.activeSegment = segment;
         resizeState.activeSegmentOffsetStart = segment.offsetStart;
-        resizeState.activeSegmentOffsetEnd = segment.offsetEnd;
+        resizeState.activeSegmentOffsetEnd = segment.end;
         segment.index = 1000;
         resizeState.dragWave = wave;
     });
@@ -1354,22 +1334,22 @@ function default_1(manager, hammer) {
         var change = (ev.deltaX * options.samplesPerPixel) / options.samplerate;
         var newTime = resizeState.activeSegmentSide === 'left' ?
             resizeState.activeSegmentOffsetStart + change :
-            resizeState.activeSegmentOffsetEnd - change;
+            resizeState.activeSegmentOffsetEnd + change;
         // Don't allow offset to become less than 0
         if (newTime < 0) {
             newTime = 0;
         }
         var active = resizeState.activeSegment;
         var newDuration = resizeState.activeSegmentSide === 'left' ?
-            (active.start + active.duration) - active.start - newTime - active.offsetEnd :
-            (active.start + active.duration) - active.start - active.offsetStart - newTime;
+            active.end - newTime :
+            newTime - active.start - active.offsetStart;
         // Do not allow resizing 
         if (newDuration <= 2) {
             return;
         }
         resizeState.activeSegmentSide === 'left' ?
             active.offsetStart = newTime :
-            active.offsetEnd = newTime;
+            active.end = newTime;
         manager.flatten(resizeState.dragWave.id);
         manager.process(resizeState.dragWave.id);
     });

@@ -1,12 +1,12 @@
-import {peak, defaultConfig} from '../../../src';
+import {defaultConfig, rms} from '../../../src';
 
-describe('Peak calculation tests.', () => {
-    it('Calculates peak values.', () => {
+describe('Rms calculation tests.', () => {
+    it('Calculates rms values.', () => {
         const data = new Map();
         data.set('1', GenerateArray(50, 100));
         data.set('2', GenerateArray(100, 200));
 
-        const result = peak({ ...defaultConfig,
+        const result = rms({ ...defaultConfig,
             samplerate: 1,
             scrollPosition: 0,
             samplesPerPixel: 1,
@@ -27,7 +27,7 @@ describe('Peak calculation tests.', () => {
         data.set('1', GenerateArray(50, 100));
         data.set('2', GenerateArray(100, 200));
 
-        const result = peak({ ...defaultConfig,
+        const result = rms({ ...defaultConfig,
             samplerate: 1,
             scrollPosition: 2,
             samplesPerPixel: 1,
@@ -48,7 +48,7 @@ describe('Peak calculation tests.', () => {
         data.set('1', [50]);
         data.set('2', [30]);
 
-        const result = peak({ ...defaultConfig,
+        const result = rms({ ...defaultConfig,
             samplerate: 2,
             scrollPosition: 0,
             samplesPerPixel: 2,

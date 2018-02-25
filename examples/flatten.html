@@ -80,8 +80,8 @@
         const options = {
             scrollPosition: 0,
             samplesPerPixel: 1024,
-            resolution: 10,
-            meterType: 'peak',
+            resolution: 32,
+            meterType: 'rms',
             mode: 'pan',
             height: 300,
             width: canvasContainer.clientWidth,
@@ -97,7 +97,7 @@
 
         const elementHeight = options.height;
         const ownHeight = canvasContainer.clientHeight;
-        const fitInElement = Math.ceil(ownHeight / elementHeight);
+        const fitInElement = Math.ceil(ownHeight / elementHeight) + 1;
 
         const buffers = [];
         let buffersInView = [];
@@ -121,54 +121,48 @@
             const segments = [{
                     id: "" + Math.random(),
                     start: 0,
-                    duration: 136,
+                    end: 136,
                     offsetStart: 10,
-                    offsetEnd: 0,
                     index: 0,
                     source: "1"
                 },
                 {
                     id: "" + Math.random(),
                     start: 5,
-                    duration: 136,
+                    end: 141,
                     offsetStart: 10,
-                    offsetEnd: 0,
                     index: 1,
                     source: "2"
                 },
                 {
                     id: "" + Math.random(),
                     start: 10,
-                    duration: 136,
+                    end: 146,
                     offsetStart: 10,
-                    offsetEnd: 0,
                     index: 2,
                     source: "3"
                 },
                 {
                     id: "" + Math.random(),
                     start: 23,
-                    duration: 136,
+                    end: 159,
                     offsetStart: 10,
-                    offsetEnd: 0,
                     index: 3,
                     source: "1"
                 },
                 {
                     id: "" + Math.random(),
                     start: 24,
-                    duration: 136,
+                    end: 160,
                     offsetStart: 10,
-                    offsetEnd: 0,
                     index: 4,
                     source: "2"
                 },
                 {
                     id: "" + Math.random(),
                     start: 35,
-                    duration: 136,
+                    end: 171,
                     offsetStart: 10,
-                    offsetEnd: 0,
                     index: 5,
                     source: "3"
                 }

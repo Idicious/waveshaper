@@ -1,9 +1,8 @@
 import { MeterType, ManagerOptions } from '../config/managerconfig';
 import calculatePeaks from '../strategies/peak'
 import calculateRms from '../strategies/rms'
-import Segment from '../models/segment';
-import flattenSegments from '../methods/flatten';
 import Interval from '../models/interval';
+import flattenSegments from '../methods/flatten';
 
 export interface LastDrawValues {
     meterType: MeterType;
@@ -16,7 +15,7 @@ export interface LastDrawValues {
 export default class WaveShaper {
     flattened: Interval[];
 
-    constructor(public readonly id: string, public segments: Segment[]) {
+    constructor(public readonly id: string, public segments: Interval[]) {
         this.flatten();
     }
 
@@ -29,16 +28,7 @@ export default class WaveShaper {
      * 
      * @returns Decimal value of total duration in seconds
      */
-    getDuration(): number {
-        let maxLength = 0;
-        for (let segment of this.segments) {
-            const end = segment.start + segment.duration;
-            if (end > maxLength) {
-                maxLength = end;
-            }
-        }
-        return maxLength;
-    }
+    getDuration = (): number => Math.max(...this.segments.map(s => s.end));
 
     /**
      * Gets the summerized values for the current settings
@@ -50,10 +40,10 @@ export default class WaveShaper {
      */
     calculate(options: ManagerOptions, dataMap: Map<string, Float32Array>): Float32Array {
         switch (options.meterType) {
-            case 'rms':
-                return calculateRms(options, this.flattened, dataMap);
-            default:
+            case 'peak':
                 return calculatePeaks(options, this.flattened, dataMap);
+            default:
+                return calculateRms(options, this.flattened, dataMap);
         }
     }
 }

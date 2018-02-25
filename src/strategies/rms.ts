@@ -1,5 +1,6 @@
-import Interval from '../models/interval';
+//import Interval from '../models/interval';
 import { ManagerOptions } from '../config/managerconfig';
+import Interval from '../models/interval';
 
 /**
  * Calculate rms values
@@ -20,54 +21,50 @@ export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<str
     const start = options.scrollPosition * options.samplesPerPixel;
     const startSecond = start / options.samplerate;
     const secondsPerPixel = options.samplesPerPixel / options.samplerate;
+    const endSecond = startSecond + (options.width * secondsPerPixel);
 
     const peaks = new Float32Array(options.width * 4);
 
+    let currentIntervalIndex = intervals.findIndex(i => i.end > startSecond && i.start + i.offsetStart < endSecond);
+
+    // There are no intervals in this range so return empty array
+    if(currentIntervalIndex === -1)
+        return peaks;
+
+    const maxIntervalIncrementIndex = intervals.length - 1;
+
+    let currentInterval = intervals[currentIntervalIndex];
+    let buffer = dataMap.get(currentInterval.source);
+
     // For each pixel we display
     for (let i = 0; i < options.width; i++) {
-        const index = i * 4;
-        let posSum = 0;
-        let negSum = 0;
-
-        const currentSecond = startSecond + ((i * options.samplesPerPixel) / options.samplerate);
-        let interval;
-        for(let i = 0; i < intervals.length; i++) {
-            const s = intervals[i];
-            if(s.start <= currentSecond && s.end >= currentSecond) {
-                interval = s;
-                break;
-            }
-        }
-
-        if(interval == null) {
-            peaks.set([0, 0, 0, 0], index);
-            continue;
-        }
-        
-        let intervalBorder = 0;
-        if(currentSecond + secondsPerPixel > interval.end 
-            || currentSecond - secondsPerPixel < interval.start) {
-            intervalBorder = 1;
-        }
-
-        const buffer = dataMap.get(interval.source);
-        if(buffer == null) {
-            peaks.set([0, 0, intervalBorder, 1], index);
+        const currentSecond = startSecond + (i * secondsPerPixel);
+        if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
             continue;
         }
 
-        const offsetStart = interval.start - interval.originalStart;
-        const secondsIntoInterval = currentSecond - interval.start;
-        const startSample = Math.floor(((secondsIntoInterval + offsetStart) * options.samplerate));
+        const startBorder = currentSecond - secondsPerPixel <= currentInterval.start + currentInterval.offsetStart;
+        const endBorder = currentSecond + secondsPerPixel >= currentInterval.end;
+        const intervalBorder = startBorder || endBorder ? 1 : 0;
+
+        if (buffer == null) {
+            peaks.set([0, 0, intervalBorder, 1], (i * 4));
+            continue;
+        }
+
+        const secondsIntoInterval = currentSecond - currentInterval.start;
+        const startSample = Math.floor(secondsIntoInterval * options.samplerate);
+
+        const endSample = startSample + options.samplesPerPixel;
         const length = buffer.length;
-        const loopEnd = startSample + options.samplesPerPixel;
-        const end = length < loopEnd ? length : loopEnd;
+        const loopEnd = length < endSample ? length : endSample;
 
         // Cycle through the data-points relevant to the pixel
         // Don't cycle through more than sampleSize frames per pixel.
-        for (let j = startSample; j < end; j += sampleSize) {
+        let posSum = 0, negSum = 0, count = 0;
+        for (let j = startSample; j < loopEnd; j += sampleSize) {
             const val = buffer[j];
-
+            count++;
             // Keep track of positive and negative values separately
             if (val > 0) {
                 posSum += val * val;
@@ -76,12 +73,19 @@ export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<str
             }
         }
 
-        const samples = Math.min(options.samplesPerPixel / 2, Math.round(options.resolution / 2));
+        const min = -Math.sqrt(negSum / count);
+        const max = Math.sqrt(posSum / count);
 
-        const min = -Math.sqrt(negSum / samples);
-        const max = Math.sqrt(posSum / samples);
+        peaks.set([min, max, intervalBorder, 1], (i * 4));
 
-        peaks.set([min, max, intervalBorder, 1], index);
+        if(currentSecond + secondsPerPixel >= currentInterval.end) {
+            if(currentIntervalIndex === maxIntervalIncrementIndex) {
+                return peaks;
+            } else {
+                currentInterval = intervals[++currentIntervalIndex];
+                buffer = dataMap.get(currentInterval.source);
+            }
+        }
     }
     return peaks;
 }

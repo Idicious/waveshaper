@@ -1,6 +1,6 @@
 import WaveShapeManager from '../core/manager';
 import { ManagerOptions } from '../config/managerconfig';
-import Segment from '../models/segment';
+import Interval from '../models/interval';
 
 /**
  * Adds drag functionality to waveshaper
@@ -24,21 +24,23 @@ export default (manager: WaveShapeManager, hammer: HammerManager) => {
         if(wave == null) return;
 
         const bb = ev.target.getBoundingClientRect();
-        const time = (options.scrollPosition + (ev.center.x - bb.left)) * options.samplesPerPixel / options.samplerate;
+        const time = (options.scrollPosition + (ev.center.x - bb.left)) * (options.samplesPerPixel / options.samplerate);
 
-        const interval = wave.flattened.find(i => i.start <= time && i.end >= time);
+        const interval = wave.flattened.find(i => i.start + i.offsetStart <= time && i.end >= time);
         if(interval == null) return;
 
         const segment = wave.segments.find(s => s.id === interval.id);
         if(segment == null) return;
 
-        const cutTime = time - segment.start;
+        const segmentSplitTime = time - segment.start;
 
-        const newSegment: Segment = { ...segment }
-        newSegment.offsetStart = cutTime;
-        newSegment.id = options.generateId();
+        const newSegment: Interval = { 
+            ...segment, 
+            offsetStart: segmentSplitTime,
+            id: options.generateId() 
+        };
 
-        segment.offsetEnd = segment.duration - cutTime;
+        segment.end = segmentSplitTime;
         wave.segments.push(newSegment);
         
         manager.flatten(wave.id);

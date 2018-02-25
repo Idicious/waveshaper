@@ -1,5 +1,5 @@
 import WaveShaper from './waveshaper';
-import Segment from '../models/segment';
+import Interval from '../models/interval';
 import defaultOptions, { ManagerOptions, ManagerInput } from '../config/managerconfig';
 
 export declare type WaveShaperCallback = (options: ManagerOptions, data: Float32Array) => void;
@@ -156,7 +156,7 @@ export default class WaveShapeManager {
      * 
      * @memberof WaveShapeManager
      */
-    setTracks(...tracks: {id: string, segments: Segment[]}[]): WaveShapeManager {
+    setTracks(...tracks: {id: string, segments: Interval[]}[]): WaveShapeManager {
         tracks.forEach(track => {
             const foundWave = this.getTrack(track.id);
             if(foundWave == null) {
