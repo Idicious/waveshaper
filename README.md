@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/Idicious/waveshaper.svg?branch=master)](https://travis-ci.org/Idicious/waveshaper)
+[![Coverage Status](https://coveralls.io/repos/github/Idicious/waveshaper/badge.svg?branch=master)](https://coveralls.io/github/Idicious/waveshaper?branch=master)
 
 # WaveShaper
 Waveform drawing and interaction library. The library offers high performance drawing of audio files to multiple canvasses while providing the following functionality:

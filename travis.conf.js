@@ -2,6 +2,7 @@
 // Generated on Mon Feb 19 2018 09:16:45 GMT+0100 (W. Europe Standard Time)
 
 var path = require('path');
+var token = require('./build.json').coveralls;
 
 module.exports = function (config) {
   config.set({
@@ -50,7 +51,16 @@ module.exports = function (config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['progress', 'coverage', 'coveralls'],
+
+    coverageReporter: {
+      type: 'lcovonly', // lcov or lcovonly are required for generating lcov.info files
+      dir: 'coverage/'
+    },
+
+    coverallsReporter: {
+      repoToken: token
+    },
 
     // web server port
     port: 9876,
