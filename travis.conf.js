@@ -15,7 +15,7 @@ module.exports = function (config) {
     frameworks: ['jasmine', 'karma-typescript'],
 
     karmaTypescriptConfig: {
-      tsconfig: './tsconfig.json',
+      tsconfig: './tsconfig.test.json',
       reports: {
         html: {
           combineBrowserReports: true

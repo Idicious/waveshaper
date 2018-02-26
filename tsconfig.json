@@ -1,7 +1,6 @@
 {
-  "exclude": [
-    "node_modules",
-    //"spec/**/*.spec.ts",
+  "include": [
+    "src"
   ],
   "compilerOptions": {
     "sourceMap": true,

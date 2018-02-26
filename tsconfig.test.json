@@ -1,0 +1,25 @@
+{
+    "include": [
+      "dist",
+      "spec"
+    ],
+    "compilerOptions": {
+      "sourceMap": true,
+      "module": "commonjs",
+      "target": "es5",
+      "allowJs": false,
+      "allowUnreachableCode": false,
+      "lib": ["es5", "es6", "dom"],
+      "forceConsistentCasingInFileNames": true,
+      "noImplicitReturns": true,
+      "noImplicitThis": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "suppressImplicitAnyIndexErrors": false,
+      "noUnusedLocals": true,
+      "declaration": true,
+      "declarationDir": "./typings",
+      "alwaysStrict": false,
+      "noImplicitUseStrict": true
+    }
+  }

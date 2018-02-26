@@ -40,7 +40,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager) => {
             id: options.generateId() 
         };
 
-        segment.end = segmentSplitTime;
+        segment.end = time;
         wave.segments.push(newSegment);
         
         manager.flatten(wave.id);

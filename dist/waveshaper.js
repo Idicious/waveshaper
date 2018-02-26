@@ -7,7 +7,7 @@
 		exports["WaveShaper"] = factory(require("hammerjs"));
 	else
 		root["WaveShaper"] = factory(root["Hammer"]);
-})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_3__) {
+})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_6__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -87,7 +87,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var waveshaper_1 = __webpack_require__(1);
-var managerconfig_1 = __webpack_require__(2);
+var managerconfig_1 = __webpack_require__(5);
 /**
  *
  *
@@ -402,9 +402,9 @@ exports.default = WaveShapeManager;
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var peak_1 = __webpack_require__(5);
-var rms_1 = __webpack_require__(6);
-var flatten_1 = __webpack_require__(7);
+var peak_1 = __webpack_require__(2);
+var rms_1 = __webpack_require__(3);
+var flatten_1 = __webpack_require__(4);
 var WaveShaper = /** @class */ (function () {
     function WaveShaper(id, segments) {
         var _this = this;
@@ -444,48 +444,6 @@ exports.default = WaveShaper;
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports) {
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var defaultOptions = {
-    scrollPosition: 0,
-    samplesPerPixel: 1024,
-    resolution: 10,
-    meterType: 'rms',
-    mode: 'pan',
-    width: 300,
-    height: 150,
-    generateId: function () { return Math.random.toString(); },
-    samplerate: 44100
-};
-exports.default = defaultOptions;
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var manager_1 = __webpack_require__(0);
-exports.WaveShapeManager = manager_1.default;
-var waveshaper_1 = __webpack_require__(1);
-exports.WaveShaper = waveshaper_1.default;
-var dom_1 = __webpack_require__(8);
-exports.addInteraction = dom_1.addInteraction;
-exports.DomRenderWaveShapeManager = dom_1.DomRenderWaveShapeManager;
-var managerconfig_1 = __webpack_require__(2);
-exports.defaultConfig = managerconfig_1.default;
-exports.default = manager_1.default;
-
-
-/***/ }),
-/* 5 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -561,7 +519,7 @@ exports.default = (function (options, intervals, dataMap) {
 
 
 /***/ }),
-/* 6 */
+/* 3 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -612,9 +570,10 @@ exports.default = (function (options, intervals, dataMap) {
         var loopEnd = length_1 < endSample ? length_1 : endSample;
         // Cycle through the data-points relevant to the pixel
         // Don't cycle through more than sampleSize frames per pixel.
-        var posSum = 0, negSum = 0;
+        var posSum = 0, negSum = 0, count = 0;
         for (var j = startSample; j < loopEnd; j += sampleSize) {
             var val = buffer[j];
+            count++;
             // Keep track of positive and negative values separately
             if (val > 0) {
                 posSum += val * val;
@@ -623,9 +582,8 @@ exports.default = (function (options, intervals, dataMap) {
                 negSum += val * val;
             }
         }
-        var samples = Math.min(options.samplesPerPixel / 2, Math.round(options.resolution / 2));
-        var min = -Math.sqrt(negSum / samples);
-        var max = Math.sqrt(posSum / samples);
+        var min = -Math.sqrt(negSum / count);
+        var max = Math.sqrt(posSum / count);
         peaks.set([min, max, intervalBorder, 1], (i * 4));
         if (currentSecond + secondsPerPixel >= currentInterval.end) {
             if (currentIntervalIndex === maxIntervalIncrementIndex) {
@@ -642,7 +600,7 @@ exports.default = (function (options, intervals, dataMap) {
 
 
 /***/ }),
-/* 7 */
+/* 4 */
 /***/ (function(module, exports) {
 
 var __assign = (this && this.__assign) || Object.assign || function(t) {
@@ -855,6 +813,54 @@ var cmp = function (a, b) {
 
 
 /***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var defaultOptions = {
+    scrollPosition: 0,
+    samplesPerPixel: 1024,
+    resolution: 10,
+    meterType: 'rms',
+    mode: 'pan',
+    width: 300,
+    height: 150,
+    generateId: function () { return Math.random.toString(); },
+    samplerate: 44100
+};
+exports.default = defaultOptions;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_6__;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var manager_1 = __webpack_require__(0);
+exports.WaveShapeManager = manager_1.default;
+var waveshaper_1 = __webpack_require__(1);
+exports.WaveShaper = waveshaper_1.default;
+var dom_1 = __webpack_require__(8);
+exports.addInteraction = dom_1.addInteraction;
+exports.DomRenderWaveShapeManager = dom_1.DomRenderWaveShapeManager;
+var managerconfig_1 = __webpack_require__(5);
+exports.defaultConfig = managerconfig_1.default;
+var rms_1 = __webpack_require__(3);
+exports.rms = rms_1.default;
+var peak_1 = __webpack_require__(2);
+exports.peak = peak_1.default;
+var flatten_1 = __webpack_require__(4);
+exports.flatten = flatten_1.default;
+exports.default = manager_1.default;
+
+
+/***/ }),
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -870,7 +876,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var manager_1 = __webpack_require__(0);
-var Hammer = __webpack_require__(3);
+var Hammer = __webpack_require__(6);
 var hammerconfig_1 = __webpack_require__(9);
 var cut_1 = __webpack_require__(10);
 var drag_1 = __webpack_require__(11);
@@ -965,7 +971,7 @@ exports.DomRenderWaveShapeManager = DomRenderWaveShapeManager;
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Hammer = __webpack_require__(3);
+var Hammer = __webpack_require__(6);
 var hammerOptions = {
     touchAction: 'pan-y',
     recognizers: [
@@ -1009,7 +1015,7 @@ exports.default = (function (manager, hammer) {
         if (wave == null)
             return;
         var bb = ev.target.getBoundingClientRect();
-        var time = (options.scrollPosition + (ev.center.x - bb.left)) * options.samplesPerPixel / options.samplerate;
+        var time = (options.scrollPosition + (ev.center.x - bb.left)) * (options.samplesPerPixel / options.samplerate);
         var interval = wave.flattened.find(function (i) { return i.start + i.offsetStart <= time && i.end >= time; });
         if (interval == null)
             return;
@@ -1018,7 +1024,7 @@ exports.default = (function (manager, hammer) {
             return;
         var segmentSplitTime = time - segment.start;
         var newSegment = __assign({}, segment, { offsetStart: segmentSplitTime, id: options.generateId() });
-        segment.end = segmentSplitTime;
+        segment.end = time;
         wave.segments.push(newSegment);
         manager.flatten(wave.id);
         manager.process(wave.id);
