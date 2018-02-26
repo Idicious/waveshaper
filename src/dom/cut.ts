@@ -32,11 +32,9 @@ export default (manager: WaveShapeManager, hammer: HammerManager) => {
         const segment = wave.segments.find(s => s.id === interval.id);
         if(segment == null) return;
 
-        const segmentSplitTime = time - segment.start;
-
         const newSegment: Interval = { 
             ...segment, 
-            offsetStart: segmentSplitTime,
+            offsetStart: time - segment.start,
             id: options.generateId() 
         };
 

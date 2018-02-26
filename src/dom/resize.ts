@@ -53,7 +53,7 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
             return;
 
         resizeState.activeSegmentSide = 
-            time < interval.start + interval.offsetStart + ((interval.end - interval.start + interval.offsetStart) / 2) ? 
+            time < interval.start + interval.offsetStart + ((interval.end - (interval.start + interval.offsetStart)) / 2) ? 
                 'left' : 
                 'right';
 
@@ -91,7 +91,7 @@ export default function(manager: WaveShapeManager, hammer: HammerManager) {
 
         const active = resizeState.activeSegment;
         const newDuration = resizeState.activeSegmentSide === 'left' ?
-            active.end - newTime :
+            active.end - active.start - newTime :
             newTime - active.start - active.offsetStart;
 
         // Do not allow resizing 
