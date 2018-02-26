@@ -57,6 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
-# tokens
-build.json
+# IDE files
+.vscode
 
