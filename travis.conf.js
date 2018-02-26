@@ -2,7 +2,6 @@
 // Generated on Mon Feb 19 2018 09:16:45 GMT+0100 (W. Europe Standard Time)
 
 var path = require('path');
-var token = require('./build.json').coveralls;
 
 module.exports = function (config) {
   config.set({
