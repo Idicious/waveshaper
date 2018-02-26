@@ -1022,8 +1022,7 @@ exports.default = (function (manager, hammer) {
         var segment = wave.segments.find(function (s) { return s.id === interval.id; });
         if (segment == null)
             return;
-        var segmentSplitTime = time - segment.start;
-        var newSegment = __assign({}, segment, { offsetStart: segmentSplitTime, id: options.generateId() });
+        var newSegment = __assign({}, segment, { offsetStart: time - segment.start, id: options.generateId() });
         segment.end = time;
         wave.segments.push(newSegment);
         manager.flatten(wave.id);
@@ -1318,7 +1317,7 @@ function default_1(manager, hammer) {
         if (interval == null)
             return;
         resizeState.activeSegmentSide =
-            time < interval.start + interval.offsetStart + ((interval.end - interval.start + interval.offsetStart) / 2) ?
+            time < interval.start + interval.offsetStart + ((interval.end - (interval.start + interval.offsetStart)) / 2) ?
                 'left' :
                 'right';
         var segment = wave.segments.find(function (s) { return s.id === interval.id; });
@@ -1347,7 +1346,7 @@ function default_1(manager, hammer) {
         }
         var active = resizeState.activeSegment;
         var newDuration = resizeState.activeSegmentSide === 'left' ?
-            active.end - newTime :
+            active.end - active.start - newTime :
             newTime - active.start - active.offsetStart;
         // Do not allow resizing 
         if (newDuration <= 2) {

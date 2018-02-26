@@ -51,15 +51,11 @@ module.exports = function (config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress', 'coverage', 'coveralls'],
+    reporters: ['progress', 'coverage'],
 
     coverageReporter: {
       type: 'lcovonly', // lcov or lcovonly are required for generating lcov.info files
       dir: 'coverage/'
-    },
-
-    coverallsReporter: {
-      repoToken: token
     },
 
     // web server port
