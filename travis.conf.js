@@ -43,7 +43,9 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "**/*.ts": ['karma-typescript'],
+      'src/**/*.ts': ['karma-typescript', 'coverage'],
+      'spec/**/!(*.ts)': ['karma-typescript', 'coverage'],  //<-- Ignore spec for coverage
+      'spec/**/*.ts': ['karma-typescript']
     },
 
 
@@ -53,8 +55,12 @@ module.exports = function (config) {
     reporters: ['progress', 'coverage', 'coveralls'],
 
     coverageReporter: {
-      type: 'lcovonly', // lcov or lcovonly are required for generating lcov.info files
+      type: 'lcov', // lcov or lcovonly are required for generating lcov.info files
       dir: 'coverage/'
+    },
+
+    coveragePreprocessor: {
+        exclude: [ "spec" ]
     },
 
     // web server port

@@ -38,7 +38,6 @@ export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<str
     
     // For each pixel we display
     for (let i = 0; i < options.width; i++) {
-
         const currentSecond = startSecond + (i * secondsPerPixel);
         if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
             continue;
