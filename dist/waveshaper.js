@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define(["hammerjs"], factory);
 	else if(typeof exports === 'object')
-		exports["WaveShaper"] = factory(require("hammerjs"));
+		exports["WS"] = factory(require("hammerjs"));
 	else
-		root["WaveShaper"] = factory(root["Hammer"]);
+		root["WS"] = factory(root["Hammer"]);
 })(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_6__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -86,39 +86,39 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var waveshaper_1 = __webpack_require__(1);
+var track_1 = __webpack_require__(1);
 var managerconfig_1 = __webpack_require__(5);
 /**
  *
  *
  * @export
  */
-var WaveShapeManager = /** @class */ (function () {
+var WaveShaper = /** @class */ (function () {
     /**
      * @param [options=defaultOptions] Initial options
      * @throws Throws an error if samplerate is null or NaN
      */
-    function WaveShapeManager(options) {
+    function WaveShaper(options) {
         if (options === void 0) { options = managerconfig_1.default; }
         /**
          * Map of waveshapers managed by the manager
          *
          * @readonly
-         * @memberof WaveShapeManager
+         * @memberof WaveShaper
          */
-        this.waveShapers = new Map();
+        this.tracks = new Map();
         /**
          * Map of audio data
          *
          * @readonly
-         * @memberof WaveShapeManager
+         * @memberof WaveShaper
          */
         this.audioData = new Map();
         /**
          * @description Map of callback functions
          *
          * @readonly
-         * @memberof WaveShapeManager
+         * @memberof WaveShaper
          */
         this.callbackMap = new Map();
         if (!this.optionsValid(options)) {
@@ -126,175 +126,46 @@ var WaveShapeManager = /** @class */ (function () {
         }
         this._options = __assign({}, managerconfig_1.default, options);
     }
-    Object.defineProperty(WaveShapeManager.prototype, "options", {
+    Object.defineProperty(WaveShaper.prototype, "options", {
         /**
          * @description Currect settings
          *
          * @readonly
-         * @memberof WaveShapeManager
+         * @memberof WaveShaper
          */
         get: function () { return __assign({}, this._options); },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(WaveShapeManager.prototype, "lastProcessResult", {
+    Object.defineProperty(WaveShaper.prototype, "lastProcessResult", {
         /**
          * @description Last result of calling process, argument given to all callbacks
          *
          * @readonly
-         * @memberof WaveShapeManager
+         * @memberof WaveShaper
          */
         get: function () { return this._lastProcessResult; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(WaveShapeManager.prototype, "duration", {
+    Object.defineProperty(WaveShaper.prototype, "duration", {
         /**
          * @description Total duration of all tracks
          *
          * @readonly
-         * @memberof WaveShapeManager
+         * @memberof WaveShaper
          */
         get: function () { return this._duration; },
         enumerable: true,
         configurable: true
     });
     /**
-     * @description Merges the given options into the current and returns updated options
-     *
-     * @param options A (partial) ManagerOptions object
-     * @returns A copy of the updated options
-     */
-    WaveShapeManager.prototype.set = function (options) {
-        if (!this.optionsValid(options)) {
-            throw new Error("Invalid options given: " + JSON.stringify(options));
-        }
-        this._options = __assign({}, this.options, options);
-        return this;
-    };
-    /**
-     * Registers a callback that fires when the track with given id is processed
-     *
-     * @param id id of Track to register to
-     * @param callBack will be invoked when the given track is processed
-     */
-    WaveShapeManager.prototype.on = function (id, callBack) {
-        var callbackArray = this.callbackMap.get(id);
-        if (callbackArray == null) {
-            this.callbackMap.set(id, [callBack]);
-        }
-        else {
-            callbackArray.push(callBack);
-        }
-        return this;
-    };
-    /**
-     * Unregisters a callback from the given track, will no longer be called
-     *
-     * @param id id of Track to unregister from
-     * @param callBack callback to remove
-     */
-    WaveShapeManager.prototype.off = function (id, callBack) {
-        var callbackArray = this.callbackMap.get(id);
-        if (callbackArray == null)
-            return this;
-        var index = callbackArray.indexOf(callBack);
-        if (index < 0)
-            return this;
-        callbackArray = callbackArray.splice(index, 1);
-        return this;
-    };
-    /**
-     * The given id's are set as the active waveshapers, process only processes these when set,
-     * call with no values to allways process all values (default)
-     *
-     * @param ids Waveshaper id's to set as active
-     */
-    WaveShapeManager.prototype.setActive = function () {
-        var ids = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            ids[_i] = arguments[_i];
-        }
-        this.activeWaveShapers = ids;
-        return this;
-    };
-    /**
-     * @description Adds a waveshaper to the manager
-     *
-     * @param id id of WaveShaper
-     * @param segments Segments in wave
-     * @param color Background color of segments
-     *
-     * @memberof WaveShapeManager
-     */
-    WaveShapeManager.prototype.setTracks = function () {
-        var _this = this;
-        var tracks = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            tracks[_i] = arguments[_i];
-        }
-        tracks.forEach(function (track) {
-            var foundWave = _this.getTrack(track.id);
-            if (foundWave == null) {
-                var wave = new waveshaper_1.default(track.id, track.segments);
-                _this.waveShapers.set(track.id, wave);
-            }
-            else {
-                foundWave.segments = track.segments;
-                foundWave.flatten();
-            }
-        });
-        this._duration = this.getDuration();
-        return this;
-    };
-    /**
-     * @description Removes the waves and all callbacks with given id from the manager
-     *
-     * @param id
-     *
-     * @memberof WaveShapeManager
-     */
-    WaveShapeManager.prototype.removeTracks = function () {
-        var _this = this;
-        var ids = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            ids[_i] = arguments[_i];
-        }
-        ids.forEach(function (id) {
-            _this.removeCallbacksById(id);
-            _this.waveShapers.delete(id);
-        });
-        return this;
-    };
-    WaveShapeManager.prototype.getTrack = function (id) {
-        return this.waveShapers.get(id);
-    };
-    /**
-     * @description Adds audio data to the waveshaper and redraws waveshapers using it
-     *
-     * @param id  Data id, refered to by source parameter of segments
-     * @param data AudioBuffer with audio data
-     *
-     * @memberof WaveShapeManager
-     */
-    WaveShapeManager.prototype.addData = function () {
-        var _this = this;
-        var data = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            data[_i] = arguments[_i];
-        }
-        data.forEach(function (d) {
-            _this.audioData.set(d.id, d.data.getChannelData(0));
-        });
-        return this;
-    };
-    /**
      * @description Flattens the segments of the given waveshaper id
      *
      * @param id
-     * @memberof WaveShapeManager
+     * @returns WaveShaper instance
      */
-    WaveShapeManager.prototype.flatten = function () {
+    WaveShaper.prototype.flatten = function () {
         var _this = this;
         var ids = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -313,9 +184,9 @@ var WaveShapeManager = /** @class */ (function () {
      * @param ids Options array of id's to draw
      * @param forceDraw Force redraw of the given waves
      *
-     * @memberof WaveShapeManager
+     * @returns WaveShaper instance
      */
-    WaveShapeManager.prototype.process = function () {
+    WaveShaper.prototype.process = function () {
         var ids = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             ids[_i] = arguments[_i];
@@ -329,14 +200,161 @@ var WaveShapeManager = /** @class */ (function () {
             if (wave == null)
                 continue;
             var peaks = wave.calculate(options, this.audioData);
-            data.push({ id: id, peaks: peaks });
+            data.push({ id: id, data: peaks });
         }
         // Invoke callbacks after returning value.
         this._lastProcessResult = { options: options, data: data };
         this.invokeCallbacks(this._lastProcessResult);
         return this;
     };
-    WaveShapeManager.prototype.optionsValid = function (options) {
+    /**
+     * Registers a callback that fires when the track with given id is processed
+     *
+     * @param id id of Track to register to
+     * @param callBack will be invoked when the given track is processed
+     *
+     * @returns WaveShaper instance
+     */
+    WaveShaper.prototype.on = function (id, callBack) {
+        var callbackArray = this.callbackMap.get(id);
+        if (callbackArray == null) {
+            this.callbackMap.set(id, [callBack]);
+        }
+        else {
+            callbackArray.push(callBack);
+        }
+        return this;
+    };
+    /**
+     * Unregisters a callback from the given track, will no longer be called
+     *
+     * @param id id of Track to unregister from
+     * @param callBack callback to remove
+     *
+     * @returns WaveShaper instance
+     */
+    WaveShaper.prototype.off = function (id, callBack) {
+        var callbackArray = this.callbackMap.get(id);
+        if (callbackArray == null)
+            return this;
+        var index = callbackArray.indexOf(callBack);
+        if (index < 0)
+            return this;
+        callbackArray = callbackArray.splice(index, 1);
+        return this;
+    };
+    /**
+     * @description Merges the given options into the current and returns updated options
+     *
+     * @param options A (partial) ManagerOptions object
+     * @returns WaveShaper instance
+     */
+    WaveShaper.prototype.setOptions = function (options) {
+        if (!this.optionsValid(options)) {
+            throw new Error("Invalid options given: " + JSON.stringify(options));
+        }
+        this._options = __assign({}, this.options, options);
+        return this;
+    };
+    /**
+     * @description Adds a waveshaper to the manager
+     *
+     * @param id id of WaveShaper
+     * @param segments Segments in wave
+     * @param color Background color of segments
+     *
+     * @returns WaveShaper instance
+     */
+    WaveShaper.prototype.setTracks = function () {
+        var _this = this;
+        var tracks = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            tracks[_i] = arguments[_i];
+        }
+        tracks.forEach(function (track) {
+            var foundWave = _this.getTrack(track.id);
+            if (foundWave == null) {
+                var wave = new track_1.default(track.id, track.intervals);
+                _this.tracks.set(track.id, wave);
+            }
+            else {
+                foundWave.intervals = track.intervals;
+                foundWave.flatten();
+            }
+        });
+        this._duration = this.getDuration();
+        return this;
+    };
+    /**
+     * @description Adds audio data to the waveshaper and redraws waveshapers using it
+     *
+     * @param id  Data id, refered to by source parameter of segments
+     * @param data AudioBuffer with audio data
+     *
+     * @returns WaveShaper instance
+     */
+    WaveShaper.prototype.setData = function () {
+        var _this = this;
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
+        data.forEach(function (d) {
+            _this.audioData.set(d.id, d.data);
+        });
+        return this;
+    };
+    /**
+     * @description The given id's are set as the active waveshapers, process only processes these when set,
+     * call with no values to allways process all values (default)
+     *
+     * @param ids Waveshaper id's to set as active
+     *
+     * @returns WaveShaper instance
+     */
+    WaveShaper.prototype.setActive = function () {
+        var ids = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            ids[_i] = arguments[_i];
+        }
+        this.activeWaveShapers = ids;
+        return this;
+    };
+    /**
+     * @description Removes the waves and all callbacks with given id from the manager
+     *
+     * @param id
+     *
+     * @returns WaveShaper instance
+     */
+    WaveShaper.prototype.clearTracks = function () {
+        var _this = this;
+        var ids = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            ids[_i] = arguments[_i];
+        }
+        ids.forEach(function (id) {
+            _this.removeCallbacksById(id);
+            _this.tracks.delete(id);
+        });
+        return this;
+    };
+    /**
+     * @description Gets Track with given id
+     *
+     * @param id
+     * @returns Track with given ID
+     */
+    WaveShaper.prototype.getTrack = function (id) {
+        return this.tracks.get(id);
+    };
+    /**
+     * Validates given options
+     *
+     * @param options
+     * @returns true if valid, false if not
+     */
+    WaveShaper.prototype.optionsValid = function (options) {
         return (options.samplesPerPixel === undefined || options.samplesPerPixel > 0) &&
             (options.meterType === undefined || options.meterType) &&
             (options.resolution === undefined || options.resolution > 0) &&
@@ -350,7 +368,7 @@ var WaveShapeManager = /** @class */ (function () {
      * @param options
      * @param data
      */
-    WaveShapeManager.prototype.invokeCallbacks = function (result) {
+    WaveShaper.prototype.invokeCallbacks = function (result) {
         for (var i = 0; i < result.data.length; i++) {
             var trackResult = result.data[i];
             var callbacks = this.callbackMap.get(trackResult.id);
@@ -358,11 +376,11 @@ var WaveShapeManager = /** @class */ (function () {
                 continue;
             for (var j = 0; j < callbacks.length; j++) {
                 var callback = callbacks[j];
-                callback(result.options, new Float32Array(trackResult.peaks));
+                callback(result.options, new Float32Array(trackResult.data));
             }
         }
     };
-    WaveShapeManager.prototype.getProcessIds = function () {
+    WaveShaper.prototype.getProcessIds = function () {
         var ids = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             ids[_i] = arguments[_i];
@@ -371,9 +389,9 @@ var WaveShapeManager = /** @class */ (function () {
             return ids;
         if (this.activeWaveShapers && this.activeWaveShapers.length > 0)
             return this.activeWaveShapers;
-        return Array.from(this.waveShapers.keys());
+        return Array.from(this.tracks.keys());
     };
-    WaveShapeManager.prototype.removeCallbacksById = function (id) {
+    WaveShaper.prototype.removeCallbacksById = function (id) {
         var callbackArray = this.callbackMap.get(id);
         if (callbackArray == null)
             return;
@@ -384,17 +402,17 @@ var WaveShapeManager = /** @class */ (function () {
      * @description Returns the maximum duration of all the waveshapers managed by this class
      *
      * @returns Maximum duration in seconds
-     * @memberof WaveShapeManager
+     * @memberof WaveShaper
      */
-    WaveShapeManager.prototype.getDuration = function () {
-        return Array.from(this.waveShapers.values()).reduce(function (maxDuration, waveShaper) {
+    WaveShaper.prototype.getDuration = function () {
+        return Array.from(this.tracks.values()).reduce(function (maxDuration, waveShaper) {
             var duration = waveShaper.getDuration();
             return duration > maxDuration ? duration : maxDuration;
         }, 0);
     };
-    return WaveShapeManager;
+    return WaveShaper;
 }());
-exports.default = WaveShapeManager;
+exports.default = WaveShaper;
 
 
 /***/ }),
@@ -405,21 +423,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var peak_1 = __webpack_require__(2);
 var rms_1 = __webpack_require__(3);
 var flatten_1 = __webpack_require__(4);
-var WaveShaper = /** @class */ (function () {
-    function WaveShaper(id, segments) {
+var Track = /** @class */ (function () {
+    function Track(id, intervals) {
         var _this = this;
         this.id = id;
-        this.segments = segments;
+        this.intervals = intervals;
         /**
          * Gets the duration of the audio in seconds
          *
          * @returns Decimal value of total duration in seconds
          */
-        this.getDuration = function () { return Math.max.apply(Math, _this.segments.map(function (s) { return s.end; })); };
-        this.flatten();
+        this.getDuration = function () { return Math.max.apply(Math, _this.intervals.map(function (s) { return s.end; })); };
+        this.flattened = flatten_1.default(this.intervals);
     }
-    WaveShaper.prototype.flatten = function () {
-        this.flattened = flatten_1.default(this.segments);
+    Track.prototype.flatten = function () {
+        this.flattened = flatten_1.default(this.intervals);
     };
     /**
      * Gets the summerized values for the current settings
@@ -429,7 +447,7 @@ var WaveShaper = /** @class */ (function () {
      * @returns Two dimensional array, one entry for each pixel, for each pixel a min
      * and a max value.
      */
-    WaveShaper.prototype.calculate = function (options, dataMap) {
+    Track.prototype.calculate = function (options, dataMap) {
         switch (options.meterType) {
             case 'peak':
                 return peak_1.default(options, this.flattened, dataMap);
@@ -437,9 +455,9 @@ var WaveShaper = /** @class */ (function () {
                 return rms_1.default(options, this.flattened, dataMap);
         }
     };
-    return WaveShaper;
+    return Track;
 }());
-exports.default = WaveShaper;
+exports.default = Track;
 
 
 /***/ }),
@@ -477,11 +495,20 @@ exports.default = (function (options, intervals, dataMap) {
     // For each pixel we display
     for (var i = 0; i < options.width; i++) {
         var currentSecond = startSecond + (i * secondsPerPixel);
+        if (currentSecond >= currentInterval.end) {
+            if (currentIntervalIndex === maxIntervalIncrementIndex) {
+                return peaks;
+            }
+            else {
+                currentInterval = intervals[++currentIntervalIndex];
+                buffer = dataMap.get(currentInterval.source);
+            }
+        }
         if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
             continue;
         }
-        var startBorder = currentSecond - secondsPerPixel <= currentInterval.start + currentInterval.offsetStart;
-        var endBorder = currentSecond + secondsPerPixel >= currentInterval.end;
+        var startBorder = currentSecond - secondsPerPixel < currentInterval.start + currentInterval.offsetStart;
+        var endBorder = currentSecond + secondsPerPixel > currentInterval.end;
         var intervalBorder = startBorder || endBorder ? 1 : 0;
         if (buffer == null) {
             peaks.set([0, 0, intervalBorder, 1], (i * 4));
@@ -504,15 +531,6 @@ exports.default = (function (options, intervals, dataMap) {
                 min = sample;
         }
         peaks.set([min, max, intervalBorder, 1], (i * 4));
-        if (currentSecond + secondsPerPixel >= currentInterval.end) {
-            if (currentIntervalIndex === maxIntervalIncrementIndex) {
-                return peaks;
-            }
-            else {
-                currentInterval = intervals[++currentIntervalIndex];
-                buffer = dataMap.get(currentInterval.source);
-            }
-        }
     }
     return peaks;
 });
@@ -553,11 +571,20 @@ exports.default = (function (options, intervals, dataMap) {
     // For each pixel we display
     for (var i = 0; i < options.width; i++) {
         var currentSecond = startSecond + (i * secondsPerPixel);
+        if (currentSecond >= currentInterval.end) {
+            if (currentIntervalIndex === maxIntervalIncrementIndex) {
+                return peaks;
+            }
+            else {
+                currentInterval = intervals[++currentIntervalIndex];
+                buffer = dataMap.get(currentInterval.source);
+            }
+        }
         if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
             continue;
         }
-        var startBorder = currentSecond - secondsPerPixel <= currentInterval.start + currentInterval.offsetStart;
-        var endBorder = currentSecond + secondsPerPixel >= currentInterval.end;
+        var startBorder = currentSecond - secondsPerPixel < currentInterval.start + currentInterval.offsetStart;
+        var endBorder = currentSecond + secondsPerPixel > currentInterval.end;
         var intervalBorder = startBorder || endBorder ? 1 : 0;
         if (buffer == null) {
             peaks.set([0, 0, intervalBorder, 1], (i * 4));
@@ -571,9 +598,8 @@ exports.default = (function (options, intervals, dataMap) {
         // Cycle through the data-points relevant to the pixel
         // Don't cycle through more than sampleSize frames per pixel.
         var posSum = 0, negSum = 0, count = 0;
-        for (var j = startSample; j < loopEnd; j += sampleSize) {
+        for (var j = startSample; j < loopEnd; j += sampleSize, count++) {
             var val = buffer[j];
-            count++;
             // Keep track of positive and negative values separately
             if (val > 0) {
                 posSum += val * val;
@@ -585,15 +611,6 @@ exports.default = (function (options, intervals, dataMap) {
         var min = -Math.sqrt(negSum / count);
         var max = Math.sqrt(posSum / count);
         peaks.set([min, max, intervalBorder, 1], (i * 4));
-        if (currentSecond + secondsPerPixel >= currentInterval.end) {
-            if (currentIntervalIndex === maxIntervalIncrementIndex) {
-                return peaks;
-            }
-            else {
-                currentInterval = intervals[++currentIntervalIndex];
-                buffer = dataMap.get(currentInterval.source);
-            }
-        }
     }
     return peaks;
 });
@@ -627,9 +644,20 @@ var start = function (segment) { return segment.start + segment.offsetStart; };
 exports.default = (function (segments) {
     var sorted = sort(segments);
     var normalized = normalizeIndex(sorted);
-    var grouped = groupByIndex(normalized);
+    var copied = copy(normalized);
+    var grouped = groupByIndex(copied);
     return weightedMerge(grouped);
 });
+var copy = function (intervals) {
+    return intervals.map(function (i) { return ({
+        id: i.id,
+        start: i.start,
+        offsetStart: i.offsetStart,
+        end: i.end,
+        index: i.index,
+        source: i.source
+    }); });
+};
 /**
  * When an element is altered the index is set very high,
  * this functions normalizes to indexes back to 0
@@ -842,13 +870,12 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_6__;
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var manager_1 = __webpack_require__(0);
-exports.WaveShapeManager = manager_1.default;
-var waveshaper_1 = __webpack_require__(1);
+var waveshaper_1 = __webpack_require__(0);
 exports.WaveShaper = waveshaper_1.default;
+var track_1 = __webpack_require__(1);
+exports.Track = track_1.default;
 var dom_1 = __webpack_require__(8);
-exports.addInteraction = dom_1.addInteraction;
-exports.DomRenderWaveShapeManager = dom_1.DomRenderWaveShapeManager;
+exports.DomRenderWaveShaper = dom_1.default;
 var managerconfig_1 = __webpack_require__(5);
 exports.defaultConfig = managerconfig_1.default;
 var rms_1 = __webpack_require__(3);
@@ -857,7 +884,7 @@ var peak_1 = __webpack_require__(2);
 exports.peak = peak_1.default;
 var flatten_1 = __webpack_require__(4);
 exports.flatten = flatten_1.default;
-exports.default = manager_1.default;
+exports.default = new dom_1.default();
 
 
 /***/ }),
@@ -875,7 +902,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var manager_1 = __webpack_require__(0);
+var waveshaper_1 = __webpack_require__(0);
 var Hammer = __webpack_require__(6);
 var hammerconfig_1 = __webpack_require__(9);
 var cut_1 = __webpack_require__(10);
@@ -884,6 +911,7 @@ var pan_1 = __webpack_require__(12);
 var zoom_1 = __webpack_require__(13);
 var resize_1 = __webpack_require__(14);
 var line_1 = __webpack_require__(15);
+var noop = function () { };
 /**
  * @description Sets up touch and mouse interaction with the canvasses. When using this
  * you should use the registerCanvas method as it ensures the canvasses have the correct
@@ -892,26 +920,32 @@ var line_1 = __webpack_require__(15);
  * @param manager
  * @param container
  */
-exports.addInteraction = function (manager, elementId) {
-    var element = document.getElementById(elementId);
+var addInteraction = function (manager, element) {
     if (element == null)
         throw Error('Interaction container element could not be found.');
     var hammer = new Hammer(element, hammerconfig_1.default);
-    drag_1.default(manager, hammer, window.document.body);
+    var destroy = drag_1.default(manager, hammer, element);
     cut_1.default(manager, hammer);
     pan_1.default(manager, hammer);
     zoom_1.default(manager, hammer);
     resize_1.default(manager, hammer);
+    return function () {
+        hammer.destroy();
+        destroy();
+    };
 };
 /**
  * Extends WaveShapeManager to allow for easy canvas rendering registration.
  *
  * @inheritDoc
  */
-var DomRenderWaveShapeManager = /** @class */ (function (_super) {
-    __extends(DomRenderWaveShapeManager, _super);
-    function DomRenderWaveShapeManager() {
-        return _super !== null && _super.apply(this, arguments) || this;
+var DomRenderWaveShaper = /** @class */ (function (_super) {
+    __extends(DomRenderWaveShaper, _super);
+    function DomRenderWaveShaper() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.unregister = noop;
+        _this.canvasMap = new Map();
+        return _this;
     }
     /**
      * @description When a canvas is registered through this method each time the
@@ -923,7 +957,7 @@ var DomRenderWaveShapeManager = /** @class */ (function (_super) {
      * @param canvas Canvas to render to
      * @param color Background color of segments
      */
-    DomRenderWaveShapeManager.prototype.registerCanvas = function (id, canvas, color) {
+    DomRenderWaveShaper.prototype.registerCanvas = function (id, canvas, color) {
         var _this = this;
         var ctx = canvas.getContext('2d');
         if (ctx == null)
@@ -939,18 +973,62 @@ var DomRenderWaveShapeManager = /** @class */ (function (_super) {
         ctx.scale(scale, 1);
         var callBack = function (options, data) { return line_1.default(data, options, ctx, color); };
         this.on(id, callBack);
-        return function () { return _this.off(id, callBack); };
+        this.unregisterCanvas(id);
+        this.canvasMap.set(id, function () { return _this.off(id, callBack); });
+        return this;
     };
     /**
-     * Gets the duration of the audio as a date
+     * Clears the callbacks associated with this canvas
      *
-     * @returns Date containing audio length
-     * @memberof WaveShapeManager
+     * @param id
+     * @returns Instance of WaveShaper
      */
-    DomRenderWaveShapeManager.prototype.getDurationAsDate = function () {
-        var date = new Date(0);
-        date.setTime(this._duration * 1000);
-        return date;
+    DomRenderWaveShaper.prototype.unregisterCanvas = function (id) {
+        var unregister = this.canvasMap.get(id);
+        if (unregister != null) {
+            unregister();
+            this.canvasMap.delete(id);
+        }
+        return this;
+    };
+    /**
+     * Registers event listeners to given element which handle interaction,
+     * events are delegated so canvasses should be direct or indirect children
+     * of given element.
+     *
+     * @param element
+     * @returns Current WaveShaper instance
+     */
+    DomRenderWaveShaper.prototype.setInteraction = function (element) {
+        this.unregister();
+        this.unregister = addInteraction(this, element);
+        return this;
+    };
+    /**
+     * Removes event listeners from previously called setInteraction
+     *
+     * @returns Current WaveShaper instance
+     */
+    DomRenderWaveShaper.prototype.clearInteraction = function () {
+        this.unregister();
+        this.unregister = noop;
+        return this;
+    };
+    DomRenderWaveShaper.prototype.loadData = function (ctx) {
+        var _this = this;
+        var data = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            data[_i - 1] = arguments[_i];
+        }
+        data.forEach(function (dat) {
+            fetch(dat.url)
+                .then(function (res) { return res.arrayBuffer(); })
+                .then(function (arrayBuffer) { return ctx.decodeAudioData(arrayBuffer); })
+                .then(function (audioBuffer) {
+                _this.setData({ id: dat.id, data: audioBuffer.getChannelData(0) }).process();
+            });
+        });
+        return this;
     };
     /**
      * @description Gets the width of scrollbar needed to scroll through the entire audio file
@@ -958,12 +1036,12 @@ var DomRenderWaveShapeManager = /** @class */ (function (_super) {
      * @returns Scroll width in pixels for the entire audio file
      * @memberof WaveShapeManager
      */
-    DomRenderWaveShapeManager.prototype.getScrollWidth = function () {
+    DomRenderWaveShaper.prototype.getScrollWidth = function () {
         return (this._duration * this._options.samplerate) / this._options.samplesPerPixel;
     };
-    return DomRenderWaveShapeManager;
-}(manager_1.default));
-exports.DomRenderWaveShapeManager = DomRenderWaveShapeManager;
+    return DomRenderWaveShaper;
+}(waveshaper_1.default));
+exports.default = DomRenderWaveShaper;
 
 
 /***/ }),
@@ -1019,12 +1097,12 @@ exports.default = (function (manager, hammer) {
         var interval = wave.flattened.find(function (i) { return i.start + i.offsetStart <= time && i.end >= time; });
         if (interval == null)
             return;
-        var segment = wave.segments.find(function (s) { return s.id === interval.id; });
+        var segment = wave.intervals.find(function (s) { return s.id === interval.id; });
         if (segment == null)
             return;
         var newSegment = __assign({}, segment, { offsetStart: time - segment.start, id: options.generateId() });
         segment.end = time;
-        wave.segments.push(newSegment);
+        wave.intervals.push(newSegment);
         manager.flatten(wave.id);
         manager.process(wave.id);
     });
@@ -1053,6 +1131,7 @@ var dragState = {
  */
 exports.default = (function (manager, hammer, container) {
     var shouldHandle = function (ev, options) { return options.mode === 'drag' && ev.target.hasAttribute('data-wave-id'); };
+    var listener = function (ev) { return mouseHover(ev); };
     /**
      * Fires when the mouse moves over the container,
      * If a segment is being dragged and the pointer moves
@@ -1060,11 +1139,19 @@ exports.default = (function (manager, hammer, container) {
      * new canvas.
      */
     if (isTouchDevice()) {
-        container.addEventListener('touchmove', function (ev) { return mouseHover(ev); });
+        container.addEventListener('touchmove', listener);
     }
     else {
-        container.addEventListener('mousemove', function (ev) { return mouseHover(ev); });
+        container.addEventListener('mousemove', listener);
     }
+    var destroy = function () {
+        if (isTouchDevice()) {
+            container.removeEventListener('touchmove', listener);
+        }
+        else {
+            container.removeEventListener('mousemove', listener);
+        }
+    };
     /**
      * Sets up the drag by finding the
      */
@@ -1083,7 +1170,7 @@ exports.default = (function (manager, hammer, container) {
         var interval = wave.flattened.find(function (i) { return i.start + i.offsetStart <= time && i.end >= time; });
         if (interval == null)
             return;
-        var segment = wave.segments.find(function (s) { return s.id === interval.id; });
+        var segment = wave.intervals.find(function (s) { return s.id === interval.id; });
         if (segment == null)
             return;
         dragState.options = options;
@@ -1145,9 +1232,9 @@ exports.default = (function (manager, hammer, container) {
         if (wave == null)
             return;
         if (dragState.dragWave.id !== id) {
-            var index = dragState.dragWave.segments.indexOf(dragState.activeSegment);
-            dragState.dragWave.segments.splice(index, 1);
-            wave.segments.push(dragState.activeSegment);
+            var index = dragState.dragWave.intervals.indexOf(dragState.activeSegment);
+            dragState.dragWave.intervals.splice(index, 1);
+            wave.intervals.push(dragState.activeSegment);
             dragState.activeSegment.index = 1000;
             var currentId = dragState.dragWave.id;
             dragState.dragWave = wave;
@@ -1170,6 +1257,7 @@ exports.default = (function (manager, hammer, container) {
             || navigator.maxTouchPoints; // works on IE10/11 and Surface
     }
     ;
+    return destroy;
 });
 
 
@@ -1210,7 +1298,7 @@ function default_1(manager, hammer) {
             return;
         if (position > panState.panMax - panState.options.width)
             return;
-        manager.set({ scrollPosition: newPosition }).process();
+        manager.setOptions({ scrollPosition: newPosition }).process();
     });
     hammer.on('panend', function (ev) {
         if (panState.options == null || !shouldHandle(ev, panState.options))
@@ -1264,7 +1352,7 @@ function default_1(manager, hammer) {
         if (newSamplesInView >= maxSamplesInView)
             return;
         var newScroll = (sampleAtLeft + samplesToCenter - newSamplesToCenter) / newSpp;
-        manager.set({
+        manager.setOptions({
             samplesPerPixel: newSpp,
             scrollPosition: newScroll >= 0 ? newScroll : 0
         }).process();
@@ -1320,7 +1408,7 @@ function default_1(manager, hammer) {
             time < interval.start + interval.offsetStart + ((interval.end - (interval.start + interval.offsetStart)) / 2) ?
                 'left' :
                 'right';
-        var segment = wave.segments.find(function (s) { return s.id === interval.id; });
+        var segment = wave.intervals.find(function (s) { return s.id === interval.id; });
         if (segment == null)
             return;
         resizeState.options = options;
@@ -1420,8 +1508,8 @@ exports.default = (function (waveform, options, ctx, color) {
     ctx.closePath();
     for (var i = 0; i < width; i++) {
         var index = i * 4;
-        if (i != 0 && waveform[index - 4 + 2] === 0 && waveform[index + 2] === 1) {
-            ctx.rect(i - 1, 0, 1, options.height);
+        if (waveform[index - 4 + 2] === 0 && waveform[index + 2] === 1) {
+            ctx.rect(i, 0, 1, options.height);
         }
     }
     ctx.fill();
@@ -1429,6 +1517,6 @@ exports.default = (function (waveform, options, ctx, color) {
 
 
 /***/ })
-/******/ ]);
+/******/ ])["default"];
 });
 //# sourceMappingURL=waveshaper.js.map

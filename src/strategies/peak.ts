@@ -39,12 +39,22 @@ export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<str
     // For each pixel we display
     for (let i = 0; i < options.width; i++) {
         const currentSecond = startSecond + (i * secondsPerPixel);
+
+        if(currentSecond >= currentInterval.end) {
+            if(currentIntervalIndex === maxIntervalIncrementIndex) {
+                return peaks;
+            } else {
+                currentInterval = intervals[++currentIntervalIndex];
+                buffer = dataMap.get(currentInterval.source);
+            }
+        }
+
         if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
             continue;
         }
 
-        const startBorder = currentSecond - secondsPerPixel <= currentInterval.start + currentInterval.offsetStart;
-        const endBorder = currentSecond + secondsPerPixel >= currentInterval.end;
+        const startBorder = currentSecond - secondsPerPixel < currentInterval.start + currentInterval.offsetStart;
+        const endBorder = currentSecond + secondsPerPixel > currentInterval.end;
         const intervalBorder = startBorder || endBorder ? 1 : 0;
 
         if (buffer == null) {
@@ -71,15 +81,6 @@ export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<str
         }
 
         peaks.set([min, max, intervalBorder, 1], (i * 4));
-
-        if(currentSecond + secondsPerPixel >= currentInterval.end) {
-            if(currentIntervalIndex === maxIntervalIncrementIndex) {
-                return peaks;
-            } else {
-                currentInterval = intervals[++currentIntervalIndex];
-                buffer = dataMap.get(currentInterval.source);
-            }
-        }
     }
     return peaks;
 }

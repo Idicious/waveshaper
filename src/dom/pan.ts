@@ -1,5 +1,5 @@
 import { ManagerOptions } from '../config/managerconfig';
-import { DomRenderWaveShapeManager } from '.';
+import DomRenderWaveShaper from './index';
 
 const endMargin = 500;
 
@@ -21,7 +21,7 @@ const panState: PanState = {
  * @param manager
  * @param hammer
  */
-export default function(manager: DomRenderWaveShapeManager, hammer: HammerManager) {
+export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
 
     const shouldHandle = (ev: HammerInput, options: ManagerOptions) => options.mode === 'pan' && ev.target.hasAttribute('data-wave-id');
 
@@ -30,7 +30,7 @@ export default function(manager: DomRenderWaveShapeManager, hammer: HammerManage
         if(!shouldHandle(ev, options))
             return;
 
-        panState.panMax = manager.getScrollWidth() + endMargin;
+        panState.panMax = manager.scrollWidth + endMargin;
         panState.panStart = options.scrollPosition;
     });
 
@@ -49,7 +49,7 @@ export default function(manager: DomRenderWaveShapeManager, hammer: HammerManage
         if(position > panState.panMax - panState.options.width)
             return;
         
-        manager.set({ scrollPosition: newPosition }).process();
+        manager.setOptions({ scrollPosition: newPosition }).process();
     });
 
     hammer.on('panend', (ev) => {

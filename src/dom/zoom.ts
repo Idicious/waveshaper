@@ -1,5 +1,5 @@
 import { ManagerOptions } from '../config/managerconfig';
-import { DomRenderWaveShapeManager } from '.';
+import DomRenderWaveShaper from './';
 
 const endMargin = 500;
 
@@ -21,7 +21,7 @@ const zoomState: ZoomState = {
  * @param manager
  * @param hammer
  */
-export default function(manager: DomRenderWaveShapeManager, hammer: HammerManager) {
+export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
 
     const shouldHandle = (ev: HammerInput, options: ManagerOptions) => options.mode === 'pan' && ev.target.hasAttribute('data-wave-id');
 
@@ -31,7 +31,7 @@ export default function(manager: DomRenderWaveShapeManager, hammer: HammerManage
             return;
 
         zoomState.sppStart = options.samplesPerPixel;
-        zoomState.maxWidth = manager.getScrollWidth() + endMargin;
+        zoomState.maxWidth = manager.scrollWidth + endMargin;
     });
 
     hammer.on('pinchmove', (ev) => {
@@ -48,7 +48,7 @@ export default function(manager: DomRenderWaveShapeManager, hammer: HammerManage
         const newSamplesInView = zoomState.options.width * newSpp;
         const newSamplesToCenter = newSamplesInView / 2;
 
-        const maxWidth = manager.getScrollWidth() + endMargin;
+        const maxWidth = manager.scrollWidth + endMargin;
         const maxSamplesInView = maxWidth  * zoomState.options.samplerate;
 
         if(newSamplesInView >= maxSamplesInView)
@@ -56,7 +56,7 @@ export default function(manager: DomRenderWaveShapeManager, hammer: HammerManage
 
         const newScroll = (sampleAtLeft + samplesToCenter - newSamplesToCenter) / newSpp;
 
-        manager.set({
+        manager.setOptions({
             samplesPerPixel: newSpp,
             scrollPosition: newScroll >= 0 ? newScroll : 0
         }).process();

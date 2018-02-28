@@ -39,12 +39,22 @@ export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<str
     // For each pixel we display
     for (let i = 0; i < options.width; i++) {
         const currentSecond = startSecond + (i * secondsPerPixel);
+
+        if(currentSecond >= currentInterval.end) {
+            if(currentIntervalIndex === maxIntervalIncrementIndex) {
+                return peaks;
+            } else {
+                currentInterval = intervals[++currentIntervalIndex];
+                buffer = dataMap.get(currentInterval.source);
+            }
+        }
+
         if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
             continue;
         }
 
-        const startBorder = currentSecond - secondsPerPixel <= currentInterval.start + currentInterval.offsetStart;
-        const endBorder = currentSecond + secondsPerPixel >= currentInterval.end;
+        const startBorder = currentSecond - secondsPerPixel < currentInterval.start + currentInterval.offsetStart;
+        const endBorder = currentSecond + secondsPerPixel > currentInterval.end;
         const intervalBorder = startBorder || endBorder ? 1 : 0;
 
         if (buffer == null) {
@@ -62,9 +72,8 @@ export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<str
         // Cycle through the data-points relevant to the pixel
         // Don't cycle through more than sampleSize frames per pixel.
         let posSum = 0, negSum = 0, count = 0;
-        for (let j = startSample; j < loopEnd; j += sampleSize) {
+        for (let j = startSample; j < loopEnd; j += sampleSize, count++) {
             const val = buffer[j];
-            count++;
             // Keep track of positive and negative values separately
             if (val > 0) {
                 posSum += val * val;
@@ -77,15 +86,6 @@ export default (options: ManagerOptions, intervals: Interval[], dataMap: Map<str
         const max = Math.sqrt(posSum / count);
 
         peaks.set([min, max, intervalBorder, 1], (i * 4));
-
-        if(currentSecond + secondsPerPixel >= currentInterval.end) {
-            if(currentIntervalIndex === maxIntervalIncrementIndex) {
-                return peaks;
-            } else {
-                currentInterval = intervals[++currentIntervalIndex];
-                buffer = dataMap.get(currentInterval.source);
-            }
-        }
     }
     return peaks;
 }

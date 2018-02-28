@@ -34,6 +34,7 @@ export default (waveform: Float32Array, options: ManagerOptions, ctx: CanvasRend
     ctx.moveTo(0, scale);
     for (let i = 0; i < width; i++) {
         const index = i * 4;
+
         ctx.lineTo(i, Math.round((waveform[index] * scale) + scale));
     }
     ctx.lineTo(width - 1, scale);
@@ -41,6 +42,7 @@ export default (waveform: Float32Array, options: ManagerOptions, ctx: CanvasRend
     ctx.moveTo(0, scale);
     for (let i = 0; i < width; i++) {
         const index = i * 4;
+
         ctx.lineTo(i, Math.round((waveform[index + 1] * scale) + scale));
     }
     ctx.lineTo(width - 1, scale);
@@ -48,8 +50,8 @@ export default (waveform: Float32Array, options: ManagerOptions, ctx: CanvasRend
 
     for (let i = 0; i < width; i++) {
         const index = i * 4;
-        if(i != 0 && waveform[index - 4 + 2] === 0 && waveform[index + 2] === 1) {
-            ctx.rect(i-1, 0, 1, options.height);
+        if(waveform[index - 4 + 2] === 0 && waveform[index + 2] === 1) {
+            ctx.rect(i, 0, 1, options.height);
         }
     }
     

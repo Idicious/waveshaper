@@ -18,10 +18,19 @@ const start = (segment: Interval) => segment.start + segment.offsetStart;
 export default (segments: Interval[]): Interval[] => {
   const sorted = sort(segments);
   const normalized = normalizeIndex(sorted);
-  const grouped = groupByIndex(normalized);
+  const copied = copy(normalized);
+  const grouped = groupByIndex(copied);
 
   return weightedMerge(grouped);
 }
+
+/**
+ * Copies elements so original are unaltered
+ * 
+ * @param intervals 
+ */
+const copy = (intervals: Interval[]): Interval[] => intervals.map(i => ({ ...i }));
+  
 
 /**
  * When an element is altered the index is set very high,

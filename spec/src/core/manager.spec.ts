@@ -1,9 +1,9 @@
-import { WaveShapeManager, Interval, defaultConfig } from "../../../src";
+import { WaveShaper, Interval, defaultConfig } from "../../../src";
 
-describe('WaveShapeManager class tests', () => {
+describe('WaveShaper class tests', () => {
 
     it('Can be created with default settings.', () => {
-        const manager = new WaveShapeManager();
+        const manager = new WaveShaper();
 
         expect(manager).not.toBeNull();
 
@@ -23,7 +23,7 @@ describe('WaveShapeManager class tests', () => {
     });
 
     it('Can be created with partial config.', () => {
-        const manager = new WaveShapeManager({ samplesPerPixel: 333 });
+        const manager = new WaveShaper({ samplesPerPixel: 333 });
 
         const options = manager.options;
         
@@ -33,47 +33,47 @@ describe('WaveShapeManager class tests', () => {
 
     it('Throws with invalid options.', () => {
 
-        expect(() => new WaveShapeManager({samplesPerPixel: null} as any)).toThrow();
-        expect(() => new WaveShapeManager().set({samplesPerPixel: null} as any)).toThrow();
+        expect(() => new WaveShaper({samplesPerPixel: null} as any)).toThrow();
+        expect(() => new WaveShaper().setOptions({samplesPerPixel: null} as any)).toThrow();
     });
 
     it('Can add WaveShapers', () => {
-        const segments: Interval[] = [
+        const intervals: Interval[] = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' }
         ];
 
-        const manager = new WaveShapeManager();
-        const waveShaper = manager.setTracks({ id: '1', segments }).getTrack('1');
+        const manager = new WaveShaper();
+        const waveShaper = manager.setTracks({ id: '1', intervals }).getTrack('1');
 
         expect(waveShaper).not.toBeNull();
     });
 
     it('Can add AudioData.', (done) => {
-        const segments: Interval[] = [
+        const intervals: Interval[] = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
             { id: 'def', start: 40, end: 70, index: 2, offsetStart: 0, source: '2' },
             { id: 'ghi', start: 600, end: 630, index: 3, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1', '2'].map(id => ({ id, segments }));
+        const tracks = ['1', '2'].map(id => ({ id, intervals }));
 
         const ctx = new AudioContext();
-        const manager = new WaveShapeManager({ samplerate: ctx.sampleRate, width: 10000 });
+        const manager = new WaveShaper({ samplerate: ctx.sampleRate, width: 10000 });
         manager.setTracks(...tracks);
 
         fetch('assets/audio/GTR.wav')
             .then(res => res.arrayBuffer())
             .then(arrayBuffer => ctx.decodeAudioData(arrayBuffer))
             .then(data => {
-                manager.addData({ id: '1', data })
+                manager.setData({ id: '1', data: data.getChannelData(0) })
                     .process()
-                    .set({ meterType: 'peak' })
+                    .setOptions({ meterType: 'peak' })
                     .process();
                 done();
             });
     });
 
     it('Respects activeWaveShapers property.', () => {
-        const segments = [
+        const intervals = [
             { id: 'abc', start: 0, end: 30, index: 2, offsetStart: 0, source: '1' },
             { id: 'def', start: 5, end: 35, index: 1, offsetStart: 0, source: '1' },
             { id: 'ghi', start: 100, end: 130, index: 1, offsetStart: 0, source: '1' },
@@ -81,9 +81,9 @@ describe('WaveShapeManager class tests', () => {
             { id: 'jkl', start: 111, end: 141, index: 1, offsetStart: 0, source: '1' },
             { id: 'mno', start: 200, end: 230, index: 1, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1',  '2'].map(id => ({ id, segments }));
+        const tracks = ['1',  '2'].map(id => ({ id, intervals }));
 
-        const manager = new WaveShapeManager();
+        const manager = new WaveShaper();
         const callback1Spy = jasmine.createSpy();
         const callback2Spy = jasmine.createSpy();
 
@@ -127,13 +127,13 @@ describe('WaveShapeManager class tests', () => {
     });
 
     it('Call callbacks correctly', () => {
-        const segments = [
+        const intervals = [
             { id: 'abc', start: 0, end: 33, index: 1, offsetStart: 0, source: '1' },
             { id: 'def', start: 1, end: 31, index: 2, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1', '2'].map(id => ({ id, segments }));
+        const tracks = ['1', '2'].map(id => ({ id, intervals }));
 
-        const manager = new WaveShapeManager();
+        const manager = new WaveShaper();
         const spy = jasmine.createSpy();
 
         manager.on("1", spy)
@@ -144,13 +144,13 @@ describe('WaveShapeManager class tests', () => {
     });
 
     it('Removes callbacks when off is called', () => {
-        const segments = [
+        const intervals = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' },
             { id: 'def', start: 0, end: 30, index: 1, offsetEnd: 0, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1', '2'].map(id => ({ id, segments }));
+        const tracks = ['1', '2'].map(id => ({ id, intervals }));
 
-        const manager = new WaveShapeManager();
+        const manager = new WaveShaper();
         const spy = jasmine.createSpy();
 
         manager.setTracks(...tracks)
@@ -165,12 +165,12 @@ describe('WaveShapeManager class tests', () => {
     });
 
     it('Stores the last process result.', () => {
-        const segments = [
+        const intervals = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
             { id: 'def', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1', '2'].map(id => ({ id, segments }));
-        const manager = new WaveShapeManager();
+        const tracks = ['1', '2'].map(id => ({ id, intervals }));
+        const manager = new WaveShaper();
 
         manager.setTracks(...tracks)
             .process();
@@ -179,86 +179,86 @@ describe('WaveShapeManager class tests', () => {
     });
 
     it('Calculates duration correctly.', () => {
-        const segments = [
+        const intervals = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
             { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1', '2'].map(id => ({ id, segments }));
-        const manager = new WaveShapeManager();
+        const tracks = ['1', '2'].map(id => ({ id, intervals }));
+        const manager = new WaveShaper();
 
         manager.setTracks(...tracks);
         expect(manager.duration).toBe(50);
     });
 
     it('Updates values with set.', () => {
-        const manager = new WaveShapeManager();
+        const manager = new WaveShaper();
         expect(manager.options.samplesPerPixel).toBe(defaultConfig.samplesPerPixel);
 
-        manager.set({ samplesPerPixel: 1024 });
+        manager.setOptions({ samplesPerPixel: 1024 });
         expect(manager.options.samplesPerPixel).toBe(1024);
     });
 
     it('Updates segments when setTrack is called with same id more than once', () => {
-        let segments = [
+        let intervals = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
             { id: 'def', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' }
         ];
-        let tracks = ['1', '2'].map(id => ({ id, segments }));
-        const manager = new WaveShapeManager();
+        let tracks = ['1', '2'].map(id => ({ id, intervals }));
+        const manager = new WaveShaper();
 
         manager.setTracks(...tracks);
         expect(manager.duration).toBe(30);
 
-        segments = [
+        intervals = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
             { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
-        tracks = ['1', '2'].map(id => ({ id, segments }));
+        tracks = ['1', '2'].map(id => ({ id, intervals }));
 
         manager.setTracks(...tracks);
         expect(manager.duration).toBe(50);
     });
 
     it('Removes a track succesfully', () => {
-        const segments = [
+        const intervals = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
             { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1', '2'].map(id => ({ id, segments }));
-        const manager = new WaveShapeManager();
+        const tracks = ['1', '2'].map(id => ({ id, intervals }));
+        const manager = new WaveShaper();
 
-        manager.setTracks(...tracks).removeTracks('1');
+        manager.setTracks(...tracks).clearTracks('1');
 
         expect(manager.getTrack('1')).toBeUndefined();
         expect(manager.getTrack('2')).not.toBeUndefined();
     });
 
     it('Removes callbacks when removing tracks', () => {
-        const segments = [
+        const intervals = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
             { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1', '2'].map(id => ({ id, segments }));
-        const manager = new WaveShapeManager();
+        const tracks = ['1', '2'].map(id => ({ id, intervals }));
+        const manager = new WaveShaper();
 
         manager
             .setTracks(...tracks)
             .on('1', () => null)
-            .removeTracks('1');
+            .clearTracks('1');
 
         expect(manager.getTrack('1')).toBeUndefined();
         expect(manager.getTrack('2')).not.toBeUndefined();
     });
 
     it('Ignores off requests to non existant tracks and callbacks', () => {
-        const segments = [
+        const intervals = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
             { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1', '2'].map(id => ({ id, segments }));
+        const tracks = ['1', '2'].map(id => ({ id, intervals }));
         const noop = () => { };
 
-        const manager = new WaveShapeManager();
+        const manager = new WaveShaper();
 
         manager.off('1', noop);
         manager.setTracks(...tracks);
@@ -268,31 +268,31 @@ describe('WaveShapeManager class tests', () => {
     });
 
     it('Ignores process of non existant tracks', () => {
-        const manager = new WaveShapeManager();
+        const manager = new WaveShaper();
         manager.process('1');
     });
 
     it('Flattens existing tracks', () => {
-        const segments = [
+        const intervals = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
             { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1', '2'].map(id => ({ id, segments }));
+        const tracks = ['1', '2'].map(id => ({ id, intervals }));
 
-        const manager = new WaveShapeManager();
+        const manager = new WaveShaper();
         manager.setTracks(...tracks)
             .flatten()
             .flatten('1', '2');
     });
 
     it('Ignores flatten on non existant tracks', () => {
-        const segments = [
+        const intervals = [
             { id: 'abc', start: 0, end: 30, index: 1, offsetStart: 0, source: '1' },
             { id: 'def', start: 20, end: 50, index: 1, offsetStart: 0, source: '1' }
         ];
-        const tracks = ['1', '2'].map(id => ({ id, segments }));
+        const tracks = ['1', '2'].map(id => ({ id, intervals }));
 
-        const manager = new WaveShapeManager();
+        const manager = new WaveShaper();
         manager.setTracks(...tracks)
             .flatten('3');
     });

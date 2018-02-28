@@ -1,12 +1,12 @@
-import WaveShaper from '../core/waveshaper';
-import WaveShapeManager from '../core/manager';
+import Track from '../core/track';
+import DomRenderWaveShaper from './index';
 import Interval from '../models/interval';
 import { ManagerOptions } from '../config/managerconfig';
 
 interface DragState {
     activeSegment: Interval | null;
     activeSegmentStart: number;
-    dragWave: WaveShaper | null;
+    dragWave: Track | null;
     options: ManagerOptions | null;
     duration: number;
     dragging: boolean;
@@ -28,9 +28,11 @@ const dragState: DragState = {
  * @param hammer Hammer instance
  * @param container Container element
  */
-export default (manager: WaveShapeManager, hammer: HammerManager, container: HTMLElement) => {
+export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: HTMLElement): () => void => {
 
     const shouldHandle = (ev: HammerInput, options: ManagerOptions) => options.mode === 'drag' && ev.target.hasAttribute('data-wave-id');
+
+    const listener = (ev: TouchEvent | MouseEvent) => mouseHover(ev);
 
     /**
      * Fires when the mouse moves over the container,
@@ -39,9 +41,17 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
      * new canvas.
      */
     if(isTouchDevice()) {
-        container.addEventListener('touchmove', ev => mouseHover(ev));
+        container.addEventListener('touchmove', listener);
     } else {
-        container.addEventListener('mousemove', ev => mouseHover(ev));
+        container.addEventListener('mousemove', listener);
+    }
+
+    const destroy = () => {
+        if(isTouchDevice()) {
+            container.removeEventListener('touchmove', listener);
+        } else {
+            container.removeEventListener('mousemove', listener);
+        }
     }
 
     /**
@@ -65,7 +75,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
         if (interval == null)
             return;
 
-        const segment = wave.segments.find(s => s.id === interval.id);
+        const segment = wave.intervals.find(s => s.id === interval.id);
         if(segment == null) return;
 
         dragState.options = options;
@@ -146,10 +156,10 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
         if(wave == null) return;
 
         if (dragState.dragWave.id !== id) {
-            const index = dragState.dragWave.segments.indexOf(dragState.activeSegment);
-            dragState.dragWave.segments.splice(index, 1);
+            const index = dragState.dragWave.intervals.indexOf(dragState.activeSegment);
+            dragState.dragWave.intervals.splice(index, 1);
 
-            wave.segments.push(dragState.activeSegment);
+            wave.intervals.push(dragState.activeSegment);
             dragState.activeSegment.index = 1000;
 
             const currentId = dragState.dragWave.id;
@@ -175,4 +185,6 @@ export default (manager: WaveShapeManager, hammer: HammerManager, container: HTM
         return 'ontouchstart' in window        // works on most browsers 
             || navigator.maxTouchPoints;       // works on IE10/11 and Surface
     };
+
+    return destroy;
 }

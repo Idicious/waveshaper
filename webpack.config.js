@@ -15,8 +15,9 @@ module.exports = {
   output: {
     path: path.join(__dirname, "dist"),
     filename: "waveshaper.js",
-    library: 'WaveShaper',
+    library: 'WS',
     libraryTarget: 'umd',
+    libraryExport: 'default',
     publicPath: "/"
   },
   devtool: 'source-map',

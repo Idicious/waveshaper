@@ -1,4 +1,4 @@
-import WaveShapeManager from '../core/manager';
+import WaveShaper from '../core/waveshaper';
 import { ManagerOptions } from '../config/managerconfig';
 import Interval from '../models/interval';
 
@@ -8,7 +8,7 @@ import Interval from '../models/interval';
  * @param manager
  * @param hammer
  */
-export default (manager: WaveShapeManager, hammer: HammerManager) => {
+export default (manager: WaveShaper, hammer: HammerManager) => {
 
     const shouldHandle = (ev: HammerInput, options: ManagerOptions) => options.mode === 'cut' && ev.target.hasAttribute('data-wave-id');
 
@@ -29,7 +29,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager) => {
         const interval = wave.flattened.find(i => i.start + i.offsetStart <= time && i.end >= time);
         if(interval == null) return;
 
-        const segment = wave.segments.find(s => s.id === interval.id);
+        const segment = wave.intervals.find(s => s.id === interval.id);
         if(segment == null) return;
 
         const newSegment: Interval = { 
@@ -39,7 +39,7 @@ export default (manager: WaveShapeManager, hammer: HammerManager) => {
         };
 
         segment.end = time;
-        wave.segments.push(newSegment);
+        wave.intervals.push(newSegment);
         
         manager.flatten(wave.id);
         manager.process(wave.id);

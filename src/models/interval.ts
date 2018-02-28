@@ -1,7 +1,7 @@
 /**
  * A segment of audio
  */
-export default interface Interval {
+interface Interval {
     id: string;
     start: number;
     end: number;
@@ -9,3 +9,5 @@ export default interface Interval {
     index: number;
     source: string;
 }
+
+export default Interval;

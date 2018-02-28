@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    #container {
+        width: 100%;
+    }
+</style>
+<body>
+    <div id='container'></div>
+
+    <label for="mode">Mode</label>
+    <select name="mode" id="modeSelect">
+        <option value="pan" selected>Pan</option>
+        <option value="drag">Drag</option>
+        <option value="cut">Cut</option>
+        <option value="resize">Resize</option>
+    </select>
+
+    <br />
+
+    <label for="meter">Type</label>
+    <select name="meter" id="meterSelect">
+        <option value="peak" selected>Peak</option>
+        <option value="rms">RMS</option>
+    </select>
+
+    <br />
+
+    <label for="resolution">Resolution</label>
+    <input id="resolution" name="resolution" type="range" min="1" max="128" value="10"></range>
+
+    <br />
+
+    <label for="zoom">Zoom</label>
+    <input id="zoom" name="zoom" type="range" min="1" max="4096" value="1024"></range>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.js"></script>
+    <script src="../dist/waveshaper.js"></script>
+    <script>
+        // Container is used for delegated events, the canvasses should be rendered as direct or indirect children of the container element
+        var container = document.getElementById('container');
+
+        var modeSelect = document.getElementById('modeSelect');
+        var meterSelect = document.getElementById('meterSelect');
+        var resolution = document.getElementById('resolution');
+        var zoom = document.getElementById('zoom');
+
+        modeSelect.addEventListener('change', function(e) {
+            requestAnimationFrame(function(){
+                WS.setOptions({ 
+                    mode: e.target.value 
+                });
+            });
+        });
+
+        meterSelect.addEventListener('change', function(e) {
+            requestAnimationFrame(function(){
+                WS.setOptions({ 
+                    meterType: e.target.value 
+                }).process();
+            });
+        });
+
+        resolution.addEventListener('input', function(e) {
+            requestAnimationFrame(function(){
+                WS.setOptions({ 
+                    resolution: +e.target.value 
+                }).process();
+            });
+        });
+
+        zoom.addEventListener('input', function(e) {
+            var { scrollPosition, samplesPerPixel, samplerate } = WS.options;
+            var leftTime = (scrollPosition * samplesPerPixel) / samplerate;
+            
+            var newSamplesPerPixel = +e.target.value;
+            var secondsPerPixel = newSamplesPerPixel / samplerate;
+            var newScrollPosition = leftTime / secondsPerPixel;
+
+            requestAnimationFrame(function(){
+                WS.setOptions({ 
+                    samplesPerPixel: newSamplesPerPixel,
+                    scrollPosition: newScrollPosition
+                }).process();
+            });
+        });
+
+        var ctx = new AudioContext();
+
+        var options = {
+            scrollPosition: 0,
+            samplesPerPixel: +zoom.value,
+            resolution: +resolution.value,
+            meterType: meterSelect.value,
+            mode: modeSelect.value,
+            height: 300,
+            width: container.clientWidth,
+            samplerate: ctx.sampleRate,
+            generateId: function() { return Math.random().toString(); }
+        };
+
+        var tracks = [
+            {
+                id: '1', color: 'lightblue', intervals: [
+                    { id: '1', index: 1, start: 0, end: 30, offsetStart: 0, source: '1' },
+                    { id: '2', index: 2, start: 10, end: 20, offsetStart: 2, source: '2' }
+                ]
+            },
+            {
+                id: '2', color: 'teal', intervals: [
+                    { id: '3', index: 1, start: 0, end: 30, offsetStart: 0, source: '2' },
+                    { id: '4', index: 2, start: 10, end: 20, offsetStart: 2, source: '1' }
+                ]
+            },
+        ];
+
+        const audioData = [
+            { id: '1', url: './audio/GTR.wav' },
+            { id: '2', url: './audio/TOM.wav' },
+        ]
+            
+        WS.setOptions(options);
+
+        tracks.forEach(track => {
+            var canvas = document.createElement('canvas');
+            WS.registerCanvas(track.id, canvas, track.color);
+
+            container.appendChild(canvas);
+        });
+
+        // Without audio data will draw outlines
+        WS.setInteraction(container)
+            .setTracks(...tracks)
+            .loadData(ctx, ...audioData)
+            .process();
+    </script>
+</body>
+
+</html>
