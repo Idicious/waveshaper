@@ -59,7 +59,7 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
      */
     hammer.on('panstart', (ev: HammerInput) => {
         const options = manager.options;
-        const target = manager.options.getEventTarget(ev);
+        const target = manager.options.getEventTarget(ev.srcEvent);
         if (!shouldHandle(target, options))
             return;
 
@@ -90,7 +90,7 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
     });
 
     hammer.on('panmove', (ev: HammerInput) => {
-        const target = manager.options.getEventTarget(ev);
+        const target = manager.options.getEventTarget(ev.srcEvent);
         if (dragState.options == null || !shouldHandle(target, dragState.options))
             return;
 
@@ -130,7 +130,7 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
     });
 
     hammer.on('panend', (ev: HammerInput) => {
-        const target = manager.options.getEventTarget(ev);
+        const target = manager.options.getEventTarget(ev.srcEvent);
         if (dragState.options == null || !shouldHandle(target, dragState.options))
             return;
 

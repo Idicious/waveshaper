@@ -27,7 +27,8 @@ export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
 
     hammer.on('pinchstart', (ev) => {
         const options = manager.options;
-        if(!shouldHandle(manager.options.getEventTarget(ev), options))
+        const target = manager.options.getEventTarget(ev.srcEvent);
+        if(!shouldHandle(target, options))
             return;
 
         zoomState.sppStart = options.samplesPerPixel;
@@ -36,7 +37,8 @@ export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
 
     hammer.on('pinchmove', (ev) => {
         zoomState.options = manager.options;
-        if(zoomState.options == null || !shouldHandle(manager.options.getEventTarget(ev), zoomState.options))
+        const target = manager.options.getEventTarget(ev.srcEvent);
+        if(zoomState.options == null || !shouldHandle(target, zoomState.options))
             return;
 
         const sampleAtLeft = zoomState.options.scrollPosition * zoomState.options.samplesPerPixel;
@@ -63,7 +65,8 @@ export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
     });
 
     hammer.on('pinchend', (ev) => {
-        if(zoomState.options == null || !shouldHandle(manager.options.getEventTarget(ev), zoomState.options))
+        const target = manager.options.getEventTarget(ev.srcEvent);
+        if(zoomState.options == null || !shouldHandle(target, zoomState.options))
             return;
 
         zoomState.sppStart = 0;

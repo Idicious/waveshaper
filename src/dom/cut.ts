@@ -14,7 +14,7 @@ export default (manager: WaveShaper, hammer: HammerManager) => {
 
     hammer.on('tap', (ev: HammerInput) => { 
         const options = manager.options;
-        const target = manager.options.getEventTarget(ev);
+        const target = manager.options.getEventTarget(ev.srcEvent);
         if(options == null || !shouldHandle(target, options))
             return;
 

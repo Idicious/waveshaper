@@ -35,7 +35,7 @@ export default function(manager: WaveShaper, hammer: HammerManager) {
 
     hammer.on('panstart', (ev) => { 
         const options = manager.options;
-        const target = manager.options.getEventTarget(ev);
+        const target = manager.options.getEventTarget(ev.srcEvent);
         if(!shouldHandle(target, options))
             return;
 
@@ -72,7 +72,7 @@ export default function(manager: WaveShaper, hammer: HammerManager) {
     });
 
     hammer.on('panmove', (ev) =>  {
-        const target = manager.options.getEventTarget(ev);
+        const target = manager.options.getEventTarget(ev.srcEvent);
         if(resizeState.dragWave == null || resizeState.options == null || !shouldHandle(target, resizeState.options))
             return;
 
@@ -110,7 +110,7 @@ export default function(manager: WaveShaper, hammer: HammerManager) {
     });
 
     hammer.on('panend', (ev) => {
-        const target = manager.options.getEventTarget(ev);
+        const target = manager.options.getEventTarget(ev.srcEvent);
         if(resizeState.options == null || !shouldHandle(target, resizeState.options))
             return;
 

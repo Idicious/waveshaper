@@ -1084,7 +1084,7 @@ exports.default = (function (manager, hammer) {
     var shouldHandle = function (target, options) { return options.mode === 'cut' && target.hasAttribute('data-wave-id'); };
     hammer.on('tap', function (ev) {
         var options = manager.options;
-        var target = manager.options.getEventTarget(ev);
+        var target = manager.options.getEventTarget(ev.srcEvent);
         if (options == null || !shouldHandle(target, options))
             return;
         var id = target.getAttribute('data-wave-id');
@@ -1158,7 +1158,7 @@ exports.default = (function (manager, hammer, container) {
      */
     hammer.on('panstart', function (ev) {
         var options = manager.options;
-        var target = manager.options.getEventTarget(ev);
+        var target = manager.options.getEventTarget(ev.srcEvent);
         if (!shouldHandle(target, options))
             return;
         var id = target.getAttribute('data-wave-id');
@@ -1183,7 +1183,7 @@ exports.default = (function (manager, hammer, container) {
         dragState.dragWave = wave;
     });
     hammer.on('panmove', function (ev) {
-        var target = manager.options.getEventTarget(ev);
+        var target = manager.options.getEventTarget(ev.srcEvent);
         if (dragState.options == null || !shouldHandle(target, dragState.options))
             return;
         if (dragState.activeSegment == null || dragState.dragWave == null)
@@ -1212,7 +1212,7 @@ exports.default = (function (manager, hammer, container) {
         dragState.dragging = false;
     });
     hammer.on('panend', function (ev) {
-        var target = manager.options.getEventTarget(ev);
+        var target = manager.options.getEventTarget(ev.srcEvent);
         if (dragState.options == null || !shouldHandle(target, dragState.options))
             return;
         dragState.activeSegment = null;
@@ -1286,7 +1286,7 @@ function default_1(manager, hammer) {
     var shouldHandle = function (target, options) { return options.mode === 'pan' && target.hasAttribute('data-wave-id'); };
     hammer.on('panstart', function (ev) {
         var options = manager.options;
-        var target = manager.options.getEventTarget(ev);
+        var target = manager.options.getEventTarget(ev.srcEvent);
         if (!shouldHandle(target, options))
             return;
         panState.panMax = manager.scrollWidth + endMargin;
@@ -1294,7 +1294,7 @@ function default_1(manager, hammer) {
     });
     hammer.on('panmove', function (ev) {
         panState.options = manager.options;
-        var target = manager.options.getEventTarget(ev);
+        var target = manager.options.getEventTarget(ev.srcEvent);
         if (!shouldHandle(target, panState.options))
             return;
         var position = panState.panStart - ev.deltaX;
@@ -1307,7 +1307,7 @@ function default_1(manager, hammer) {
         manager.setOptions({ scrollPosition: newPosition }).process();
     });
     hammer.on('panend', function (ev) {
-        var target = manager.options.getEventTarget(ev);
+        var target = manager.options.getEventTarget(ev.srcEvent);
         if (panState.options == null || !shouldHandle(target, panState.options))
             return;
         panState.options = null;
@@ -1339,14 +1339,16 @@ function default_1(manager, hammer) {
     var shouldHandle = function (target, options) { return options.mode === 'pan' && target.hasAttribute('data-wave-id'); };
     hammer.on('pinchstart', function (ev) {
         var options = manager.options;
-        if (!shouldHandle(manager.options.getEventTarget(ev), options))
+        var target = manager.options.getEventTarget(ev.srcEvent);
+        if (!shouldHandle(target, options))
             return;
         zoomState.sppStart = options.samplesPerPixel;
         zoomState.maxWidth = manager.scrollWidth + endMargin;
     });
     hammer.on('pinchmove', function (ev) {
         zoomState.options = manager.options;
-        if (zoomState.options == null || !shouldHandle(manager.options.getEventTarget(ev), zoomState.options))
+        var target = manager.options.getEventTarget(ev.srcEvent);
+        if (zoomState.options == null || !shouldHandle(target, zoomState.options))
             return;
         var sampleAtLeft = zoomState.options.scrollPosition * zoomState.options.samplesPerPixel;
         var samplesInView = zoomState.options.width * zoomState.options.samplesPerPixel;
@@ -1365,7 +1367,8 @@ function default_1(manager, hammer) {
         }).process();
     });
     hammer.on('pinchend', function (ev) {
-        if (zoomState.options == null || !shouldHandle(manager.options.getEventTarget(ev), zoomState.options))
+        var target = manager.options.getEventTarget(ev.srcEvent);
+        if (zoomState.options == null || !shouldHandle(target, zoomState.options))
             return;
         zoomState.sppStart = 0;
         zoomState.maxWidth = 0;
@@ -1398,7 +1401,7 @@ function default_1(manager, hammer) {
     var shouldHandle = function (target, options) { return options.mode === 'resize' && target != null && target.hasAttribute('data-wave-id'); };
     hammer.on('panstart', function (ev) {
         var options = manager.options;
-        var target = manager.options.getEventTarget(ev);
+        var target = manager.options.getEventTarget(ev.srcEvent);
         if (!shouldHandle(target, options))
             return;
         var id = target.getAttribute('data-wave-id');
@@ -1427,7 +1430,7 @@ function default_1(manager, hammer) {
         resizeState.dragWave = wave;
     });
     hammer.on('panmove', function (ev) {
-        var target = manager.options.getEventTarget(ev);
+        var target = manager.options.getEventTarget(ev.srcEvent);
         if (resizeState.dragWave == null || resizeState.options == null || !shouldHandle(target, resizeState.options))
             return;
         var options = manager.options;
@@ -1456,7 +1459,7 @@ function default_1(manager, hammer) {
         manager.process(resizeState.dragWave.id);
     });
     hammer.on('panend', function (ev) {
-        var target = manager.options.getEventTarget(ev);
+        var target = manager.options.getEventTarget(ev.srcEvent);
         if (resizeState.options == null || !shouldHandle(target, resizeState.options))
             return;
         resizeState.activeSegment = null;

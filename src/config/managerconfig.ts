@@ -2,7 +2,7 @@ export type MeterType = 'peak' | 'rms';
 export type InteractionMode = 'pan' | 'drag' | 'cut' | 'resize';
 
 export type GenerateId = () => string;
-export type GetTarget = (ev: HammerInput) => HTMLElement;
+export type GetTarget = (ev: Event) => HTMLElement;
 
 export interface ManagerOptions {
     scrollPosition: number;
@@ -40,7 +40,7 @@ const defaultOptions: ManagerOptions = {
     height: 150,
     generateId: () => Math.random.toString(),
     samplerate: 44100,
-    getEventTarget: (ev) => ev.target
+    getEventTarget: (ev) => <HTMLElement>ev.target
 }
 
 export default defaultOptions;
