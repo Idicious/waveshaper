@@ -1084,9 +1084,10 @@ exports.default = (function (manager, hammer) {
     var shouldHandle = function (target, options) { return options.mode === 'cut' && target.hasAttribute('data-wave-id'); };
     hammer.on('tap', function (ev) {
         var options = manager.options;
-        if (options == null || !shouldHandle(manager.options.getEventTarget(ev), options))
+        var target = manager.options.getEventTarget(ev);
+        if (options == null || !shouldHandle(target, options))
             return;
-        var id = ev.target.getAttribute('data-wave-id');
+        var id = target.getAttribute('data-wave-id');
         if (id == null)
             return;
         var wave = manager.getTrack(id);
@@ -1157,9 +1158,10 @@ exports.default = (function (manager, hammer, container) {
      */
     hammer.on('panstart', function (ev) {
         var options = manager.options;
-        if (!shouldHandle(manager.options.getEventTarget(ev), options))
+        var target = manager.options.getEventTarget(ev);
+        if (!shouldHandle(target, options))
             return;
-        var id = ev.target.getAttribute('data-wave-id');
+        var id = target.getAttribute('data-wave-id');
         if (id == null)
             return;
         var wave = manager.getTrack(id);
@@ -1181,7 +1183,8 @@ exports.default = (function (manager, hammer, container) {
         dragState.dragWave = wave;
     });
     hammer.on('panmove', function (ev) {
-        if (dragState.options == null || !shouldHandle(manager.options.getEventTarget(ev), dragState.options))
+        var target = manager.options.getEventTarget(ev);
+        if (dragState.options == null || !shouldHandle(target, dragState.options))
             return;
         if (dragState.activeSegment == null || dragState.dragWave == null)
             return;
@@ -1209,7 +1212,8 @@ exports.default = (function (manager, hammer, container) {
         dragState.dragging = false;
     });
     hammer.on('panend', function (ev) {
-        if (dragState.options == null || !shouldHandle(manager.options.getEventTarget(ev), dragState.options))
+        var target = manager.options.getEventTarget(ev);
+        if (dragState.options == null || !shouldHandle(target, dragState.options))
             return;
         dragState.activeSegment = null;
         dragState.activeSegmentStart = 0;
@@ -1250,7 +1254,7 @@ exports.default = (function (manager, hammer, container) {
         if (ev instanceof TouchEvent) {
             return document.elementFromPoint(ev.touches[0].pageX, ev.touches[0].pageY);
         }
-        return ev.target;
+        return manager.options.getEventTarget(ev);
     };
     function isTouchDevice() {
         return 'ontouchstart' in window // works on most browsers 
@@ -1282,14 +1286,16 @@ function default_1(manager, hammer) {
     var shouldHandle = function (target, options) { return options.mode === 'pan' && target.hasAttribute('data-wave-id'); };
     hammer.on('panstart', function (ev) {
         var options = manager.options;
-        if (!shouldHandle(manager.options.getEventTarget(ev), options))
+        var target = manager.options.getEventTarget(ev);
+        if (!shouldHandle(target, options))
             return;
         panState.panMax = manager.scrollWidth + endMargin;
         panState.panStart = options.scrollPosition;
     });
     hammer.on('panmove', function (ev) {
         panState.options = manager.options;
-        if (!shouldHandle(manager.options.getEventTarget(ev), panState.options))
+        var target = manager.options.getEventTarget(ev);
+        if (!shouldHandle(target, panState.options))
             return;
         var position = panState.panStart - ev.deltaX;
         var newPosition = position > 0 ? position : 0;
@@ -1301,7 +1307,8 @@ function default_1(manager, hammer) {
         manager.setOptions({ scrollPosition: newPosition }).process();
     });
     hammer.on('panend', function (ev) {
-        if (panState.options == null || !shouldHandle(manager.options.getEventTarget(ev), panState.options))
+        var target = manager.options.getEventTarget(ev);
+        if (panState.options == null || !shouldHandle(target, panState.options))
             return;
         panState.options = null;
         panState.panStart = 0;
@@ -1391,9 +1398,10 @@ function default_1(manager, hammer) {
     var shouldHandle = function (target, options) { return options.mode === 'resize' && target != null && target.hasAttribute('data-wave-id'); };
     hammer.on('panstart', function (ev) {
         var options = manager.options;
-        if (!shouldHandle(manager.options.getEventTarget(ev), options))
+        var target = manager.options.getEventTarget(ev);
+        if (!shouldHandle(target, options))
             return;
-        var id = ev.target.getAttribute('data-wave-id');
+        var id = target.getAttribute('data-wave-id');
         if (id == null)
             return;
         var wave = manager.getTrack(id);
@@ -1419,7 +1427,8 @@ function default_1(manager, hammer) {
         resizeState.dragWave = wave;
     });
     hammer.on('panmove', function (ev) {
-        if (resizeState.dragWave == null || resizeState.options == null || !shouldHandle(manager.options.getEventTarget(ev), resizeState.options))
+        var target = manager.options.getEventTarget(ev);
+        if (resizeState.dragWave == null || resizeState.options == null || !shouldHandle(target, resizeState.options))
             return;
         var options = manager.options;
         if (resizeState.activeSegment == null)
@@ -1447,7 +1456,8 @@ function default_1(manager, hammer) {
         manager.process(resizeState.dragWave.id);
     });
     hammer.on('panend', function (ev) {
-        if (resizeState.options == null || !shouldHandle(manager.options.getEventTarget(ev), resizeState.options))
+        var target = manager.options.getEventTarget(ev);
+        if (resizeState.options == null || !shouldHandle(target, resizeState.options))
             return;
         resizeState.activeSegment = null;
         resizeState.activeSegmentOffsetStart = 0;
