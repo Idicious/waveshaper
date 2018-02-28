@@ -30,7 +30,7 @@ const dragState: DragState = {
  */
 export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: HTMLElement): () => void => {
 
-    const shouldHandle = (ev: HammerInput, options: ManagerOptions) => options.mode === 'drag' && ev.target.hasAttribute('data-wave-id');
+    const shouldHandle = (target: HTMLElement, options: ManagerOptions) => options.mode === 'drag' && target.hasAttribute('data-wave-id');
 
     const listener = (ev: TouchEvent | MouseEvent) => mouseHover(ev);
 
@@ -59,7 +59,7 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
      */
     hammer.on('panstart', (ev: HammerInput) => {
         const options = manager.options;
-        if (!shouldHandle(ev, options))
+        if (!shouldHandle(manager.options.getEventTarget(ev), options))
             return;
 
         const id = ev.target.getAttribute('data-wave-id');
@@ -89,7 +89,7 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
     });
 
     hammer.on('panmove', (ev: HammerInput) => {
-        if (dragState.options == null || !shouldHandle(ev, dragState.options))
+        if (dragState.options == null || !shouldHandle(manager.options.getEventTarget(ev), dragState.options))
             return;
 
         if (dragState.activeSegment == null || dragState.dragWave == null)
@@ -128,7 +128,7 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
     });
 
     hammer.on('panend', (ev: HammerInput) => {
-        if (dragState.options == null || !shouldHandle(ev, dragState.options))
+        if (dragState.options == null || !shouldHandle(manager.options.getEventTarget(ev), dragState.options))
             return;
 
         dragState.activeSegment = null;

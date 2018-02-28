@@ -648,16 +648,12 @@ exports.default = (function (segments) {
     var grouped = groupByIndex(copied);
     return weightedMerge(grouped);
 });
-var copy = function (intervals) {
-    return intervals.map(function (i) { return ({
-        id: i.id,
-        start: i.start,
-        offsetStart: i.offsetStart,
-        end: i.end,
-        index: i.index,
-        source: i.source
-    }); });
-};
+/**
+ * Copies elements so original are unaltered
+ *
+ * @param intervals
+ */
+var copy = function (intervals) { return intervals.map(function (i) { return (__assign({}, i)); }); };
 /**
  * When an element is altered the index is set very high,
  * this functions normalizes to indexes back to 0
@@ -854,7 +850,8 @@ var defaultOptions = {
     width: 300,
     height: 150,
     generateId: function () { return Math.random.toString(); },
-    samplerate: 44100
+    samplerate: 44100,
+    getEventTarget: function (ev) { return ev.target; }
 };
 exports.default = defaultOptions;
 
@@ -947,6 +944,11 @@ var DomRenderWaveShaper = /** @class */ (function (_super) {
         _this.canvasMap = new Map();
         return _this;
     }
+    Object.defineProperty(DomRenderWaveShaper.prototype, "scrollWidth", {
+        get: function () { return (this._duration * this._options.samplerate) / this._options.samplesPerPixel; },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * @description When a canvas is registered through this method each time the
      * waveform is updated the canvas will be rerendered.
@@ -1014,6 +1016,12 @@ var DomRenderWaveShaper = /** @class */ (function (_super) {
         this.unregister = noop;
         return this;
     };
+    /**
+     * Loads and saves a set of url's to audio files.
+     *
+     * @param ctx
+     * @param data
+     */
     DomRenderWaveShaper.prototype.loadData = function (ctx) {
         var _this = this;
         var data = [];
@@ -1026,18 +1034,10 @@ var DomRenderWaveShaper = /** @class */ (function (_super) {
                 .then(function (arrayBuffer) { return ctx.decodeAudioData(arrayBuffer); })
                 .then(function (audioBuffer) {
                 _this.setData({ id: dat.id, data: audioBuffer.getChannelData(0) }).process();
-            });
+            })
+                .catch(function (e) { return console.log(e); });
         });
         return this;
-    };
-    /**
-     * @description Gets the width of scrollbar needed to scroll through the entire audio file
-     *
-     * @returns Scroll width in pixels for the entire audio file
-     * @memberof WaveShapeManager
-     */
-    DomRenderWaveShaper.prototype.getScrollWidth = function () {
-        return (this._duration * this._options.samplerate) / this._options.samplesPerPixel;
     };
     return DomRenderWaveShaper;
 }(waveshaper_1.default));
@@ -1081,10 +1081,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @param hammer
  */
 exports.default = (function (manager, hammer) {
-    var shouldHandle = function (ev, options) { return options.mode === 'cut' && ev.target.hasAttribute('data-wave-id'); };
+    var shouldHandle = function (target, options) { return options.mode === 'cut' && target.hasAttribute('data-wave-id'); };
     hammer.on('tap', function (ev) {
         var options = manager.options;
-        if (options == null || !shouldHandle(ev, options))
+        if (options == null || !shouldHandle(manager.options.getEventTarget(ev), options))
             return;
         var id = ev.target.getAttribute('data-wave-id');
         if (id == null)
@@ -1130,7 +1130,7 @@ var dragState = {
  * @param container Container element
  */
 exports.default = (function (manager, hammer, container) {
-    var shouldHandle = function (ev, options) { return options.mode === 'drag' && ev.target.hasAttribute('data-wave-id'); };
+    var shouldHandle = function (target, options) { return options.mode === 'drag' && target.hasAttribute('data-wave-id'); };
     var listener = function (ev) { return mouseHover(ev); };
     /**
      * Fires when the mouse moves over the container,
@@ -1157,7 +1157,7 @@ exports.default = (function (manager, hammer, container) {
      */
     hammer.on('panstart', function (ev) {
         var options = manager.options;
-        if (!shouldHandle(ev, options))
+        if (!shouldHandle(manager.options.getEventTarget(ev), options))
             return;
         var id = ev.target.getAttribute('data-wave-id');
         if (id == null)
@@ -1181,7 +1181,7 @@ exports.default = (function (manager, hammer, container) {
         dragState.dragWave = wave;
     });
     hammer.on('panmove', function (ev) {
-        if (dragState.options == null || !shouldHandle(ev, dragState.options))
+        if (dragState.options == null || !shouldHandle(manager.options.getEventTarget(ev), dragState.options))
             return;
         if (dragState.activeSegment == null || dragState.dragWave == null)
             return;
@@ -1209,7 +1209,7 @@ exports.default = (function (manager, hammer, container) {
         dragState.dragging = false;
     });
     hammer.on('panend', function (ev) {
-        if (dragState.options == null || !shouldHandle(ev, dragState.options))
+        if (dragState.options == null || !shouldHandle(manager.options.getEventTarget(ev), dragState.options))
             return;
         dragState.activeSegment = null;
         dragState.activeSegmentStart = 0;
@@ -1279,17 +1279,17 @@ var panState = {
  * @param hammer
  */
 function default_1(manager, hammer) {
-    var shouldHandle = function (ev, options) { return options.mode === 'pan' && ev.target.hasAttribute('data-wave-id'); };
+    var shouldHandle = function (target, options) { return options.mode === 'pan' && target.hasAttribute('data-wave-id'); };
     hammer.on('panstart', function (ev) {
         var options = manager.options;
-        if (!shouldHandle(ev, options))
+        if (!shouldHandle(manager.options.getEventTarget(ev), options))
             return;
-        panState.panMax = manager.getScrollWidth() + endMargin;
+        panState.panMax = manager.scrollWidth + endMargin;
         panState.panStart = options.scrollPosition;
     });
     hammer.on('panmove', function (ev) {
         panState.options = manager.options;
-        if (!shouldHandle(ev, panState.options))
+        if (!shouldHandle(manager.options.getEventTarget(ev), panState.options))
             return;
         var position = panState.panStart - ev.deltaX;
         var newPosition = position > 0 ? position : 0;
@@ -1301,7 +1301,7 @@ function default_1(manager, hammer) {
         manager.setOptions({ scrollPosition: newPosition }).process();
     });
     hammer.on('panend', function (ev) {
-        if (panState.options == null || !shouldHandle(ev, panState.options))
+        if (panState.options == null || !shouldHandle(manager.options.getEventTarget(ev), panState.options))
             return;
         panState.options = null;
         panState.panStart = 0;
@@ -1329,17 +1329,17 @@ var zoomState = {
  * @param hammer
  */
 function default_1(manager, hammer) {
-    var shouldHandle = function (ev, options) { return options.mode === 'pan' && ev.target.hasAttribute('data-wave-id'); };
+    var shouldHandle = function (target, options) { return options.mode === 'pan' && target.hasAttribute('data-wave-id'); };
     hammer.on('pinchstart', function (ev) {
         var options = manager.options;
-        if (!shouldHandle(ev, options))
+        if (!shouldHandle(manager.options.getEventTarget(ev), options))
             return;
         zoomState.sppStart = options.samplesPerPixel;
-        zoomState.maxWidth = manager.getScrollWidth() + endMargin;
+        zoomState.maxWidth = manager.scrollWidth + endMargin;
     });
     hammer.on('pinchmove', function (ev) {
         zoomState.options = manager.options;
-        if (zoomState.options == null || !shouldHandle(ev, zoomState.options))
+        if (zoomState.options == null || !shouldHandle(manager.options.getEventTarget(ev), zoomState.options))
             return;
         var sampleAtLeft = zoomState.options.scrollPosition * zoomState.options.samplesPerPixel;
         var samplesInView = zoomState.options.width * zoomState.options.samplesPerPixel;
@@ -1347,7 +1347,7 @@ function default_1(manager, hammer) {
         var newSpp = zoomState.sppStart * ev.scale;
         var newSamplesInView = zoomState.options.width * newSpp;
         var newSamplesToCenter = newSamplesInView / 2;
-        var maxWidth = manager.getScrollWidth() + endMargin;
+        var maxWidth = manager.scrollWidth + endMargin;
         var maxSamplesInView = maxWidth * zoomState.options.samplerate;
         if (newSamplesInView >= maxSamplesInView)
             return;
@@ -1358,7 +1358,7 @@ function default_1(manager, hammer) {
         }).process();
     });
     hammer.on('pinchend', function (ev) {
-        if (zoomState.options == null || !shouldHandle(ev, zoomState.options))
+        if (zoomState.options == null || !shouldHandle(manager.options.getEventTarget(ev), zoomState.options))
             return;
         zoomState.sppStart = 0;
         zoomState.maxWidth = 0;
@@ -1388,10 +1388,10 @@ var resizeState = {
  * @param hammer
  */
 function default_1(manager, hammer) {
-    var shouldHandle = function (ev, options) { return options.mode === 'resize' && ev != null && ev.target.hasAttribute('data-wave-id'); };
+    var shouldHandle = function (target, options) { return options.mode === 'resize' && target != null && target.hasAttribute('data-wave-id'); };
     hammer.on('panstart', function (ev) {
         var options = manager.options;
-        if (!shouldHandle(ev, options))
+        if (!shouldHandle(manager.options.getEventTarget(ev), options))
             return;
         var id = ev.target.getAttribute('data-wave-id');
         if (id == null)
@@ -1419,7 +1419,7 @@ function default_1(manager, hammer) {
         resizeState.dragWave = wave;
     });
     hammer.on('panmove', function (ev) {
-        if (resizeState.dragWave == null || resizeState.options == null || !shouldHandle(ev, resizeState.options))
+        if (resizeState.dragWave == null || resizeState.options == null || !shouldHandle(manager.options.getEventTarget(ev), resizeState.options))
             return;
         var options = manager.options;
         if (resizeState.activeSegment == null)
@@ -1447,7 +1447,7 @@ function default_1(manager, hammer) {
         manager.process(resizeState.dragWave.id);
     });
     hammer.on('panend', function (ev) {
-        if (resizeState.options == null || !shouldHandle(ev, resizeState.options))
+        if (resizeState.options == null || !shouldHandle(manager.options.getEventTarget(ev), resizeState.options))
             return;
         resizeState.activeSegment = null;
         resizeState.activeSegmentOffsetStart = 0;

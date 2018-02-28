@@ -10,11 +10,11 @@ import Interval from '../models/interval';
  */
 export default (manager: WaveShaper, hammer: HammerManager) => {
 
-    const shouldHandle = (ev: HammerInput, options: ManagerOptions) => options.mode === 'cut' && ev.target.hasAttribute('data-wave-id');
+    const shouldHandle = (target: HTMLElement, options: ManagerOptions) => options.mode === 'cut' && target.hasAttribute('data-wave-id');
 
     hammer.on('tap', (ev: HammerInput) => { 
         const options = manager.options;
-        if(options == null || !shouldHandle(ev, options))
+        if(options == null || !shouldHandle(manager.options.getEventTarget(ev), options))
             return;
 
         const id = ev.target.getAttribute('data-wave-id');

@@ -31,11 +31,11 @@ const resizeState: ResizeState = {
  */
 export default function(manager: WaveShaper, hammer: HammerManager) {
 
-    const shouldHandle = (ev: HammerInput, options: ManagerOptions) => options.mode === 'resize' && ev != null && ev.target.hasAttribute('data-wave-id');
+    const shouldHandle = (target: HTMLElement, options: ManagerOptions) => options.mode === 'resize' && target != null && target.hasAttribute('data-wave-id');
 
     hammer.on('panstart', (ev) => { 
         const options = manager.options;
-        if(!shouldHandle(ev, options))
+        if(!shouldHandle(manager.options.getEventTarget(ev), options))
             return;
 
         const id = ev.target.getAttribute('data-wave-id');
@@ -71,7 +71,7 @@ export default function(manager: WaveShaper, hammer: HammerManager) {
     });
 
     hammer.on('panmove', (ev) =>  {
-        if(resizeState.dragWave == null || resizeState.options == null || !shouldHandle(ev, resizeState.options))
+        if(resizeState.dragWave == null || resizeState.options == null || !shouldHandle(manager.options.getEventTarget(ev), resizeState.options))
             return;
 
         const options = manager.options;
@@ -108,7 +108,7 @@ export default function(manager: WaveShaper, hammer: HammerManager) {
     });
 
     hammer.on('panend', (ev) => {
-        if(resizeState.options == null || !shouldHandle(ev, resizeState.options))
+        if(resizeState.options == null || !shouldHandle(manager.options.getEventTarget(ev), resizeState.options))
             return;
 
         resizeState.activeSegment = null;

@@ -23,11 +23,11 @@ const panState: PanState = {
  */
 export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
 
-    const shouldHandle = (ev: HammerInput, options: ManagerOptions) => options.mode === 'pan' && ev.target.hasAttribute('data-wave-id');
+    const shouldHandle = (target: HTMLElement, options: ManagerOptions) => options.mode === 'pan' && target.hasAttribute('data-wave-id');
 
     hammer.on('panstart', (ev) => { 
         const options = manager.options;
-        if(!shouldHandle(ev, options))
+        if(!shouldHandle(manager.options.getEventTarget(ev), options))
             return;
 
         panState.panMax = manager.scrollWidth + endMargin;
@@ -36,7 +36,7 @@ export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
 
     hammer.on('panmove', (ev) =>  {
         panState.options = manager.options;
-        if(!shouldHandle(ev, panState.options))
+        if(!shouldHandle(manager.options.getEventTarget(ev), panState.options))
             return;
 
         const position = panState.panStart - ev.deltaX;
@@ -53,7 +53,7 @@ export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
     });
 
     hammer.on('panend', (ev) => {
-        if(panState.options == null || !shouldHandle(ev, panState.options))
+        if(panState.options == null || !shouldHandle(manager.options.getEventTarget(ev), panState.options))
             return;
 
         panState.options = null;

@@ -2,6 +2,7 @@ export type MeterType = 'peak' | 'rms';
 export type InteractionMode = 'pan' | 'drag' | 'cut' | 'resize';
 
 export type GenerateId = () => string;
+export type GetTarget = (ev: HammerInput) => HTMLElement;
 
 export interface ManagerOptions {
     scrollPosition: number;
@@ -13,6 +14,7 @@ export interface ManagerOptions {
     height: number;
     generateId: GenerateId;
     samplerate: number;
+    getEventTarget: GetTarget;
 }
 
 export interface ManagerInput {
@@ -25,6 +27,7 @@ export interface ManagerInput {
     height?: number;
     generateId?: GenerateId;
     samplerate?: number;
+    getEventTarget?: GetTarget;
 }
 
 const defaultOptions: ManagerOptions = {
@@ -36,7 +39,8 @@ const defaultOptions: ManagerOptions = {
     width: 300,
     height: 150,
     generateId: () => Math.random.toString(),
-    samplerate: 44100
+    samplerate: 44100,
+    getEventTarget: (ev) => ev.target
 }
 
 export default defaultOptions;
