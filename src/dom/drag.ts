@@ -59,10 +59,11 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
      */
     hammer.on('panstart', (ev: HammerInput) => {
         const options = manager.options;
-        if (!shouldHandle(manager.options.getEventTarget(ev), options))
+        const target = manager.options.getEventTarget(ev);
+        if (!shouldHandle(target, options))
             return;
 
-        const id = ev.target.getAttribute('data-wave-id');
+        const id = target.getAttribute('data-wave-id');
         if(id == null) return;
 
         const wave = manager.getTrack(id);
@@ -89,7 +90,8 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
     });
 
     hammer.on('panmove', (ev: HammerInput) => {
-        if (dragState.options == null || !shouldHandle(manager.options.getEventTarget(ev), dragState.options))
+        const target = manager.options.getEventTarget(ev);
+        if (dragState.options == null || !shouldHandle(target, dragState.options))
             return;
 
         if (dragState.activeSegment == null || dragState.dragWave == null)
@@ -128,7 +130,8 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
     });
 
     hammer.on('panend', (ev: HammerInput) => {
-        if (dragState.options == null || !shouldHandle(manager.options.getEventTarget(ev), dragState.options))
+        const target = manager.options.getEventTarget(ev);
+        if (dragState.options == null || !shouldHandle(target, dragState.options))
             return;
 
         dragState.activeSegment = null;
@@ -178,7 +181,7 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
         if (ev instanceof TouchEvent) {
             return document.elementFromPoint(ev.touches[0].pageX, ev.touches[0].pageY);
         }
-        return ev.target;
+        return manager.options.getEventTarget(ev as any);
     }
 
     function isTouchDevice() {

@@ -14,10 +14,11 @@ export default (manager: WaveShaper, hammer: HammerManager) => {
 
     hammer.on('tap', (ev: HammerInput) => { 
         const options = manager.options;
-        if(options == null || !shouldHandle(manager.options.getEventTarget(ev), options))
+        const target = manager.options.getEventTarget(ev);
+        if(options == null || !shouldHandle(target, options))
             return;
 
-        const id = ev.target.getAttribute('data-wave-id');
+        const id = target.getAttribute('data-wave-id');
         if(id == null) return;
 
         const wave = manager.getTrack(id);

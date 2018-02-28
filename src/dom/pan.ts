@@ -27,7 +27,8 @@ export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
 
     hammer.on('panstart', (ev) => { 
         const options = manager.options;
-        if(!shouldHandle(manager.options.getEventTarget(ev), options))
+        const target = manager.options.getEventTarget(ev);
+        if(!shouldHandle(target, options))
             return;
 
         panState.panMax = manager.scrollWidth + endMargin;
@@ -36,7 +37,9 @@ export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
 
     hammer.on('panmove', (ev) =>  {
         panState.options = manager.options;
-        if(!shouldHandle(manager.options.getEventTarget(ev), panState.options))
+
+        const target = manager.options.getEventTarget(ev);
+        if(!shouldHandle(target, panState.options))
             return;
 
         const position = panState.panStart - ev.deltaX;
@@ -53,7 +56,8 @@ export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
     });
 
     hammer.on('panend', (ev) => {
-        if(panState.options == null || !shouldHandle(manager.options.getEventTarget(ev), panState.options))
+        const target = manager.options.getEventTarget(ev);
+        if(panState.options == null || !shouldHandle(target, panState.options))
             return;
 
         panState.options = null;

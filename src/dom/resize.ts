@@ -35,10 +35,11 @@ export default function(manager: WaveShaper, hammer: HammerManager) {
 
     hammer.on('panstart', (ev) => { 
         const options = manager.options;
-        if(!shouldHandle(manager.options.getEventTarget(ev), options))
+        const target = manager.options.getEventTarget(ev);
+        if(!shouldHandle(target, options))
             return;
 
-        const id = ev.target.getAttribute('data-wave-id');
+        const id = target.getAttribute('data-wave-id');
         if(id == null) return;
 
         const wave = manager.getTrack(id);
@@ -71,7 +72,8 @@ export default function(manager: WaveShaper, hammer: HammerManager) {
     });
 
     hammer.on('panmove', (ev) =>  {
-        if(resizeState.dragWave == null || resizeState.options == null || !shouldHandle(manager.options.getEventTarget(ev), resizeState.options))
+        const target = manager.options.getEventTarget(ev);
+        if(resizeState.dragWave == null || resizeState.options == null || !shouldHandle(target, resizeState.options))
             return;
 
         const options = manager.options;
@@ -108,7 +110,8 @@ export default function(manager: WaveShaper, hammer: HammerManager) {
     });
 
     hammer.on('panend', (ev) => {
-        if(resizeState.options == null || !shouldHandle(manager.options.getEventTarget(ev), resizeState.options))
+        const target = manager.options.getEventTarget(ev);
+        if(resizeState.options == null || !shouldHandle(target, resizeState.options))
             return;
 
         resizeState.activeSegment = null;
