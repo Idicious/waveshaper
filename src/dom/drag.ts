@@ -1,25 +1,6 @@
-import Track from '../core/track';
 import DomRenderWaveShaper from './index';
-import Interval from '../models/interval';
 import { DomOptions } from './dom-config';
-
-interface DragState {
-    activeSegment: Interval | null;
-    activeSegmentStart: number;
-    dragWave: Track | null;
-    options: DomOptions | null;
-    duration: number;
-    dragging: boolean;
-}
-
-const dragState: DragState = {
-    activeSegment: null,
-    activeSegmentStart: 0,
-    dragWave: null,
-    options: null,
-    duration: 0,
-    dragging: false
-}
+import { DragState } from './dragstate';
 
 /**
  * Adds drag functionality to waveshaper
@@ -28,27 +9,9 @@ const dragState: DragState = {
  * @param hammer Hammer instance
  * @param container Container element
  */
-export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: HTMLElement): () => void => {
+export default (manager: DomRenderWaveShaper, hammer: HammerManager, dragState: DragState) => {
 
     const shouldHandle = (target: HTMLElement, options: DomOptions) => options.mode === 'drag' && target.hasAttribute('data-wave-id');
-
-    const enterlistener = (ev: PointerEvent) => mouseHover(ev);
-    const downlistener = (ev: PointerEvent) => container.releasePointerCapture(ev.pointerId);
-
-
-    /**
-     * Fires when the mouse moves over the container,
-     * If a segment is being dragged and the pointer moves
-     * into another canvas the segment is tranfered to the 
-     * new canvas.
-     */
-    container.addEventListener('pointerenter', enterlistener);
-    container.addEventListener('pointerdown', downlistener);
-
-    const destroy = () => {
-        container.removeEventListener('pointerover', enterlistener);
-        container.removeEventListener('pointerdown', downlistener);
-    }
 
     /**
      * Sets up the drag by finding the 
@@ -136,54 +99,4 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
         dragState.options = null;
         dragState.duration = 0;
     });
-
-    const mouseHover = (ev: PointerEvent) => {
-        if (dragState.options == null || dragState.options.mode !== 'drag')
-            return;
-
-        if (dragState.activeSegment == null || dragState.dragWave == null)
-            return;
-
-        const canvas = dragState.options.getEventTarget(ev);
-        if (canvas == null || !(canvas instanceof HTMLCanvasElement))
-            return;
-
-        const id = canvas.getAttribute('data-wave-id');
-        if(id == null) return;
-
-        const wave = manager.getTrack(id);
-        if(wave == null) return;
-
-        if (dragState.dragWave.id !== id) {
-            const index = dragState.dragWave.intervals.indexOf(dragState.activeSegment);
-            dragState.dragWave.intervals.splice(index, 1);
-
-            wave.intervals.push(dragState.activeSegment);
-            dragState.activeSegment.index = 1000;
-
-            const currentId = dragState.dragWave.id;
-            dragState.dragWave = wave;
-
-            manager.flatten(wave.id, currentId);
-            manager.process(wave.id, currentId);
-        }
-    }
-
-    /**
-     * Gets the actual target from a pointer event
-     * @param ev 
-    //  */
-    // const getTouchMouseTargetElement = (ev: PointerEvent | MouseEvent) => {
-    //     if (ev instanceof PointerEvent) {
-    //         return document.elementFromPoint(ev.pageX, ev.pageY);
-    //     }
-    //     return manager.options.getEventTarget(ev as any);
-    // }
-
-    // function isTouchDevice() {
-    //     return 'ontouchstart' in window        // works on most browsers 
-    //         || navigator.maxTouchPoints;       // works on IE10/11 and Surface
-    // };
-
-    return destroy;
 }

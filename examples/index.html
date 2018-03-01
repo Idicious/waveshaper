@@ -11,6 +11,11 @@
     #container {
         width: 100%;
     }
+
+    canvas {
+        width: 100%;
+        height: 300px;
+    }
 </style>
 <body>
     <div id='container'></div>
@@ -137,7 +142,8 @@
         });
 
         // Without audio data will draw outlines
-        WS.setTracks(...tracks)
+        WS.setInteraction(container)
+            .setTracks(...tracks)
             .loadData(ctx, ...audioData)
             .process();
     </script>

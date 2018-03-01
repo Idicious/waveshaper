@@ -8,7 +8,9 @@ import pan from './pan';
 import zoom from './zoom';
 import resize from './resize';
 import line from './line';
+import enter from './enter';
 import defaultDomOptions, { DomInput, DomOptions } from "./dom-config";
+import { dragState } from "./dragstate";
 
 /**
  * Extends WaveShapeManager to allow for easy canvas rendering registration.
@@ -16,8 +18,9 @@ import defaultDomOptions, { DomInput, DomOptions } from "./dom-config";
  * @inheritDoc
  */
 export default class DomRenderWaveShaper extends WaveShaper {
-    private unregisterMap = new Map<string, () => void>();
+    private unregister = () => {};
 
+    private unregisterMap = new Map<string, () => void>();
     private canvasMap = new Map<string, () => void>();
 
     public get scrollWidth(): number { return (this._duration * this._options.samplerate) / this._options.samplesPerPixel }
@@ -62,10 +65,12 @@ export default class DomRenderWaveShaper extends WaveShaper {
         const callBack = (options: DomOptions, data: Float32Array) => line(data, options, ctx, color)
         this.on(id, callBack);
 
-        this.unregisterCanvas(id)
+        this.unregisterCanvas(id);
+
+        
         this.canvasMap.set(id, () => this.off(id, callBack));
 
-        const unregister = this.addInteraction(canvas);
+        const unregister = enter(this, canvas, dragState);
         this.unregisterMap.set(id, unregister);
 
         // If registerSetsActive is true 
@@ -126,21 +131,28 @@ export default class DomRenderWaveShaper extends WaveShaper {
         return this;
     }
 
-    addInteraction (element: HTMLCanvasElement): () => void {
+    setInteraction(element: HTMLElement) {
         if(element == null) throw Error('Interaction container element could not be found.');
-    
+        this.unregister();
+
         element.setAttribute('touch-action', 'none');
         const hammer = new Hammer(element, hammerConfig);
     
-        const destroy = drag(this, hammer, element);
+        drag(this, hammer, dragState);
         cut(this, hammer);
         pan(this, hammer);
         zoom(this, hammer);
         resize(this, hammer);
     
-        return () => {
+        this.unregister = () => {
             hammer.destroy();
-            destroy();
         };
+
+        return this;
+    }
+
+    clearInteraction() {
+        this.unregister();
+        this.unregister = () => { }
     }
 }

@@ -10,16 +10,11 @@ describe('WaveShaper class tests', () => {
         const options = manager.options;
 
         expect(options.samplerate).toBe(defaultConfig.samplerate);
-        expect(options.mode).toBe(defaultConfig.mode);
         expect(options.meterType).toBe(defaultConfig.meterType);
         expect(options.width).toBe(defaultConfig.width);
-        expect(options.height).toBe(defaultConfig.height);
         expect(options.samplesPerPixel).toBe(defaultConfig.samplesPerPixel);
         expect(options.scrollPosition).toBe(defaultConfig.scrollPosition);
         expect(options.resolution).toBe(defaultConfig.resolution);
-
-        const newId = manager.options.generateId();
-        expect(newId).not.toBeNull();
     });
 
     it('Can be created with partial config.', () => {

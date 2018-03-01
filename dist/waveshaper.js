@@ -918,7 +918,9 @@ var pan_1 = __webpack_require__(12);
 var zoom_1 = __webpack_require__(13);
 var resize_1 = __webpack_require__(14);
 var line_1 = __webpack_require__(15);
-var dom_config_1 = __webpack_require__(16);
+var enter_1 = __webpack_require__(16);
+var dom_config_1 = __webpack_require__(17);
+var dragstate_1 = __webpack_require__(18);
 /**
  * Extends WaveShapeManager to allow for easy canvas rendering registration.
  *
@@ -929,6 +931,7 @@ var DomRenderWaveShaper = /** @class */ (function (_super) {
     function DomRenderWaveShaper(options) {
         if (options === void 0) { options = dom_config_1.default; }
         var _this = _super.call(this, options) || this;
+        _this.unregister = function () { };
         _this.unregisterMap = new Map();
         _this.canvasMap = new Map();
         _this._options = __assign({}, dom_config_1.default, _this._options);
@@ -972,7 +975,7 @@ var DomRenderWaveShaper = /** @class */ (function (_super) {
         this.on(id, callBack);
         this.unregisterCanvas(id);
         this.canvasMap.set(id, function () { return _this.off(id, callBack); });
-        var unregister = this.addInteraction(canvas);
+        var unregister = enter_1.default(this, canvas, dragstate_1.dragState);
         this.unregisterMap.set(id, unregister);
         // If registerSetsActive is true 
         if (this._options.registerSetsActive) {
@@ -1032,20 +1035,25 @@ var DomRenderWaveShaper = /** @class */ (function (_super) {
         });
         return this;
     };
-    DomRenderWaveShaper.prototype.addInteraction = function (element) {
+    DomRenderWaveShaper.prototype.setInteraction = function (element) {
         if (element == null)
             throw Error('Interaction container element could not be found.');
+        this.unregister();
         element.setAttribute('touch-action', 'none');
         var hammer = new Hammer(element, hammerconfig_1.default);
-        var destroy = drag_1.default(this, hammer, element);
+        drag_1.default(this, hammer, dragstate_1.dragState);
         cut_1.default(this, hammer);
         pan_1.default(this, hammer);
         zoom_1.default(this, hammer);
         resize_1.default(this, hammer);
-        return function () {
+        this.unregister = function () {
             hammer.destroy();
-            destroy();
         };
+        return this;
+    };
+    DomRenderWaveShaper.prototype.clearInteraction = function () {
+        this.unregister();
+        this.unregister = function () { };
     };
     return DomRenderWaveShaper;
 }(waveshaper_1.default));
@@ -1123,14 +1131,6 @@ exports.default = (function (manager, hammer) {
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var dragState = {
-    activeSegment: null,
-    activeSegmentStart: 0,
-    dragWave: null,
-    options: null,
-    duration: 0,
-    dragging: false
-};
 /**
  * Adds drag functionality to waveshaper
  *
@@ -1138,22 +1138,8 @@ var dragState = {
  * @param hammer Hammer instance
  * @param container Container element
  */
-exports.default = (function (manager, hammer, container) {
+exports.default = (function (manager, hammer, dragState) {
     var shouldHandle = function (target, options) { return options.mode === 'drag' && target.hasAttribute('data-wave-id'); };
-    var enterlistener = function (ev) { return mouseHover(ev); };
-    var downlistener = function (ev) { return container.releasePointerCapture(ev.pointerId); };
-    /**
-     * Fires when the mouse moves over the container,
-     * If a segment is being dragged and the pointer moves
-     * into another canvas the segment is tranfered to the
-     * new canvas.
-     */
-    container.addEventListener('pointerenter', enterlistener);
-    container.addEventListener('pointerdown', downlistener);
-    var destroy = function () {
-        container.removeEventListener('pointerover', enterlistener);
-        container.removeEventListener('pointerdown', downlistener);
-    };
     /**
      * Sets up the drag by finding the
      */
@@ -1222,46 +1208,6 @@ exports.default = (function (manager, hammer, container) {
         dragState.options = null;
         dragState.duration = 0;
     });
-    var mouseHover = function (ev) {
-        if (dragState.options == null || dragState.options.mode !== 'drag')
-            return;
-        if (dragState.activeSegment == null || dragState.dragWave == null)
-            return;
-        var canvas = dragState.options.getEventTarget(ev);
-        if (canvas == null || !(canvas instanceof HTMLCanvasElement))
-            return;
-        var id = canvas.getAttribute('data-wave-id');
-        if (id == null)
-            return;
-        var wave = manager.getTrack(id);
-        if (wave == null)
-            return;
-        if (dragState.dragWave.id !== id) {
-            var index = dragState.dragWave.intervals.indexOf(dragState.activeSegment);
-            dragState.dragWave.intervals.splice(index, 1);
-            wave.intervals.push(dragState.activeSegment);
-            dragState.activeSegment.index = 1000;
-            var currentId = dragState.dragWave.id;
-            dragState.dragWave = wave;
-            manager.flatten(wave.id, currentId);
-            manager.process(wave.id, currentId);
-        }
-    };
-    /**
-     * Gets the actual target from a pointer event
-     * @param ev
-    //  */
-    // const getTouchMouseTargetElement = (ev: PointerEvent | MouseEvent) => {
-    //     if (ev instanceof PointerEvent) {
-    //         return document.elementFromPoint(ev.pageX, ev.pageY);
-    //     }
-    //     return manager.options.getEventTarget(ev as any);
-    // }
-    // function isTouchDevice() {
-    //     return 'ontouchstart' in window        // works on most browsers 
-    //         || navigator.maxTouchPoints;       // works on IE10/11 and Surface
-    // };
-    return destroy;
 });
 
 
@@ -1531,6 +1477,55 @@ exports.default = (function (waveform, options, ctx, color) {
 
 /***/ }),
 /* 16 */
+/***/ (function(module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = (function (manager, canvas, dragState) {
+    var enterlistener = function (ev) { return pointerEnter(ev); };
+    var downlistener = function (ev) { return canvas.releasePointerCapture(ev.pointerId); };
+    /**
+     * Fires when the mouse moves over the container,
+     * If a segment is being dragged and the pointer moves
+     * into another canvas the segment is tranfered to the
+     * new canvas.
+     */
+    canvas.addEventListener('pointerenter', enterlistener);
+    canvas.addEventListener('pointerdown', downlistener);
+    var destroy = function () {
+        canvas.removeEventListener('pointerenter', enterlistener);
+        canvas.removeEventListener('pointerdown', downlistener);
+    };
+    var pointerEnter = function (ev) {
+        if (dragState.options == null || dragState.options.mode !== 'drag')
+            return;
+        if (dragState.activeSegment == null || dragState.dragWave == null)
+            return;
+        var canvas = dragState.options.getEventTarget(ev);
+        if (canvas == null || !(canvas instanceof HTMLCanvasElement))
+            return;
+        var id = canvas.getAttribute('data-wave-id');
+        if (id == null)
+            return;
+        var wave = manager.getTrack(id);
+        if (wave == null)
+            return;
+        if (dragState.dragWave.id !== id) {
+            var index = dragState.dragWave.intervals.indexOf(dragState.activeSegment);
+            dragState.dragWave.intervals.splice(index, 1);
+            wave.intervals.push(dragState.activeSegment);
+            dragState.activeSegment.index = 1000;
+            var currentId = dragState.dragWave.id;
+            dragState.dragWave = wave;
+            manager.flatten(wave.id, currentId);
+            manager.process(wave.id, currentId);
+        }
+    };
+    return destroy;
+});
+
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __assign = (this && this.__assign) || Object.assign || function(t) {
@@ -1545,6 +1540,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var managerconfig_1 = __webpack_require__(0);
 var defaultDomOptions = __assign({}, managerconfig_1.default, { mode: 'pan', height: 150, getEventTarget: function (ev) { return ev.target; }, generateId: function () { return Math.random().toString(); }, registerSetsActive: true });
 exports.default = defaultDomOptions;
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.dragState = {
+    activeSegment: null,
+    activeSegmentStart: 0,
+    dragWave: null,
+    options: null,
+    duration: 0,
+    dragging: false
+};
 
 
 /***/ })

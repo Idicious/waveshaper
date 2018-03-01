@@ -93,7 +93,7 @@
         const canvasWrapper = document.getElementById('canvas-wrapper');
         const canvasFragment = document.getElementById('canvas-fragment');
 
-        WS.setOptions(options);
+        WS.setOptions(options).setInteraction(canvasWrapper);
 
         const elementHeight = options.height;
         const ownHeight = canvasContainer.clientHeight;
