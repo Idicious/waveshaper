@@ -1,4 +1,4 @@
-import { ManagerOptions } from "../config/managerconfig";
+import { DomOptions } from "./dom-config";
 
 /**
  * 
@@ -9,7 +9,7 @@ import { ManagerOptions } from "../config/managerconfig";
  * @param ctx 
  * @param color
  */
-export default (waveform: Float32Array, options: ManagerOptions, ctx: CanvasRenderingContext2D, color: string) => {
+export default (waveform: Float32Array, options: DomOptions, ctx: CanvasRenderingContext2D, color: string) => {
     const scale = options.height / 2;
     const width = options.width;
     

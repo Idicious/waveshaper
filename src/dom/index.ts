@@ -8,34 +8,7 @@ import pan from './pan';
 import zoom from './zoom';
 import resize from './resize';
 import line from './line';
-import { ManagerOptions } from "../config/managerconfig";
-
-const noop = () => { };
-
-/**
- * @description Sets up touch and mouse interaction with the canvasses. When using this
- * you should use the registerCanvas method as it ensures the canvasses have the correct
- * classes and attributes.
- * 
- * @param manager 
- * @param container 
- */
-const addInteraction = (manager: DomRenderWaveShaper, element: HTMLElement): () => void => {
-    if(element == null) throw Error('Interaction container element could not be found.');
-
-    const hammer = new Hammer(element, hammerConfig);
-
-    const destroy = drag(manager, hammer, element);
-    cut(manager, hammer);
-    pan(manager, hammer);
-    zoom(manager, hammer);
-    resize(manager, hammer);
-
-    return () => {
-        hammer.destroy();
-        destroy();
-    };
-}
+import defaultDomOptions, { DomInput, DomOptions } from "./dom-config";
 
 /**
  * Extends WaveShapeManager to allow for easy canvas rendering registration.
@@ -43,11 +16,20 @@ const addInteraction = (manager: DomRenderWaveShaper, element: HTMLElement): () 
  * @inheritDoc
  */
 export default class DomRenderWaveShaper extends WaveShaper {
-    private unregister: () => void = noop;
+    private unregisterMap = new Map<string, () => void>();
 
     private canvasMap = new Map<string, () => void>();
 
     public get scrollWidth(): number { return (this._duration * this._options.samplerate) / this._options.samplesPerPixel }
+
+    public get options(): DomOptions { return { ...this._options }; }
+    protected _options: DomOptions;
+
+    constructor(options: DomInput = defaultDomOptions) {
+        super(options);
+
+        this._options = { ...defaultDomOptions, ...this._options };
+    }
 
     /**
      * @description When a canvas is registered through this method each time the 
@@ -77,11 +59,21 @@ export default class DomRenderWaveShaper extends WaveShaper {
         
         ctx.scale(scale, 1)
 
-        const callBack = (options: ManagerOptions, data: Float32Array) => line(data, options, ctx, color)
+        const callBack = (options: DomOptions, data: Float32Array) => line(data, options, ctx, color)
         this.on(id, callBack);
 
         this.unregisterCanvas(id)
         this.canvasMap.set(id, () => this.off(id, callBack));
+
+        const unregister = this.addInteraction(canvas);
+        this.unregisterMap.set(id, unregister);
+
+        // If registerSetsActive is true 
+        if(this._options.registerSetsActive) {
+            if(this.activeWaveShapers) this.setActive(...this.activeWaveShapers.concat(id));
+            else this.setActive(id);
+        }
+
         return this;
     }
 
@@ -98,32 +90,18 @@ export default class DomRenderWaveShaper extends WaveShaper {
             this.canvasMap.delete(id);
         }
 
-        return this;
-    }
+        const unregisterEvents = this.unregisterMap.get(id);
+        if(unregisterEvents != null) {
+            unregisterEvents();
+            this.unregisterMap.delete(id);
+        }
 
-    /**
-     * Registers event listeners to given element which handle interaction,
-     * events are delegated so canvasses should be direct or indirect children
-     * of given element.
-     * 
-     * @param element 
-     * @returns Current WaveShaper instance
-     */
-    setInteraction(element: HTMLElement): DomRenderWaveShaper {
-        this.unregister();
-        this.unregister = addInteraction(this, element);
-
-        return this;
-    }
-
-    /**
-     * Removes event listeners from previously called setInteraction
-     * 
-     * @returns Current WaveShaper instance
-     */
-    clearInteraction(): DomRenderWaveShaper {
-        this.unregister();
-        this.unregister = noop;
+        if(this._options.registerSetsActive) {
+            if(this.activeWaveShapers) {
+                const index = this.activeWaveShapers.indexOf(id);
+                if(index != -1) this.setActive(...this.activeWaveShapers.splice(index, 1))
+            }
+        }
 
         return this;
     }
@@ -146,5 +124,23 @@ export default class DomRenderWaveShaper extends WaveShaper {
         });
         
         return this;
+    }
+
+    addInteraction (element: HTMLCanvasElement): () => void {
+        if(element == null) throw Error('Interaction container element could not be found.');
+    
+        element.setAttribute('touch-action', 'none');
+        const hammer = new Hammer(element, hammerConfig);
+    
+        const destroy = drag(this, hammer, element);
+        cut(this, hammer);
+        pan(this, hammer);
+        zoom(this, hammer);
+        resize(this, hammer);
+    
+        return () => {
+            hammer.destroy();
+            destroy();
+        };
     }
 }

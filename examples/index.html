@@ -41,6 +41,7 @@
     <label for="zoom">Zoom</label>
     <input id="zoom" name="zoom" type="range" min="1" max="4096" value="1024"></range>
 
+    <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.js"></script>
     <script src="../dist/waveshaper.js"></script>
     <script>
@@ -136,8 +137,7 @@
         });
 
         // Without audio data will draw outlines
-        WS.setInteraction(container)
-            .setTracks(...tracks)
+        WS.setTracks(...tracks)
             .loadData(ctx, ...audioData)
             .process();
     </script>

@@ -1,12 +1,12 @@
-import { ManagerOptions } from '../config/managerconfig';
 import DomRenderWaveShaper from './index';
+import { DomOptions } from './dom-config';
 
 const endMargin = 500;
 
 interface PanState {
     panStart: number;
     panMax: number;
-    options: ManagerOptions | null;
+    options: DomOptions | null;
 }
 
 const panState: PanState = {
@@ -23,7 +23,7 @@ const panState: PanState = {
  */
 export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
 
-    const shouldHandle = (target: HTMLElement, options: ManagerOptions) => options.mode === 'pan' && target.hasAttribute('data-wave-id');
+    const shouldHandle = (target: HTMLElement, options: DomOptions) => options.mode === 'pan' && target.hasAttribute('data-wave-id');
 
     hammer.on('panstart', (ev) => { 
         const options = manager.options;

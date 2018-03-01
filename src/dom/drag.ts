@@ -1,13 +1,13 @@
 import Track from '../core/track';
 import DomRenderWaveShaper from './index';
 import Interval from '../models/interval';
-import { ManagerOptions } from '../config/managerconfig';
+import { DomOptions } from './dom-config';
 
 interface DragState {
     activeSegment: Interval | null;
     activeSegmentStart: number;
     dragWave: Track | null;
-    options: ManagerOptions | null;
+    options: DomOptions | null;
     duration: number;
     dragging: boolean;
 }
@@ -30,9 +30,11 @@ const dragState: DragState = {
  */
 export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: HTMLElement): () => void => {
 
-    const shouldHandle = (target: HTMLElement, options: ManagerOptions) => options.mode === 'drag' && target.hasAttribute('data-wave-id');
+    const shouldHandle = (target: HTMLElement, options: DomOptions) => options.mode === 'drag' && target.hasAttribute('data-wave-id');
 
-    const listener = (ev: TouchEvent | MouseEvent) => mouseHover(ev);
+    const enterlistener = (ev: PointerEvent) => mouseHover(ev);
+    const downlistener = (ev: PointerEvent) => container.releasePointerCapture(ev.pointerId);
+
 
     /**
      * Fires when the mouse moves over the container,
@@ -40,18 +42,12 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
      * into another canvas the segment is tranfered to the 
      * new canvas.
      */
-    if(isTouchDevice()) {
-        container.addEventListener('touchmove', listener);
-    } else {
-        container.addEventListener('mousemove', listener);
-    }
+    container.addEventListener('pointerenter', enterlistener);
+    container.addEventListener('pointerdown', downlistener);
 
     const destroy = () => {
-        if(isTouchDevice()) {
-            container.removeEventListener('touchmove', listener);
-        } else {
-            container.removeEventListener('mousemove', listener);
-        }
+        container.removeEventListener('pointerover', enterlistener);
+        container.removeEventListener('pointerdown', downlistener);
     }
 
     /**
@@ -141,14 +137,14 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
         dragState.duration = 0;
     });
 
-    const mouseHover = (ev: TouchEvent | MouseEvent) => {
+    const mouseHover = (ev: PointerEvent) => {
         if (dragState.options == null || dragState.options.mode !== 'drag')
             return;
 
         if (dragState.activeSegment == null || dragState.dragWave == null)
             return;
 
-        const canvas = getTouchMouseTargetElement(ev);
+        const canvas = dragState.options.getEventTarget(ev);
         if (canvas == null || !(canvas instanceof HTMLCanvasElement))
             return;
 
@@ -176,18 +172,18 @@ export default (manager: DomRenderWaveShaper, hammer: HammerManager, container: 
     /**
      * Gets the actual target from a pointer event
      * @param ev 
-     */
-    const getTouchMouseTargetElement = (ev: TouchEvent | MouseEvent) => {
-        if (ev instanceof TouchEvent) {
-            return document.elementFromPoint(ev.touches[0].pageX, ev.touches[0].pageY);
-        }
-        return manager.options.getEventTarget(ev as any);
-    }
+    //  */
+    // const getTouchMouseTargetElement = (ev: PointerEvent | MouseEvent) => {
+    //     if (ev instanceof PointerEvent) {
+    //         return document.elementFromPoint(ev.pageX, ev.pageY);
+    //     }
+    //     return manager.options.getEventTarget(ev as any);
+    // }
 
-    function isTouchDevice() {
-        return 'ontouchstart' in window        // works on most browsers 
-            || navigator.maxTouchPoints;       // works on IE10/11 and Surface
-    };
+    // function isTouchDevice() {
+    //     return 'ontouchstart' in window        // works on most browsers 
+    //         || navigator.maxTouchPoints;       // works on IE10/11 and Surface
+    // };
 
     return destroy;
 }

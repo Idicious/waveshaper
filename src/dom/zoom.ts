@@ -1,12 +1,12 @@
-import { ManagerOptions } from '../config/managerconfig';
 import DomRenderWaveShaper from './';
+import { DomOptions } from './dom-config';
 
 const endMargin = 500;
 
 interface ZoomState {
     maxWidth: number;
     sppStart: number;
-    options: ManagerOptions | null;
+    options: DomOptions | null;
 }
 
 const zoomState: ZoomState = {
@@ -23,7 +23,7 @@ const zoomState: ZoomState = {
  */
 export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
 
-    const shouldHandle = (target: HTMLElement, options: ManagerOptions) => options.mode === 'pan' && target.hasAttribute('data-wave-id');
+    const shouldHandle = (target: HTMLElement, options: DomOptions) => options.mode === 'pan' && target.hasAttribute('data-wave-id');
 
     hammer.on('pinchstart', (ev) => {
         const options = manager.options;

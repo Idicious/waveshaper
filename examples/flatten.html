@@ -72,6 +72,7 @@
         <option value="cut">Cut</option>
     </select>
 
+    <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.js"></script>
     <script src="../waveshaper.js"></script>
     <script>
@@ -92,7 +93,6 @@
         const canvasWrapper = document.getElementById('canvas-wrapper');
         const canvasFragment = document.getElementById('canvas-fragment');
 
-        WS.setInteraction(canvasWrapper);
         WS.setOptions(options);
 
         const elementHeight = options.height;
@@ -186,8 +186,6 @@
                 subscriptions.push(subscription);
 
                 canvasFragment.appendChild(waveShapeData.canvas);
-                
-                WS.setActive(...buffersInView.map(b => b.id));
                 requestAnimationFrame(() => WS.process());
             }
         }
@@ -233,7 +231,7 @@
             lastScroll = true;
 
             // Unsubscribe to existing canvas draw callbacks
-            while(subscriptions.length > 0) subscriptions.pop()();
+            buffersInView.forEach(buffer => WS.unregisterCanvas(buffer.id));
 
             const containerDiv = document.createElement('div');
             containerDiv.style.transform = 'translateY(' + offset + 'px)';
@@ -241,12 +239,9 @@
 
             const inView = buffersInView.length;
             buffersInView = buffers.slice(startIndex, startIndex + fitInElement);
-            WS.setActive(...buffersInView.map(b => b.id));
 
             for(const buffer of buffersInView) {
-                const sub = WS.registerCanvas(buffer.id, buffer.canvas, buffer.color);
-                subscriptions.push(sub);
-
+                WS.registerCanvas(buffer.id, buffer.canvas, buffer.color);
                 containerDiv.appendChild(buffer.canvas);
             }
 

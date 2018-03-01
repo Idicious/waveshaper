@@ -33,7 +33,7 @@ export default class WaveShaper {
      * 
      * @memberof WaveShaper
      */
-    protected activeWaveShapers: string[] | null;
+    protected activeWaveShapers: string[] = [];
 
     /**
      * @description Map of callback functions

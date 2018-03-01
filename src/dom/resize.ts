@@ -1,7 +1,7 @@
 import Track from '../core/track';
-import WaveShaper from '../core/waveshaper';
 import Interval from '../models/interval';
-import { ManagerOptions } from '../config/managerconfig';
+import { DomRenderWaveShaper } from '../';
+import { DomOptions } from './dom-config';
 
 declare type SegmentSide = 'left' | 'right';
 
@@ -11,7 +11,7 @@ interface ResizeState {
     activeSegmentOffsetStart: number;
     activeSegmentOffsetEnd: number;
     dragWave: Track | null;
-    options: ManagerOptions | null;
+    options: DomOptions | null;
 }
 
 const resizeState: ResizeState = {
@@ -29,9 +29,9 @@ const resizeState: ResizeState = {
  * @param manager
  * @param hammer
  */
-export default function(manager: WaveShaper, hammer: HammerManager) {
+export default function(manager: DomRenderWaveShaper, hammer: HammerManager) {
 
-    const shouldHandle = (target: HTMLElement, options: ManagerOptions) => options.mode === 'resize' && target != null && target.hasAttribute('data-wave-id');
+    const shouldHandle = (target: HTMLElement, options: DomOptions) => options.mode === 'resize' && target != null && target.hasAttribute('data-wave-id');
 
     hammer.on('panstart', (ev) => { 
         const options = manager.options;

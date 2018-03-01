@@ -1,6 +1,6 @@
-import WaveShaper from '../core/waveshaper';
-import { ManagerOptions } from '../config/managerconfig';
 import Interval from '../models/interval';
+import { DomRenderWaveShaper } from '../';
+import { DomOptions } from './dom-config';
 
 /**
  * Adds drag functionality to waveshaper
@@ -8,9 +8,9 @@ import Interval from '../models/interval';
  * @param manager
  * @param hammer
  */
-export default (manager: WaveShaper, hammer: HammerManager) => {
+export default (manager: DomRenderWaveShaper, hammer: HammerManager) => {
 
-    const shouldHandle = (target: HTMLElement, options: ManagerOptions) => options.mode === 'cut' && target.hasAttribute('data-wave-id');
+    const shouldHandle = (target: HTMLElement, options: DomOptions) => options.mode === 'cut' && target.hasAttribute('data-wave-id');
 
     hammer.on('tap', (ev: HammerInput) => { 
         const options = manager.options;

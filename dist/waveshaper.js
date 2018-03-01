@@ -75,6 +75,22 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var defaultOptions = {
+    scrollPosition: 0,
+    samplesPerPixel: 1024,
+    resolution: 10,
+    meterType: 'rms',
+    width: 300,
+    samplerate: 44100
+};
+exports.default = defaultOptions;
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __assign = (this && this.__assign) || Object.assign || function(t) {
@@ -86,8 +102,8 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var track_1 = __webpack_require__(1);
-var managerconfig_1 = __webpack_require__(5);
+var track_1 = __webpack_require__(2);
+var managerconfig_1 = __webpack_require__(0);
 /**
  *
  *
@@ -114,6 +130,12 @@ var WaveShaper = /** @class */ (function () {
          * @memberof WaveShaper
          */
         this.audioData = new Map();
+        /**
+         * @description Active id's, redraws when draw is called without argument
+         *
+         * @memberof WaveShaper
+         */
+        this.activeWaveShapers = [];
         /**
          * @description Map of callback functions
          *
@@ -416,13 +438,13 @@ exports.default = WaveShaper;
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var peak_1 = __webpack_require__(2);
-var rms_1 = __webpack_require__(3);
-var flatten_1 = __webpack_require__(4);
+var peak_1 = __webpack_require__(3);
+var rms_1 = __webpack_require__(4);
+var flatten_1 = __webpack_require__(5);
 var Track = /** @class */ (function () {
     function Track(id, intervals) {
         var _this = this;
@@ -461,7 +483,7 @@ exports.default = Track;
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -537,7 +559,7 @@ exports.default = (function (options, intervals, dataMap) {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -617,7 +639,7 @@ exports.default = (function (options, intervals, dataMap) {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 var __assign = (this && this.__assign) || Object.assign || function(t) {
@@ -837,26 +859,6 @@ var cmp = function (a, b) {
 
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var defaultOptions = {
-    scrollPosition: 0,
-    samplesPerPixel: 1024,
-    resolution: 10,
-    meterType: 'rms',
-    mode: 'pan',
-    width: 300,
-    height: 150,
-    generateId: function () { return Math.random.toString(); },
-    samplerate: 44100,
-    getEventTarget: function (ev) { return ev.target; }
-};
-exports.default = defaultOptions;
-
-
-/***/ }),
 /* 6 */
 /***/ (function(module, exports) {
 
@@ -867,19 +869,19 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_6__;
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var waveshaper_1 = __webpack_require__(0);
+var waveshaper_1 = __webpack_require__(1);
 exports.WaveShaper = waveshaper_1.default;
-var track_1 = __webpack_require__(1);
+var track_1 = __webpack_require__(2);
 exports.Track = track_1.default;
 var dom_1 = __webpack_require__(8);
 exports.DomRenderWaveShaper = dom_1.default;
-var managerconfig_1 = __webpack_require__(5);
+var managerconfig_1 = __webpack_require__(0);
 exports.defaultConfig = managerconfig_1.default;
-var rms_1 = __webpack_require__(3);
+var rms_1 = __webpack_require__(4);
 exports.rms = rms_1.default;
-var peak_1 = __webpack_require__(2);
+var peak_1 = __webpack_require__(3);
 exports.peak = peak_1.default;
-var flatten_1 = __webpack_require__(4);
+var flatten_1 = __webpack_require__(5);
 exports.flatten = flatten_1.default;
 exports.default = new dom_1.default();
 
@@ -898,8 +900,16 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var waveshaper_1 = __webpack_require__(0);
+var waveshaper_1 = __webpack_require__(1);
 var Hammer = __webpack_require__(6);
 var hammerconfig_1 = __webpack_require__(9);
 var cut_1 = __webpack_require__(10);
@@ -908,29 +918,7 @@ var pan_1 = __webpack_require__(12);
 var zoom_1 = __webpack_require__(13);
 var resize_1 = __webpack_require__(14);
 var line_1 = __webpack_require__(15);
-var noop = function () { };
-/**
- * @description Sets up touch and mouse interaction with the canvasses. When using this
- * you should use the registerCanvas method as it ensures the canvasses have the correct
- * classes and attributes.
- *
- * @param manager
- * @param container
- */
-var addInteraction = function (manager, element) {
-    if (element == null)
-        throw Error('Interaction container element could not be found.');
-    var hammer = new Hammer(element, hammerconfig_1.default);
-    var destroy = drag_1.default(manager, hammer, element);
-    cut_1.default(manager, hammer);
-    pan_1.default(manager, hammer);
-    zoom_1.default(manager, hammer);
-    resize_1.default(manager, hammer);
-    return function () {
-        hammer.destroy();
-        destroy();
-    };
-};
+var dom_config_1 = __webpack_require__(16);
 /**
  * Extends WaveShapeManager to allow for easy canvas rendering registration.
  *
@@ -938,14 +926,21 @@ var addInteraction = function (manager, element) {
  */
 var DomRenderWaveShaper = /** @class */ (function (_super) {
     __extends(DomRenderWaveShaper, _super);
-    function DomRenderWaveShaper() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.unregister = noop;
+    function DomRenderWaveShaper(options) {
+        if (options === void 0) { options = dom_config_1.default; }
+        var _this = _super.call(this, options) || this;
+        _this.unregisterMap = new Map();
         _this.canvasMap = new Map();
+        _this._options = __assign({}, dom_config_1.default, _this._options);
         return _this;
     }
     Object.defineProperty(DomRenderWaveShaper.prototype, "scrollWidth", {
         get: function () { return (this._duration * this._options.samplerate) / this._options.samplesPerPixel; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DomRenderWaveShaper.prototype, "options", {
+        get: function () { return __assign({}, this._options); },
         enumerable: true,
         configurable: true
     });
@@ -977,6 +972,15 @@ var DomRenderWaveShaper = /** @class */ (function (_super) {
         this.on(id, callBack);
         this.unregisterCanvas(id);
         this.canvasMap.set(id, function () { return _this.off(id, callBack); });
+        var unregister = this.addInteraction(canvas);
+        this.unregisterMap.set(id, unregister);
+        // If registerSetsActive is true 
+        if (this._options.registerSetsActive) {
+            if (this.activeWaveShapers)
+                this.setActive.apply(this, this.activeWaveShapers.concat(id));
+            else
+                this.setActive(id);
+        }
         return this;
     };
     /**
@@ -991,29 +995,18 @@ var DomRenderWaveShaper = /** @class */ (function (_super) {
             unregister();
             this.canvasMap.delete(id);
         }
-        return this;
-    };
-    /**
-     * Registers event listeners to given element which handle interaction,
-     * events are delegated so canvasses should be direct or indirect children
-     * of given element.
-     *
-     * @param element
-     * @returns Current WaveShaper instance
-     */
-    DomRenderWaveShaper.prototype.setInteraction = function (element) {
-        this.unregister();
-        this.unregister = addInteraction(this, element);
-        return this;
-    };
-    /**
-     * Removes event listeners from previously called setInteraction
-     *
-     * @returns Current WaveShaper instance
-     */
-    DomRenderWaveShaper.prototype.clearInteraction = function () {
-        this.unregister();
-        this.unregister = noop;
+        var unregisterEvents = this.unregisterMap.get(id);
+        if (unregisterEvents != null) {
+            unregisterEvents();
+            this.unregisterMap.delete(id);
+        }
+        if (this._options.registerSetsActive) {
+            if (this.activeWaveShapers) {
+                var index = this.activeWaveShapers.indexOf(id);
+                if (index != -1)
+                    this.setActive.apply(this, this.activeWaveShapers.splice(index, 1));
+            }
+        }
         return this;
     };
     /**
@@ -1038,6 +1031,21 @@ var DomRenderWaveShaper = /** @class */ (function (_super) {
                 .catch(function (e) { return console.log(e); });
         });
         return this;
+    };
+    DomRenderWaveShaper.prototype.addInteraction = function (element) {
+        if (element == null)
+            throw Error('Interaction container element could not be found.');
+        element.setAttribute('touch-action', 'none');
+        var hammer = new Hammer(element, hammerconfig_1.default);
+        var destroy = drag_1.default(this, hammer, element);
+        cut_1.default(this, hammer);
+        pan_1.default(this, hammer);
+        zoom_1.default(this, hammer);
+        resize_1.default(this, hammer);
+        return function () {
+            hammer.destroy();
+            destroy();
+        };
     };
     return DomRenderWaveShaper;
 }(waveshaper_1.default));
@@ -1132,26 +1140,19 @@ var dragState = {
  */
 exports.default = (function (manager, hammer, container) {
     var shouldHandle = function (target, options) { return options.mode === 'drag' && target.hasAttribute('data-wave-id'); };
-    var listener = function (ev) { return mouseHover(ev); };
+    var enterlistener = function (ev) { return mouseHover(ev); };
+    var downlistener = function (ev) { return container.releasePointerCapture(ev.pointerId); };
     /**
      * Fires when the mouse moves over the container,
      * If a segment is being dragged and the pointer moves
      * into another canvas the segment is tranfered to the
      * new canvas.
      */
-    if (isTouchDevice()) {
-        container.addEventListener('touchmove', listener);
-    }
-    else {
-        container.addEventListener('mousemove', listener);
-    }
+    container.addEventListener('pointerenter', enterlistener);
+    container.addEventListener('pointerdown', downlistener);
     var destroy = function () {
-        if (isTouchDevice()) {
-            container.removeEventListener('touchmove', listener);
-        }
-        else {
-            container.removeEventListener('mousemove', listener);
-        }
+        container.removeEventListener('pointerover', enterlistener);
+        container.removeEventListener('pointerdown', downlistener);
     };
     /**
      * Sets up the drag by finding the
@@ -1226,7 +1227,7 @@ exports.default = (function (manager, hammer, container) {
             return;
         if (dragState.activeSegment == null || dragState.dragWave == null)
             return;
-        var canvas = getTouchMouseTargetElement(ev);
+        var canvas = dragState.options.getEventTarget(ev);
         if (canvas == null || !(canvas instanceof HTMLCanvasElement))
             return;
         var id = canvas.getAttribute('data-wave-id');
@@ -1249,18 +1250,17 @@ exports.default = (function (manager, hammer, container) {
     /**
      * Gets the actual target from a pointer event
      * @param ev
-     */
-    var getTouchMouseTargetElement = function (ev) {
-        if (ev instanceof TouchEvent) {
-            return document.elementFromPoint(ev.touches[0].pageX, ev.touches[0].pageY);
-        }
-        return manager.options.getEventTarget(ev);
-    };
-    function isTouchDevice() {
-        return 'ontouchstart' in window // works on most browsers 
-            || navigator.maxTouchPoints; // works on IE10/11 and Surface
-    }
-    ;
+    //  */
+    // const getTouchMouseTargetElement = (ev: PointerEvent | MouseEvent) => {
+    //     if (ev instanceof PointerEvent) {
+    //         return document.elementFromPoint(ev.pageX, ev.pageY);
+    //     }
+    //     return manager.options.getEventTarget(ev as any);
+    // }
+    // function isTouchDevice() {
+    //     return 'ontouchstart' in window        // works on most browsers 
+    //         || navigator.maxTouchPoints;       // works on IE10/11 and Surface
+    // };
     return destroy;
 });
 
@@ -1527,6 +1527,24 @@ exports.default = (function (waveform, options, ctx, color) {
     }
     ctx.fill();
 });
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var managerconfig_1 = __webpack_require__(0);
+var defaultDomOptions = __assign({}, managerconfig_1.default, { mode: 'pan', height: 150, getEventTarget: function (ev) { return ev.target; }, generateId: function () { return Math.random().toString(); }, registerSetsActive: true });
+exports.default = defaultDomOptions;
 
 
 /***/ })
