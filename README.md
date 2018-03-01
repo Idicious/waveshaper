@@ -51,18 +51,20 @@ This is the the class you use to manage the settings of all the Tracks and get r
 | clearTracks | ...ids: string[] | Removes Tracks with given id's including all callbacks assigned to them. | WS.removeTracks('1', '2') |
 
 ### Options
+
 The setOptions method expects an object with one or more of the following properties.
+
 | Property | Type | Constraints | Description |
 | -------- | ---- | -----------   | ----------- |
-| samplesPerPixel | number | > 0 | Zoom level, higher to zoom out, lower to zoom in.
+| samplesPerPixel | number | > 0 | Zoom level, higher to zoom out, lower to zoom in. |
 | resolution    | number | > 0 | Detail level, higher for more detail, lower for faster rendering. |
-| width    | number | > 0 | Width in pixels of canvasses |
-| height | number | > 0 | Height in pixels of canvasses |
-| scrollPosition | number | >= 0 | Change to pan, position in pixels
-| meterType | string | 'peak', 'rms' | Method of calculating display values
+| width    | number | > 0 | Width in pixels of canvasses. |
+| height | number | > 0 | Height in pixels of canvasses. |
+| scrollPosition | number | >= 0 | Change to pan, position in pixels. |
+| meterType | string | 'peak', 'rms' | Method of calculating display values. |
 | mode | string | 'pan', 'drag', 'cut', 'resize' | Interaction mode, pan includes pinch-zoom. You can drag between canvasses. |
 | generateId | () => string | | When a segment is cut it must be given a new id, the given method is used to generate the id. |
-| samplerate | number | > 0 | Audio samplerate |
+| samplerate | number | > 0 | Audio samplerate. |
 
 ## DomRenderWaveShaper
 
