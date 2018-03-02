@@ -3,21 +3,11 @@ var webpack = require("webpack");
 
 module.exports = {
   entry: path.join(__dirname, "src"),
-  externals: {
-    hammerjs : {
-      root: "Hammer",
-      commonjs2: "hammerjs",
-      commonjs: "hammerjs",
-      amd: "hammerjs",
-      umd: "hammerjs"
-    }
-  },
   output: {
     path: path.join(__dirname, "dist"),
     filename: "waveshaper.js",
-    library: 'WS',
+    library: 'waveshaper',
     libraryTarget: 'umd',
-    libraryExport: 'default',
     publicPath: "/"
   },
   devtool: 'source-map',
@@ -31,6 +21,6 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: [ '.ts', '.js' ]
+    extensions: [ '.ts' ]
   }
 };

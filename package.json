@@ -9,7 +9,8 @@
     "src"
   ],
   "scripts": {
-    "build": "webpack",
+    "build": "webpack && yarn docs",
+    "docs": "yarn typedoc --tsconfig ./tsconfig.test.json --out ./docs --mode file --excludePrivate --excludeProtected ./src",
     "start": "webpack-dev-server --hot --inline",
     "test": "yarn karma start travis.conf.js --single-run",
     "test:dev": "yarn karma start karma.conf.js"

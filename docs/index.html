@@ -1,0 +1,483 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>waveshaper</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">waveshaper</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> waveshaper</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<p><a href="https://travis-ci.org/Idicious/waveshaper"><img src="https://travis-ci.org/Idicious/waveshaper.svg?branch=master" alt="Build Status"></a>
+				<a href="https://coveralls.io/github/Idicious/waveshaper?branch=master"><img src="https://coveralls.io/repos/github/Idicious/waveshaper/badge.svg?branch=master" alt="Coverage Status"></a></p>
+				<h1 id="waveshaper">WaveShaper</h1>
+				<p>This library calculates render data in real-time from audio-data which can be used to draw (interactive) audio waveforms. <a href="https://github.com/Idicious/waveshaper-dom">waveshaper-dom</a> is a libray that uses this to render interactive waveforms in the browser. The output is stored
+				in the lastProcessResult property is given per track to the registered callbacks. The format of the output data is per track a Float32Array which can be read in the following way: </p>
+				<pre><code><span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; data.length; i += <span class="hljs-number">4</span>) {
+    <span class="hljs-keyword">const</span> negativeValue = data[i];
+    <span class="hljs-keyword">const</span> positiveValue = data[i + <span class="hljs-number">1</span>];
+    <span class="hljs-keyword">const</span> isIntervalBorder = data[i + <span class="hljs-number">2</span>];
+    <span class="hljs-keyword">const</span> isInsideInterval = data[i + <span class="hljs-number">3</span>];
+}
+</code></pre><p>The length of the result array is options.width * 4, with each group of 4 containing information for a single point.</p>
+				<h2 id="installation">Installation</h2>
+				<pre><code>npm <span class="hljs-keyword">install</span> waveshaper
+</code></pre><h2 id="using-the-library">Using the library</h2>
+				<pre><code>const options = {
+<span class="hljs-symbol">    samplesPerPixel:</span> <span class="hljs-number">1024</span>,
+<span class="hljs-symbol">    resolution:</span> <span class="hljs-number">64</span>,
+<span class="hljs-symbol">    width:</span> <span class="hljs-number">300</span>,
+<span class="hljs-symbol">    scrollPosition:</span> <span class="hljs-number">0</span>,
+<span class="hljs-symbol">    meterType:</span> <span class="hljs-string">'rms'</span>,
+<span class="hljs-symbol">    samplerate:</span> <span class="hljs-number">44100</span>
+};
+
+<span class="hljs-comment">// data would generally contain decoded audio data</span>
+<span class="hljs-comment">// If no data is provided the result array contains all 0's for positive and negative values.</span>
+const data = [
+    { <span class="hljs-string">id:</span> <span class="hljs-string">'1'</span>, <span class="hljs-string">data:</span> <span class="hljs-keyword">new</span> Float32Array(<span class="hljs-number">44100</span>) },
+    { <span class="hljs-string">id:</span> <span class="hljs-string">'2'</span>, <span class="hljs-string">data:</span> <span class="hljs-keyword">new</span> Float32Array(<span class="hljs-number">44100</span>) },
+];
+
+const tracks = [
+    {
+<span class="hljs-symbol">        id:</span> <span class="hljs-string">'1'</span>, <span class="hljs-string">intervals:</span> [
+            { <span class="hljs-string">id:</span> <span class="hljs-string">'1'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">10</span>, <span class="hljs-string">end:</span> <span class="hljs-number">30</span>, offset-<span class="hljs-string">start:</span> <span class="hljs-number">5</span>, <span class="hljs-string">index:</span> <span class="hljs-number">1</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'1'</span> },
+            { <span class="hljs-string">id:</span> <span class="hljs-string">'2'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">15</span>, <span class="hljs-string">end:</span> <span class="hljs-number">20</span>, offset-<span class="hljs-string">start:</span> <span class="hljs-number">2</span>, <span class="hljs-string">index:</span> <span class="hljs-number">2</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'2'</span> },
+        ]
+    },
+     {
+<span class="hljs-symbol">        id:</span> <span class="hljs-string">'2'</span>, <span class="hljs-string">intervals:</span> [
+            { <span class="hljs-string">id:</span> <span class="hljs-string">'3'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">10</span>, <span class="hljs-string">end:</span> <span class="hljs-number">30</span>, offset-<span class="hljs-string">start:</span> <span class="hljs-number">5</span>, <span class="hljs-string">index:</span> <span class="hljs-number">1</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'1'</span> },
+            { <span class="hljs-string">id:</span> <span class="hljs-string">'4'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">15</span>, <span class="hljs-string">end:</span> <span class="hljs-number">20</span>, offset-<span class="hljs-string">start:</span> <span class="hljs-number">2</span>, <span class="hljs-string">index:</span> <span class="hljs-number">2</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'2'</span> },
+        ]
+    },
+];
+
+const callback = function(options, renderData) {
+    <span class="hljs-comment">// Options at time process was called</span>
+    console.log(options);
+
+    <span class="hljs-keyword">for</span>(let i = <span class="hljs-number">0</span>; i &lt; renderData.length; i += <span class="hljs-number">4</span>) {
+        const negativeValue = renderData[i];
+        const positiveValue = renderData[i + <span class="hljs-number">1</span>];
+        const isIntervalBorder = renderData[i + <span class="hljs-number">2</span>];
+        const isInsideInterval = renderData[i + <span class="hljs-number">3</span>];
+    }
+};
+
+const WS = <span class="hljs-keyword">new</span> WaveShaper(options)
+    .setData(...data)
+    .setTracks(...tracks)
+    .on(<span class="hljs-string">'1'</span>, callback)
+    .on(<span class="hljs-string">'2'</span>, callback)
+    .process();
+
+console.log(WS.lastProcessResult);
+</code></pre><h2 id="interval">Interval</h2>
+				<p>An interval represents a portion of audio, it has the following properties:</p>
+				<table>
+					<thead>
+						<tr>
+							<th>Property</th>
+							<th>Type</th>
+							<th>Constraints</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>id</td>
+							<td>string</td>
+							<td></td>
+							<td>Unique identifier</td>
+						</tr>
+						<tr>
+							<td>index</td>
+							<td>number</td>
+							<td>&gt;= 0</td>
+							<td>Used to resolve overlapping Intervals within a Track, higher indexes have priority.</td>
+						</tr>
+						<tr>
+							<td>start</td>
+							<td>number</td>
+							<td>&gt;= 0 - offsetStart</td>
+							<td>Start time in seconds.</td>
+						</tr>
+						<tr>
+							<td>offsetStart</td>
+							<td>number</td>
+							<td>&gt;= 0 &amp; &lt; (end - start)</td>
+							<td>Offset from start in seconds.</td>
+						</tr>
+						<tr>
+							<td>end</td>
+							<td>number</td>
+							<td>&gt; start + offsetStart</td>
+							<td>End time in seconds.</td>
+						</tr>
+						<tr>
+							<td>source</td>
+							<td>string</td>
+							<td></td>
+							<td>id of audio data.</td>
+						</tr>
+					</tbody>
+				</table>
+				<h2 id="waveshaper">WaveShaper</h2>
+				<p>This is the the class you use to manage the settings of all the Tracks and get render data from them. The class offers a fluent API, all public methods besides getTrack return the manager.  </p>
+				<table>
+					<thead>
+						<tr>
+							<th>Property</th>
+							<th>Type</th>
+							<th>Constraints</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>duration</td>
+							<td>number</td>
+							<td>readonly</td>
+							<td>Maximum end time of all intervals managed by this WaveShaper.</td>
+						</tr>
+						<tr>
+							<td>options</td>
+							<td>see below</td>
+							<td>readonly</td>
+							<td>Current options, can only be altered with the setOptions method.</td>
+						</tr>
+						<tr>
+							<td>lastProcessResult</td>
+							<td>ProcessResult</td>
+							<td>readonly</td>
+							<td>Result of last time process was called.</td>
+						</tr>
+					</tbody>
+				</table>
+				<table>
+					<thead>
+						<tr>
+							<th>Method</th>
+							<th>Arguments</th>
+							<th>Description</th>
+							<th>Examples</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>flatten</td>
+							<td>...ids: string[]</td>
+							<td>Flattens intervals for given Track id&#39;s, should be called if start, end, offset-start or index properties are changed of any Intervals.</td>
+							<td>WS.flatten(&#39;1&#39;)</td>
+						</tr>
+						<tr>
+							<td>process</td>
+							<td>...ids: string[]</td>
+							<td>Calculates new render values and fires on events for given Track id&#39;s.</td>
+							<td>WS.process(&#39;1&#39;)</td>
+						</tr>
+						<tr>
+							<td>on</td>
+							<td>id: string, callBack: function</td>
+							<td>Registers a callback that will be triggered when the Tracks with given id&#39;s are processed.</td>
+							<td>WS.on(&#39;1&#39;, function(options, renderData) { console.log(renderData) };</td>
+						</tr>
+						<tr>
+							<td>off</td>
+							<td>id: string, callBack: function</td>
+							<td>Unregisters given callback from given Track id.</td>
+							<td>WS.off(&#39;1&#39;, funcRef)</td>
+						</tr>
+						<tr>
+							<td>setOptions</td>
+							<td>options (see below)</td>
+							<td>Sets manager options.</td>
+							<td>WS.set({ samplesPerPixel: 50, scrollPosition: 10.4})</td>
+						</tr>
+						<tr>
+							<td>setActive</td>
+							<td>...ids: string[]</td>
+							<td>If set only these Tracks are processed when calling process and flatten.</td>
+							<td>WS.setActive(&#39;1&#39;, &#39;2&#39;)</td>
+						</tr>
+						<tr>
+							<td>setData</td>
+							<td>...data: Data[]</td>
+							<td>Sets audio data with the given id, this id is referenced in the Interval source property</td>
+							<td>WS.setData({ id: &#39;1&#39;, data: audioBuffer})</td>
+						</tr>
+						<tr>
+							<td>setTracks</td>
+							<td>...tracks: TrackInput[]</td>
+							<td>Sets a track to the given id.</td>
+							<td>WS.setTracks({ id: &#39;1&#39;, [{ id: &#39;1&#39;, start: 0, end: 10, offset-start: 2, index: 1, source: &#39;1&#39; }]})</td>
+						</tr>
+						<tr>
+							<td>clearTracks</td>
+							<td>...ids: string[]</td>
+							<td>Removes Tracks with given id&#39;s including all callbacks assigned to them.</td>
+							<td>WS.removeTracks(&#39;1&#39;, &#39;2&#39;)</td>
+						</tr>
+						<tr>
+							<td>getTrack</td>
+							<td>id: string</td>
+							<td>Returns the track with given ID, gives access to flattened and non flattened intervals.</td>
+							<td>WS.getTrack(&#39;1&#39;).flattened</td>
+						</tr>
+					</tbody>
+				</table>
+				<h3 id="options">Options</h3>
+				<p>The setOptions method expects an object with one or more of the following properties.</p>
+				<table>
+					<thead>
+						<tr>
+							<th>Property</th>
+							<th>Type</th>
+							<th>Constraints</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>samplesPerPixel</td>
+							<td>number</td>
+							<td>&gt; 0</td>
+							<td>Zoom level, higher to zoom out, lower to zoom in.</td>
+						</tr>
+						<tr>
+							<td>resolution</td>
+							<td>number</td>
+							<td>&gt; 0</td>
+							<td>Detail level, higher for more detail, lower for faster rendering.</td>
+						</tr>
+						<tr>
+							<td>width</td>
+							<td>number</td>
+							<td>&gt; 0</td>
+							<td>Width in pixels of canvasses.</td>
+						</tr>
+						<tr>
+							<td>scrollPosition</td>
+							<td>number</td>
+							<td>&gt;= 0</td>
+							<td>Change to pan, position in pixels.</td>
+						</tr>
+						<tr>
+							<td>meterType</td>
+							<td>string</td>
+							<td>&#39;peak&#39;, &#39;rms&#39;</td>
+							<td>Method of calculating display values.</td>
+						</tr>
+						<tr>
+							<td>samplerate</td>
+							<td>number</td>
+							<td>&gt; 0</td>
+							<td>Audio samplerate.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class">
+						<a href="classes/track.html" class="tsd-kind-icon">Track</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/waveshaper.html" class="tsd-kind-icon">Wave<wbr>Shaper</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/data.html" class="tsd-kind-icon">Data</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/interval.html" class="tsd-kind-icon">Interval</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/managerinput.html" class="tsd-kind-icon">Manager<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/manageroptions.html" class="tsd-kind-icon">Manager<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/processresult.html" class="tsd-kind-icon">Process<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/trackinput.html" class="tsd-kind-icon">Track<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#intervalmap" class="tsd-kind-icon">Interval<wbr>Map</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#metertype" class="tsd-kind-icon">Meter<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#waveshapercallback" class="tsd-kind-icon">Wave<wbr>Shaper<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#cmp" class="tsd-kind-icon">cmp</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#combine" class="tsd-kind-icon">combine</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#copy" class="tsd-kind-icon">copy</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#groupbyindex" class="tsd-kind-icon">group<wbr>ByIndex</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#merge" class="tsd-kind-icon">merge</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#normalizeindex" class="tsd-kind-icon">normalize<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#sort" class="tsd-kind-icon">sort</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#start" class="tsd-kind-icon">start</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#weightedmerge" class="tsd-kind-icon">weighted<wbr>Merge</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#defaultoptions" class="tsd-kind-icon">default<wbr>Options</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

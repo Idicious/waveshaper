@@ -55,7 +55,7 @@ describe('WaveShaper class tests', () => {
         const manager = new WaveShaper({ samplerate: ctx.sampleRate, width: 10000 });
         manager.setTracks(...tracks);
 
-        fetch('assets/audio/GTR.wav')
+        fetch('assets/audio/test.mp3')
             .then(res => res.arrayBuffer())
             .then(arrayBuffer => ctx.decodeAudioData(arrayBuffer))
             .then(data => {

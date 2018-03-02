@@ -2,19 +2,78 @@
 [![Coverage Status](https://coveralls.io/repos/github/Idicious/waveshaper/badge.svg?branch=master)](https://coveralls.io/github/Idicious/waveshaper?branch=master)
 
 # WaveShaper
-Waveform drawing and interaction library. The library offers high performance drawing of audio files to multiple canvasses while providing the following functionality:
+This library calculates render data in real-time from audio-data which can be used to draw (interactive) audio waveforms. [waveshaper-dom](https://github.com/Idicious/waveshaper-dom) is a libray that uses this to render interactive waveforms in the browser. The output is stored
+in the lastProcessResult property is given per track to the registered callbacks. The format of the output data is per track a Float32Array which can be read in the following way: 
 
-- pan
-- zoom
-- drag
-- resize
-- cut
+```
+for(let i = 0; i < data.length; i += 4) {
+    const negativeValue = data[i];
+    const positiveValue = data[i + 1];
+    const isIntervalBorder = data[i + 2];
+    const isInsideInterval = data[i + 3];
+}
+```
 
-The interaction supports touch devices as well as programmatically setting the values.
+The length of the result array is options.width * 4, with each group of 4 containing information for a single point.
 
 ## Installation
 ``` 
 npm install waveshaper
+```
+
+## Using the library
+```
+const options = {
+    samplesPerPixel: 1024,
+    resolution: 64,
+    width: 300,
+    scrollPosition: 0,
+    meterType: 'rms',
+    samplerate: 44100
+};
+
+// data would generally contain decoded audio data
+// If no data is provided the result array contains all 0's for positive and negative values.
+const data = [
+    { id: '1', data: new Float32Array(44100) },
+    { id: '2', data: new Float32Array(44100) },
+];
+
+const tracks = [
+    {
+        id: '1', intervals: [
+            { id: '1', start: 10, end: 30, offset-start: 5, index: 1, source: '1' },
+            { id: '2', start: 15, end: 20, offset-start: 2, index: 2, source: '2' },
+        ]
+    },
+     {
+        id: '2', intervals: [
+            { id: '3', start: 10, end: 30, offset-start: 5, index: 1, source: '1' },
+            { id: '4', start: 15, end: 20, offset-start: 2, index: 2, source: '2' },
+        ]
+    },
+];
+
+const callback = function(options, renderData) {
+    // Options at time process was called
+    console.log(options);
+
+    for(let i = 0; i < renderData.length; i += 4) {
+        const negativeValue = renderData[i];
+        const positiveValue = renderData[i + 1];
+        const isIntervalBorder = renderData[i + 2];
+        const isInsideInterval = renderData[i + 3];
+    }
+};
+
+const WS = new WaveShaper(options)
+    .setData(...data)
+    .setTracks(...tracks)
+    .on('1', callback)
+    .on('2', callback)
+    .process();
+
+console.log(WS.lastProcessResult);
 ```
 
 ## Interval
@@ -49,6 +108,7 @@ This is the the class you use to manage the settings of all the Tracks and get r
 | setData | ...data: Data[] | Sets audio data with the given id, this id is referenced in the Interval source property | WS.setData({ id: '1', data: audioBuffer})
 | setTracks | ...tracks: TrackInput[] | Sets a track to the given id. | WS.setTracks({ id: '1', [{ id: '1', start: 0, end: 10, offset-start: 2, index: 1, source: '1' }]}) |
 | clearTracks | ...ids: string[] | Removes Tracks with given id's including all callbacks assigned to them. | WS.removeTracks('1', '2') |
+| getTrack | id: string | Returns the track with given ID, gives access to flattened and non flattened intervals. | WS.getTrack('1').flattened |
 
 ### Options
 
@@ -59,75 +119,6 @@ The setOptions method expects an object with one or more of the following proper
 | samplesPerPixel | number | > 0 | Zoom level, higher to zoom out, lower to zoom in. |
 | resolution    | number | > 0 | Detail level, higher for more detail, lower for faster rendering. |
 | width    | number | > 0 | Width in pixels of canvasses. |
-| height | number | > 0 | Height in pixels of canvasses. |
 | scrollPosition | number | >= 0 | Change to pan, position in pixels. |
 | meterType | string | 'peak', 'rms' | Method of calculating display values. |
-| mode | string | 'pan', 'drag', 'cut', 'resize' | Interaction mode, pan includes pinch-zoom. You can drag between canvasses. |
-| generateId | () => string | | When a segment is cut it must be given a new id, the given method is used to generate the id. |
 | samplerate | number | > 0 | Audio samplerate. |
-
-## DomRenderWaveShaper
-
-DomRenderWaveShaper is a subclass of WaveShaper which adds methods for registering canvasses to render when process is called. An instance of this class it exported as WS to the window.
-
-| Property | Type | Constraints | Description |
-| -------- | ---- | -----------   | ----------- |
-| scrollWidth | number | readonly | Scroll width in pixels needed to scroll through longest track.
-
-| Method | Arguments | Description | Examples |
-| -----  | --------- | ----------  | ------- |
-| setInteraction | element: HTMLElement | Adds event listeners to given DOM element to handle interactions. If this was called previously removes listeners from old element first. | WS.setInteraction(containerDiv) |
-| clearInteraction | | Removes all event listeners | WS.clearInteraction() |
-| registerCanvas | trackId: string, canvas: HTMLCanvasElement, color: string | Once registered the given Track will be rendered to the given canvas when process is called, returns an unregister function. | WS.registerCanvas('1', canvas, 'lightblue') |
-| unregisterCanvas | id: string | Removes callbacks and references to the canvas belonging to the given Track id. | WS.unregisterCanvas('1') |
-
-## Code example
-```
-
-// Container is used for delegated events, the canvasses should be rendered as direct or indirect children of the container element
-const container = document.getElementById('container');
-const ctx = new AudioContext();
-
- var options = {
-    scrollPosition: 0,
-    samplesPerPixel: 1024,
-    resolution: 10,
-    meterType: 'rms',
-    mode: 'pan',
-    height: 300,
-    width: canvasContainer.clientWidth,
-    samplerate: audioContext.sampleRate,
-    generateId: function() { return Math.random().toString(); }
-}
-
-var tracks = [
-    { id: '1', color: 'lightblue', intervals: [ 
-        { id: '1', index: 0, start: 0, end: 30, offsetStart: 0, source: '1' },
-        { id: '2', index: 1, start: 10, end: 20, offsetStart: 2, source: '2' }
-    ]},
-     { id: '2', color: 'lightblue', intervals: [ 
-        { id: '3', index: 0, start: 0, end: 30, offsetStart: 0, source: '1' },
-        { id: '4', index: 1, start: 10, end: 20, offsetStart: 2, source: '2' }
-    ]},
-];
-
-var audioData = [
-    { id: '1', url: './audiosample1.wav' },
-    { id: '2', url: './audiosample2.wav' },
-]
-
-WS.setOptions(options);
-tracks.forEach(track => {
-    var canvas = document.createElement('canvas');
-    WS.registerCanvas(track.id, canvas, track.color);
-
-    container.appendChild(canvas);
-});
-
-// Without audio data will draw outlines
-WS.setInteraction(container)
-    .setTracks(...tracks)
-    .loadData(...audioData)
-    .process();
-```
-
