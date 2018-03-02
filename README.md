@@ -22,10 +22,10 @@ npm install waveshaper
 ```
 
 ## Links
-[API](https://idicious.github.io/waveshaper/)
-Demo - Coming soon
+- [API](https://idicious.github.io/waveshaper/)
+- Demo - Coming soon
 
-## Using the library
+## Example
 ```
 const options = {
     samplesPerPixel: 1024,
