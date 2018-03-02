@@ -46,14 +46,14 @@ const data = [
 const tracks = [
     {
         id: '1', intervals: [
-            { id: '1', start: 10, end: 30, offset-start: 5, index: 1, source: '1' },
-            { id: '2', start: 15, end: 20, offset-start: 2, index: 2, source: '2' },
+            { id: '1', start: 10, end: 30, offsetStart: 5, index: 1, source: '1' },
+            { id: '2', start: 15, end: 20, offsetStart: 2, index: 2, source: '2' },
         ]
     },
      {
         id: '2', intervals: [
-            { id: '3', start: 10, end: 30, offset-start: 5, index: 1, source: '1' },
-            { id: '4', start: 15, end: 20, offset-start: 2, index: 2, source: '2' },
+            { id: '3', start: 10, end: 30, offsetStart: 5, index: 1, source: '1' },
+            { id: '4', start: 15, end: 20, offsetStart: 2, index: 2, source: '2' },
         ]
     },
 ];
@@ -70,8 +70,8 @@ const callback = function(options, renderData) {
     }
 };
 
-const WS = new WaveShaper(options)
-    .setData(...data)
+const WS = new WaveShaper(options);
+WS.setData(...data)
     .setTracks(...tracks)
     .on('1', callback)
     .on('2', callback)
