@@ -3,7 +3,7 @@
 
 # WaveShaper
 This library calculates render data in real-time from audio-data which can be used to draw (interactive) audio waveforms. [waveshaper-dom](https://github.com/Idicious/waveshaper-dom) is a libray that uses this to render interactive waveforms in the browser. The output is stored
-in the lastProcessResult property is given per track to the registered callbacks. The format of the output data is per track a Float32Array which can be read in the following way: 
+in the lastProcessResult property and is given per track to the registered callbacks. The format of the output data is per track a Float32Array which can be read in the following way: 
 
 ```
 for(let i = 0; i < data.length; i += 4) {
