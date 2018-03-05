@@ -95,6 +95,7 @@
 						<section class="tsd-index-section ">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="waveshaper.html#activewaveshapers" class="tsd-kind-icon">active<wbr>Wave<wbr>Shapers</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="waveshaper.html#duration" class="tsd-kind-icon">duration</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="waveshaper.html#lastprocessresult" class="tsd-kind-icon">last<wbr>Process<wbr>Result</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="waveshaper.html#options" class="tsd-kind-icon">options</a></li>
@@ -108,11 +109,13 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="waveshaper.html#gettrack" class="tsd-kind-icon">get<wbr>Track</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="waveshaper.html#off" class="tsd-kind-icon">off</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="waveshaper.html#on" class="tsd-kind-icon">on</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="waveshaper.html#positiontotime" class="tsd-kind-icon">position<wbr>ToTime</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="waveshaper.html#process" class="tsd-kind-icon">process</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="waveshaper.html#setactive" class="tsd-kind-icon">set<wbr>Active</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="waveshaper.html#setdata" class="tsd-kind-icon">set<wbr>Data</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="waveshaper.html#setoptions" class="tsd-kind-icon">set<wbr>Options</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="waveshaper.html#settracks" class="tsd-kind-icon">set<wbr>Tracks</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="waveshaper.html#timetoposition" class="tsd-kind-icon">time<wbr>ToPosition</a></li>
 							</ul>
 						</section>
 					</div>
@@ -130,7 +133,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L73">core/waveshaper.ts:73</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L75">core/waveshaper.ts:75</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -154,6 +157,37 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Accessors</h2>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="activewaveshapers" class="tsd-anchor"></a>
+					<h3>active<wbr>Wave<wbr>Shapers</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> activeWaveShapers<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L55">core/waveshaper.ts:55</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>description</dt>
+									<dd><p>Active id&#39;s, redraws when draw is called without argument</p>
+									</dd>
+									<dt>readonly</dt>
+									<dd></dd>
+									<dt>unused</dt>
+									<dd></dd>
+									<dt>memberof</dt>
+									<dd><p>WaveShaper</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
 					<a name="duration" class="tsd-anchor"></a>
 					<h3>duration</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
@@ -163,7 +197,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L72">core/waveshaper.ts:72</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L74">core/waveshaper.ts:74</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -192,7 +226,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L62">core/waveshaper.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L64">core/waveshaper.ts:64</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -224,7 +258,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L52">core/waveshaper.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L45">core/waveshaper.ts:45</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -256,7 +290,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L248">core/waveshaper.ts:248</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L267">core/waveshaper.ts:267</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -287,7 +321,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L93">core/waveshaper.ts:93</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L112">core/waveshaper.ts:112</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -318,7 +352,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L263">core/waveshaper.ts:263</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L282">core/waveshaper.ts:282</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -352,7 +386,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L159">core/waveshaper.ts:159</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L178">core/waveshaper.ts:178</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -390,7 +424,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L140">core/waveshaper.ts:140</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L159">core/waveshaper.ts:159</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -419,6 +453,36 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="positiontotime" class="tsd-anchor"></a>
+					<h3>position<wbr>ToTime</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">position<wbr>ToTime<span class="tsd-signature-symbol">(</span>position<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L102">core/waveshaper.ts:102</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gives the time corresponding to a given position</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>position: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="process" class="tsd-anchor"></a>
 					<h3>process</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -428,7 +492,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L110">core/waveshaper.ts:110</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L129">core/waveshaper.ts:129</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -460,7 +524,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L235">core/waveshaper.ts:235</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L254">core/waveshaper.ts:254</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -495,7 +559,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L219">core/waveshaper.ts:219</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L238">core/waveshaper.ts:238</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -529,7 +593,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L177">core/waveshaper.ts:177</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L196">core/waveshaper.ts:196</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -563,7 +627,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/4c48d62/src/core/waveshaper.ts#L196">core/waveshaper.ts:196</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L215">core/waveshaper.ts:215</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -581,6 +645,36 @@
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="waveshaper.html" class="tsd-signature-type">WaveShaper</a></h4>
 							<p>WaveShaper instance</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="timetoposition" class="tsd-anchor"></a>
+					<h3>time<wbr>ToPosition</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">time<wbr>ToPosition<span class="tsd-signature-symbol">(</span>time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/06e44f1/src/core/waveshaper.ts#L94">core/waveshaper.ts:94</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gives the position corresponding to a given time</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>time: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -608,6 +702,9 @@
 								<a href="waveshaper.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="waveshaper.html#activewaveshapers" class="tsd-kind-icon">active<wbr>Wave<wbr>Shapers</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="waveshaper.html#duration" class="tsd-kind-icon">duration</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
@@ -632,6 +729,9 @@
 								<a href="waveshaper.html#on" class="tsd-kind-icon">on</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="waveshaper.html#positiontotime" class="tsd-kind-icon">position<wbr>ToTime</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="waveshaper.html#process" class="tsd-kind-icon">process</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -645,6 +745,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="waveshaper.html#settracks" class="tsd-kind-icon">set<wbr>Tracks</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="waveshaper.html#timetoposition" class="tsd-kind-icon">time<wbr>ToPosition</a>
 							</li>
 						</ul>
 					</li>

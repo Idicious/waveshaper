@@ -27,13 +27,6 @@ export default class WaveShaper {
      * @memberof WaveShaper
      */
     protected readonly audioData = new Map<string, Float32Array>();
-    
-    /**
-     * @description Active id's, redraws when draw is called without argument
-     * 
-     * @memberof WaveShaper
-     */
-    protected activeWaveShapers: string[] = [];
 
     /**
      * @description Map of callback functions
@@ -52,6 +45,15 @@ export default class WaveShaper {
     public get options(): ManagerOptions { return {...this._options} }
     protected _options: ManagerOptions;
 
+    /**
+     * @description Active id's, redraws when draw is called without argument
+     * 
+     * @readonly
+     * @unused
+     * @memberof WaveShaper
+     */
+    public get activeWaveShapers(): string[] { return [...this._activeWaveShapers] }
+    protected _activeWaveShapers: string[] = [];
     
     /**
      * @description Last result of calling process, argument given to all callbacks
@@ -82,6 +84,23 @@ export default class WaveShaper {
         }
 
         this._options = { ...defaultOptions, ...options };
+    }
+
+    /**
+     * Gives the position corresponding to a given time
+     * 
+     * @param time 
+     */
+    timeToPosition(time: number) { 
+        return (time * this._options.samplerate) / this._options.samplesPerPixel;
+    }
+
+    /**
+     * Gives the time corresponding to a given position
+     * @param position 
+     */
+    positionToTime(position: number) {
+        return (position * this._options.samplesPerPixel) / this._options.samplerate;
     }
 
     /**
@@ -233,7 +252,7 @@ export default class WaveShaper {
      * @returns WaveShaper instance
      */
     setActive(...ids: string[]): WaveShaper {
-        this.activeWaveShapers = ids;
+        this._activeWaveShapers = ids;
 
         return this;
     }
@@ -303,8 +322,8 @@ export default class WaveShaper {
         if(ids.length > 0) 
             return ids;
 
-        if(this.activeWaveShapers && this.activeWaveShapers.length > 0) 
-            return this.activeWaveShapers;
+        if(this._activeWaveShapers.length > 0) 
+            return this._activeWaveShapers;
 
         return Array.from(this.tracks.keys());
     }

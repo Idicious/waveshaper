@@ -17,6 +17,7 @@
       "strictNullChecks": true,
       "suppressImplicitAnyIndexErrors": false,
       "noUnusedLocals": true,
+      "noUnusedParameters": false,
       "declaration": true,
       "declarationDir": "./typings",
       "alwaysStrict": false,

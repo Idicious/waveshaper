@@ -78,7 +78,12 @@
 </code></pre><p>The length of the result array is options.width * 4, with each group of 4 containing information for a single point.</p>
 				<h2 id="installation">Installation</h2>
 				<pre><code>npm <span class="hljs-keyword">install</span> waveshaper
-</code></pre><h2 id="using-the-library">Using the library</h2>
+</code></pre><h2 id="links">Links</h2>
+				<ul>
+					<li><a href="https://idicious.github.io/waveshaper/">API</a></li>
+					<li>Demo - Coming soon</li>
+				</ul>
+				<h2 id="example">Example</h2>
 				<pre><code>const options = {
 <span class="hljs-symbol">    samplesPerPixel:</span> <span class="hljs-number">1024</span>,
 <span class="hljs-symbol">    resolution:</span> <span class="hljs-number">64</span>,
@@ -98,14 +103,14 @@ const data = [
 const tracks = [
     {
 <span class="hljs-symbol">        id:</span> <span class="hljs-string">'1'</span>, <span class="hljs-string">intervals:</span> [
-            { <span class="hljs-string">id:</span> <span class="hljs-string">'1'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">10</span>, <span class="hljs-string">end:</span> <span class="hljs-number">30</span>, offset-<span class="hljs-string">start:</span> <span class="hljs-number">5</span>, <span class="hljs-string">index:</span> <span class="hljs-number">1</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'1'</span> },
-            { <span class="hljs-string">id:</span> <span class="hljs-string">'2'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">15</span>, <span class="hljs-string">end:</span> <span class="hljs-number">20</span>, offset-<span class="hljs-string">start:</span> <span class="hljs-number">2</span>, <span class="hljs-string">index:</span> <span class="hljs-number">2</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'2'</span> },
+            { <span class="hljs-string">id:</span> <span class="hljs-string">'1'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">10</span>, <span class="hljs-string">end:</span> <span class="hljs-number">30</span>, <span class="hljs-string">offsetStart:</span> <span class="hljs-number">5</span>, <span class="hljs-string">index:</span> <span class="hljs-number">1</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'1'</span> },
+            { <span class="hljs-string">id:</span> <span class="hljs-string">'2'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">15</span>, <span class="hljs-string">end:</span> <span class="hljs-number">20</span>, <span class="hljs-string">offsetStart:</span> <span class="hljs-number">2</span>, <span class="hljs-string">index:</span> <span class="hljs-number">2</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'2'</span> },
         ]
     },
      {
 <span class="hljs-symbol">        id:</span> <span class="hljs-string">'2'</span>, <span class="hljs-string">intervals:</span> [
-            { <span class="hljs-string">id:</span> <span class="hljs-string">'3'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">10</span>, <span class="hljs-string">end:</span> <span class="hljs-number">30</span>, offset-<span class="hljs-string">start:</span> <span class="hljs-number">5</span>, <span class="hljs-string">index:</span> <span class="hljs-number">1</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'1'</span> },
-            { <span class="hljs-string">id:</span> <span class="hljs-string">'4'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">15</span>, <span class="hljs-string">end:</span> <span class="hljs-number">20</span>, offset-<span class="hljs-string">start:</span> <span class="hljs-number">2</span>, <span class="hljs-string">index:</span> <span class="hljs-number">2</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'2'</span> },
+            { <span class="hljs-string">id:</span> <span class="hljs-string">'3'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">10</span>, <span class="hljs-string">end:</span> <span class="hljs-number">30</span>, <span class="hljs-string">offsetStart:</span> <span class="hljs-number">5</span>, <span class="hljs-string">index:</span> <span class="hljs-number">1</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'1'</span> },
+            { <span class="hljs-string">id:</span> <span class="hljs-string">'4'</span>, <span class="hljs-string">start:</span> <span class="hljs-number">15</span>, <span class="hljs-string">end:</span> <span class="hljs-number">20</span>, <span class="hljs-string">offsetStart:</span> <span class="hljs-number">2</span>, <span class="hljs-string">index:</span> <span class="hljs-number">2</span>, <span class="hljs-string">source:</span> <span class="hljs-string">'2'</span> },
         ]
     },
 ];
@@ -122,218 +127,15 @@ const callback = function(options, renderData) {
     }
 };
 
-const WS = <span class="hljs-keyword">new</span> WaveShaper(options)
-    .setData(...data)
+const WS = <span class="hljs-keyword">new</span> WaveShaper(options);
+WS.setData(...data)
     .setTracks(...tracks)
     .on(<span class="hljs-string">'1'</span>, callback)
     .on(<span class="hljs-string">'2'</span>, callback)
     .process();
 
 console.log(WS.lastProcessResult);
-</code></pre><h2 id="interval">Interval</h2>
-				<p>An interval represents a portion of audio, it has the following properties:</p>
-				<table>
-					<thead>
-						<tr>
-							<th>Property</th>
-							<th>Type</th>
-							<th>Constraints</th>
-							<th>Description</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>id</td>
-							<td>string</td>
-							<td></td>
-							<td>Unique identifier</td>
-						</tr>
-						<tr>
-							<td>index</td>
-							<td>number</td>
-							<td>&gt;= 0</td>
-							<td>Used to resolve overlapping Intervals within a Track, higher indexes have priority.</td>
-						</tr>
-						<tr>
-							<td>start</td>
-							<td>number</td>
-							<td>&gt;= 0 - offsetStart</td>
-							<td>Start time in seconds.</td>
-						</tr>
-						<tr>
-							<td>offsetStart</td>
-							<td>number</td>
-							<td>&gt;= 0 &amp; &lt; (end - start)</td>
-							<td>Offset from start in seconds.</td>
-						</tr>
-						<tr>
-							<td>end</td>
-							<td>number</td>
-							<td>&gt; start + offsetStart</td>
-							<td>End time in seconds.</td>
-						</tr>
-						<tr>
-							<td>source</td>
-							<td>string</td>
-							<td></td>
-							<td>id of audio data.</td>
-						</tr>
-					</tbody>
-				</table>
-				<h2 id="waveshaper">WaveShaper</h2>
-				<p>This is the the class you use to manage the settings of all the Tracks and get render data from them. The class offers a fluent API, all public methods besides getTrack return the manager.  </p>
-				<table>
-					<thead>
-						<tr>
-							<th>Property</th>
-							<th>Type</th>
-							<th>Constraints</th>
-							<th>Description</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>duration</td>
-							<td>number</td>
-							<td>readonly</td>
-							<td>Maximum end time of all intervals managed by this WaveShaper.</td>
-						</tr>
-						<tr>
-							<td>options</td>
-							<td>see below</td>
-							<td>readonly</td>
-							<td>Current options, can only be altered with the setOptions method.</td>
-						</tr>
-						<tr>
-							<td>lastProcessResult</td>
-							<td>ProcessResult</td>
-							<td>readonly</td>
-							<td>Result of last time process was called.</td>
-						</tr>
-					</tbody>
-				</table>
-				<table>
-					<thead>
-						<tr>
-							<th>Method</th>
-							<th>Arguments</th>
-							<th>Description</th>
-							<th>Examples</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>flatten</td>
-							<td>...ids: string[]</td>
-							<td>Flattens intervals for given Track id&#39;s, should be called if start, end, offset-start or index properties are changed of any Intervals.</td>
-							<td>WS.flatten(&#39;1&#39;)</td>
-						</tr>
-						<tr>
-							<td>process</td>
-							<td>...ids: string[]</td>
-							<td>Calculates new render values and fires on events for given Track id&#39;s.</td>
-							<td>WS.process(&#39;1&#39;)</td>
-						</tr>
-						<tr>
-							<td>on</td>
-							<td>id: string, callBack: function</td>
-							<td>Registers a callback that will be triggered when the Tracks with given id&#39;s are processed.</td>
-							<td>WS.on(&#39;1&#39;, function(options, renderData) { console.log(renderData) };</td>
-						</tr>
-						<tr>
-							<td>off</td>
-							<td>id: string, callBack: function</td>
-							<td>Unregisters given callback from given Track id.</td>
-							<td>WS.off(&#39;1&#39;, funcRef)</td>
-						</tr>
-						<tr>
-							<td>setOptions</td>
-							<td>options (see below)</td>
-							<td>Sets manager options.</td>
-							<td>WS.set({ samplesPerPixel: 50, scrollPosition: 10.4})</td>
-						</tr>
-						<tr>
-							<td>setActive</td>
-							<td>...ids: string[]</td>
-							<td>If set only these Tracks are processed when calling process and flatten.</td>
-							<td>WS.setActive(&#39;1&#39;, &#39;2&#39;)</td>
-						</tr>
-						<tr>
-							<td>setData</td>
-							<td>...data: Data[]</td>
-							<td>Sets audio data with the given id, this id is referenced in the Interval source property</td>
-							<td>WS.setData({ id: &#39;1&#39;, data: audioBuffer})</td>
-						</tr>
-						<tr>
-							<td>setTracks</td>
-							<td>...tracks: TrackInput[]</td>
-							<td>Sets a track to the given id.</td>
-							<td>WS.setTracks({ id: &#39;1&#39;, [{ id: &#39;1&#39;, start: 0, end: 10, offset-start: 2, index: 1, source: &#39;1&#39; }]})</td>
-						</tr>
-						<tr>
-							<td>clearTracks</td>
-							<td>...ids: string[]</td>
-							<td>Removes Tracks with given id&#39;s including all callbacks assigned to them.</td>
-							<td>WS.removeTracks(&#39;1&#39;, &#39;2&#39;)</td>
-						</tr>
-						<tr>
-							<td>getTrack</td>
-							<td>id: string</td>
-							<td>Returns the track with given ID, gives access to flattened and non flattened intervals.</td>
-							<td>WS.getTrack(&#39;1&#39;).flattened</td>
-						</tr>
-					</tbody>
-				</table>
-				<h3 id="options">Options</h3>
-				<p>The setOptions method expects an object with one or more of the following properties.</p>
-				<table>
-					<thead>
-						<tr>
-							<th>Property</th>
-							<th>Type</th>
-							<th>Constraints</th>
-							<th>Description</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>samplesPerPixel</td>
-							<td>number</td>
-							<td>&gt; 0</td>
-							<td>Zoom level, higher to zoom out, lower to zoom in.</td>
-						</tr>
-						<tr>
-							<td>resolution</td>
-							<td>number</td>
-							<td>&gt; 0</td>
-							<td>Detail level, higher for more detail, lower for faster rendering.</td>
-						</tr>
-						<tr>
-							<td>width</td>
-							<td>number</td>
-							<td>&gt; 0</td>
-							<td>Width in pixels of canvasses.</td>
-						</tr>
-						<tr>
-							<td>scrollPosition</td>
-							<td>number</td>
-							<td>&gt;= 0</td>
-							<td>Change to pan, position in pixels.</td>
-						</tr>
-						<tr>
-							<td>meterType</td>
-							<td>string</td>
-							<td>&#39;peak&#39;, &#39;rms&#39;</td>
-							<td>Method of calculating display values.</td>
-						</tr>
-						<tr>
-							<td>samplerate</td>
-							<td>number</td>
-							<td>&gt; 0</td>
-							<td>Audio samplerate.</td>
-						</tr>
-					</tbody>
-				</table>
+</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

@@ -571,18 +571,13 @@ var WaveShaper = /** @class */ (function () {
          */
         this.audioData = new Map();
         /**
-         * @description Active id's, redraws when draw is called without argument
-         *
-         * @memberof WaveShaper
-         */
-        this.activeWaveShapers = [];
-        /**
          * @description Map of callback functions
          *
          * @readonly
          * @memberof WaveShaper
          */
         this.callbackMap = new Map();
+        this._activeWaveShapers = [];
         if (!this.optionsValid(options)) {
             throw new Error("Invalid options given: " + JSON.stringify(options));
         }
@@ -599,6 +594,18 @@ var WaveShaper = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(WaveShaper.prototype, "activeWaveShapers", {
+        /**
+         * @description Active id's, redraws when draw is called without argument
+         *
+         * @readonly
+         * @memberof WaveShaper
+         */
+        get: function () { return this._activeWaveShapers.slice(); },
+        enumerable: true,
+        configurable: true
+    });
+    ;
     Object.defineProperty(WaveShaper.prototype, "lastProcessResult", {
         /**
          * @description Last result of calling process, argument given to all callbacks
@@ -621,6 +628,21 @@ var WaveShaper = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**
+     * Gives the position corresponding to a given time
+     *
+     * @param time
+     */
+    WaveShaper.prototype.timeToPosition = function (time) {
+        return (time * this._options.samplerate) / this._options.samplesPerPixel;
+    };
+    /**
+     * Gives the time corresponding to a given position
+     * @param position
+     */
+    WaveShaper.prototype.positionToTime = function (position) {
+        return (position * this._options.samplesPerPixel) / this._options.samplerate;
+    };
     /**
      * @description Flattens the segments of the given waveshaper id
      *
@@ -779,7 +801,7 @@ var WaveShaper = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             ids[_i] = arguments[_i];
         }
-        this.activeWaveShapers = ids;
+        this._activeWaveShapers = ids;
         return this;
     };
     /**
@@ -849,8 +871,8 @@ var WaveShaper = /** @class */ (function () {
         }
         if (ids.length > 0)
             return ids;
-        if (this.activeWaveShapers && this.activeWaveShapers.length > 0)
-            return this.activeWaveShapers;
+        if (this._activeWaveShapers.length > 0)
+            return this._activeWaveShapers;
         return Array.from(this.tracks.keys());
     };
     WaveShaper.prototype.removeCallbacksById = function (id) {
