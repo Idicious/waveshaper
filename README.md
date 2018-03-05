@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/Idicious/waveshaper.svg?branch=master)](https://travis-ci.org/Idicious/waveshaper)
-[![Coverage Status](https://coveralls.io/repos/github/Idicious/waveshaper/badge.svg?branch=master)](https://coveralls.io/github/Idicious/waveshaper?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/Idicious/waveshaper/badge.svg)](https://coveralls.io/github/Idicious/waveshaper)
 [![npm version](https://badge.fury.io/js/waveshaper.svg)](https://badge.fury.io/js/waveshaper)
 
 # WaveShaper
