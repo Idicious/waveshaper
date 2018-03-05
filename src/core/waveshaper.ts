@@ -213,16 +213,18 @@ export default class WaveShaper {
      * @returns WaveShaper instance
      */
     setTracks(...tracks: TrackInput[]): WaveShaper {
-        tracks.forEach(track => {
+        for(let i = 0; i < tracks.length; i++) {
+            const track = tracks[i];
             const foundWave = this.getTrack(track.id);
             if(foundWave == null) {
                 const wave = new Track(track.id, track.intervals);
                 this.tracks.set(track.id, wave);
             } else {
-                foundWave.intervals = track.intervals;
+                foundWave.intervals = track.intervals || [];
                 foundWave.flatten();
             }
-        });
+        }
+
         this._duration = this.getDuration();
         return this;
     }

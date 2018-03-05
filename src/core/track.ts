@@ -5,16 +5,22 @@ import Interval from '../models/interval';
 import flattenSegments from '../methods/flatten';
 
 export default class Track {
-    flattened: Interval[];
+    public readonly id: string;
 
-    constructor(public readonly id: string, public intervals: Interval[]) {
-        this.flattened = flattenSegments(this.intervals);
-        
-        if(intervals == null) this.intervals = [];
+    public intervals: Interval[];
+
+    public get flattened(): Interval[] { return [ ...this._flattened ] }
+    protected _flattened: Interval[];
+
+    constructor(id: string, intervals: Interval[]) {
+        this.id = id;
+        this.intervals = intervals || [];
+
+        this._flattened = flattenSegments(this.intervals);
     }
 
     flatten() {
-        this.flattened = flattenSegments(this.intervals);
+        this._flattened = flattenSegments(this.intervals);
     }
 
     /**
@@ -22,7 +28,9 @@ export default class Track {
      * 
      * @returns Decimal value of total duration in seconds
      */
-    getDuration = (): number => Math.max(...this.intervals.map(s => s.end));
+    getDuration() {
+        return Math.max(...this.intervals.map(s => s.end));
+    } 
 
     /**
      * Gets the summerized values for the current settings

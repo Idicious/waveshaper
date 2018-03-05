@@ -83,21 +83,25 @@ var rms_1 = __webpack_require__(2);
 var flatten_1 = __webpack_require__(3);
 var Track = /** @class */ (function () {
     function Track(id, intervals) {
-        var _this = this;
         this.id = id;
-        this.intervals = intervals;
-        /**
-         * Gets the duration of the audio in seconds
-         *
-         * @returns Decimal value of total duration in seconds
-         */
-        this.getDuration = function () { return Math.max.apply(Math, _this.intervals.map(function (s) { return s.end; })); };
-        this.flattened = flatten_1.default(this.intervals);
-        if (intervals == null)
-            this.intervals = [];
+        this.intervals = intervals || [];
+        this._flattened = flatten_1.default(this.intervals);
     }
+    Object.defineProperty(Track.prototype, "flattened", {
+        get: function () { return this._flattened.slice(); },
+        enumerable: true,
+        configurable: true
+    });
     Track.prototype.flatten = function () {
-        this.flattened = flatten_1.default(this.intervals);
+        this._flattened = flatten_1.default(this.intervals);
+    };
+    /**
+     * Gets the duration of the audio in seconds
+     *
+     * @returns Decimal value of total duration in seconds
+     */
+    Track.prototype.getDuration = function () {
+        return Math.max.apply(Math, this.intervals.map(function (s) { return s.end; }));
     };
     /**
      * Gets the summerized values for the current settings
@@ -754,22 +758,22 @@ var WaveShaper = /** @class */ (function () {
      * @returns WaveShaper instance
      */
     WaveShaper.prototype.setTracks = function () {
-        var _this = this;
         var tracks = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             tracks[_i] = arguments[_i];
         }
-        tracks.forEach(function (track) {
-            var foundWave = _this.getTrack(track.id);
+        for (var i = 0; i < tracks.length; i++) {
+            var track = tracks[i];
+            var foundWave = this.getTrack(track.id);
             if (foundWave == null) {
                 var wave = new track_1.default(track.id, track.intervals);
-                _this.tracks.set(track.id, wave);
+                this.tracks.set(track.id, wave);
             }
             else {
-                foundWave.intervals = track.intervals;
+                foundWave.intervals = track.intervals || [];
                 foundWave.flatten();
             }
-        });
+        }
         this._duration = this.getDuration();
         return this;
     };
