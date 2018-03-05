@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/Idicious/waveshaper.svg?branch=master)](https://travis-ci.org/Idicious/waveshaper)
 [![Coverage Status](https://coveralls.io/repos/github/Idicious/waveshaper/badge.svg?branch=master)](https://coveralls.io/github/Idicious/waveshaper?branch=master)
+[![npm version](https://badge.fury.io/js/waveshaper.svg)](https://badge.fury.io/js/waveshaper)
 
 # WaveShaper
 This library calculates render data in real-time from audio-data which can be used to draw (interactive) audio waveforms. [waveshaper-dom](https://github.com/Idicious/waveshaper-dom) is a libray that uses this to render interactive waveforms in the browser. The output is stored
