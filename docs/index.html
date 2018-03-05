@@ -68,7 +68,7 @@
 				<a href="https://coveralls.io/github/Idicious/waveshaper?branch=master"><img src="https://coveralls.io/repos/github/Idicious/waveshaper/badge.svg?branch=master" alt="Coverage Status"></a></p>
 				<h1 id="waveshaper">WaveShaper</h1>
 				<p>This library calculates render data in real-time from audio-data which can be used to draw (interactive) audio waveforms. <a href="https://github.com/Idicious/waveshaper-dom">waveshaper-dom</a> is a libray that uses this to render interactive waveforms in the browser. The output is stored
-				in the lastProcessResult property is given per track to the registered callbacks. The format of the output data is per track a Float32Array which can be read in the following way: </p>
+				in the lastProcessResult property and is given per track to the registered callbacks. The format of the output data is per track a Float32Array which can be read in the following way: </p>
 				<pre><code><span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; data.length; i += <span class="hljs-number">4</span>) {
     <span class="hljs-keyword">const</span> negativeValue = data[i];
     <span class="hljs-keyword">const</span> positiveValue = data[i + <span class="hljs-number">1</span>];

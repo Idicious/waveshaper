@@ -93,6 +93,8 @@ var Track = /** @class */ (function () {
          */
         this.getDuration = function () { return Math.max.apply(Math, _this.intervals.map(function (s) { return s.end; })); };
         this.flattened = flatten_1.default(this.intervals);
+        if (intervals == null)
+            this.intervals = [];
     }
     Track.prototype.flatten = function () {
         this.flattened = flatten_1.default(this.intervals);
@@ -300,6 +302,8 @@ var start = function (segment) { return segment.start + segment.offsetStart; };
  * @returns flattened Interval array
  */
 exports.default = (function (segments) {
+    if (segments == null || segments.length === 0)
+        return [];
     var sorted = sort(segments);
     var normalized = normalizeIndex(sorted);
     var copied = copy(normalized);
@@ -599,13 +603,13 @@ var WaveShaper = /** @class */ (function () {
          * @description Active id's, redraws when draw is called without argument
          *
          * @readonly
+         * @unused
          * @memberof WaveShaper
          */
         get: function () { return this._activeWaveShapers.slice(); },
         enumerable: true,
         configurable: true
     });
-    ;
     Object.defineProperty(WaveShaper.prototype, "lastProcessResult", {
         /**
          * @description Last result of calling process, argument given to all callbacks
