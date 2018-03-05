@@ -16,6 +16,8 @@ const start = (segment: Interval) => segment.start + segment.offsetStart;
  * @returns flattened Interval array
  */
 export default (segments: Interval[]): Interval[] => {
+  if(segments == null || segments.length === 0) return [];
+
   const sorted = sort(segments);
   const normalized = normalizeIndex(sorted);
   const copied = copy(normalized);

@@ -17,6 +17,26 @@ describe('WaveShaper class tests', () => {
         expect(options.resolution).toBe(defaultConfig.resolution);
     });
 
+    it('Doesn\'t crash when there are no intervals in a track.', () => {
+        const manager = new WaveShaper();
+        manager.setTracks({
+            id: '1', intervals: []
+        });
+        manager.on('1', () => {});
+        
+        expect(() => manager.process()).not.toThrow();
+    });
+
+    it('Doesn\'t crash when intervals are null in a track.', () => {
+        const manager = new WaveShaper();
+        manager.setTracks({
+            id: '1', intervals: (null as any)
+        });
+        manager.on('1', () => {});
+
+        expect(() => manager.process()).not.toThrow();
+    });
+
     it('Can be created with partial config.', () => {
         const manager = new WaveShaper({ samplesPerPixel: 333 });
 

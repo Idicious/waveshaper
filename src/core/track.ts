@@ -9,6 +9,8 @@ export default class Track {
 
     constructor(public readonly id: string, public intervals: Interval[]) {
         this.flattened = flattenSegments(this.intervals);
+        
+        if(intervals == null) this.intervals = [];
     }
 
     flatten() {
