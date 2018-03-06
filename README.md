@@ -24,7 +24,7 @@ npm install waveshaper
 
 ## Links
 - [API](https://idicious.github.io/waveshaper/)
-- Demo - Coming soon
+- [Demo](https://idicious.github.io/waveshaper-demo/) - Demo using [waveshaper-dom](https://github.com/Idicious/waveshaper-dom)
 
 ## Example
 ```
