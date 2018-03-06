@@ -746,6 +746,7 @@ var WaveShaper = /** @class */ (function () {
             throw new Error("Invalid options given: " + JSON.stringify(options));
         }
         this._options = __assign({}, this.options, options);
+        this.invokeOptionsCallbacks(this.options);
         return this;
     };
     /**
@@ -871,6 +872,12 @@ var WaveShaper = /** @class */ (function () {
                 callback(result.options, new Float32Array(trackResult.data));
             }
         }
+    };
+    WaveShaper.prototype.invokeOptionsCallbacks = function (options) {
+        var callbacks = this.callbackMap.get('options');
+        if (callbacks == null)
+            return;
+        callbacks.forEach(function (cb) { return cb(options, null); });
     };
     WaveShaper.prototype.getProcessIds = function () {
         var ids = [];

@@ -199,6 +199,7 @@ export default class WaveShaper {
         }
 
         this._options = { ...this.options, ...options };
+        this.invokeOptionsCallbacks(this.options);
 
         return this;
     }
@@ -318,6 +319,13 @@ export default class WaveShaper {
                 callback(result.options, new Float32Array(trackResult.data));
             }
         }
+    }
+
+    protected invokeOptionsCallbacks(options: ManagerOptions) {
+        const callbacks = this.callbackMap.get('options');
+        if(callbacks == null) return;
+
+        callbacks.forEach(cb => cb(options, null as any))
     }
 
     protected getProcessIds(...ids: string[]) : string[] {
