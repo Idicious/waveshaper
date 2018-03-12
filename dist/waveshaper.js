@@ -586,9 +586,7 @@ var WaveShaper = /** @class */ (function () {
          */
         this.callbackMap = new Map();
         this._activeWaveShapers = [];
-        if (!this.optionsValid(options)) {
-            throw new Error("Invalid options given: " + JSON.stringify(options));
-        }
+        this.validateOptions(options);
         this._options = __assign({}, managerconfig_1.default, options);
     }
     Object.defineProperty(WaveShaper.prototype, "options", {
@@ -742,9 +740,7 @@ var WaveShaper = /** @class */ (function () {
      * @returns WaveShaper instance
      */
     WaveShaper.prototype.setOptions = function (options) {
-        if (!this.optionsValid(options)) {
-            throw new Error("Invalid options given: " + JSON.stringify(options));
-        }
+        this.validateOptions(options);
         this._options = __assign({}, this.options, options);
         this.invokeOptionsCallbacks(this.options);
         return this;
@@ -847,13 +843,26 @@ var WaveShaper = /** @class */ (function () {
      * @param options
      * @returns true if valid, false if not
      */
-    WaveShaper.prototype.optionsValid = function (options) {
-        return (options.samplesPerPixel === undefined || options.samplesPerPixel > 0) &&
-            (options.meterType === undefined || options.meterType) &&
-            (options.resolution === undefined || options.resolution > 0) &&
-            (options.width === undefined || options.width > 0) &&
-            (options.scrollPosition === undefined || options.scrollPosition >= 0) &&
-            (options.samplerate === undefined || options.samplerate > 0);
+    WaveShaper.prototype.validateOptions = function (options) {
+        var currentOptions = this._options || managerconfig_1.default;
+        if (!options.samplesPerPixel || options.samplesPerPixel <= 0) {
+            options.samplesPerPixel = currentOptions.samplesPerPixel;
+        }
+        if (!options.meterType) {
+            options.meterType = currentOptions.meterType;
+        }
+        if (!options.resolution || options.resolution <= 0) {
+            options.resolution = currentOptions.resolution;
+        }
+        if (!options.width || this.options.width <= 0) {
+            options.width = currentOptions.width;
+        }
+        if (!options.scrollPosition || this.options.scrollPosition <= 0) {
+            options.scrollPosition = currentOptions.scrollPosition;
+        }
+        if (!options.samplerate || this.options.samplerate <= 0) {
+            options.samplerate = currentOptions.samplerate;
+        }
     };
     /**
      * Invokes all registered callbacks registered to a waveshaper id in the data list

@@ -79,10 +79,7 @@ export default class WaveShaper {
      * @throws Throws an error if samplerate is null or NaN
      */
     constructor(options: ManagerInput = defaultOptions) {
-        if(!this.optionsValid(options)) {
-            throw new Error(`Invalid options given: ${JSON.stringify(options)}`);
-        }
-
+        this.validateOptions(options);
         this._options = { ...defaultOptions, ...options };
     }
 
@@ -194,9 +191,7 @@ export default class WaveShaper {
      * @returns WaveShaper instance
      */
     setOptions(options: ManagerInput): WaveShaper {
-        if(!this.optionsValid(options)) {
-            throw new Error(`Invalid options given: ${JSON.stringify(options)}`);
-        }
+        this.validateOptions(options);
 
         this._options = { ...this.options, ...options };
         this.invokeOptionsCallbacks(this.options);
@@ -292,13 +287,27 @@ export default class WaveShaper {
      * @param options 
      * @returns true if valid, false if not
      */
-    protected optionsValid(options: ManagerInput) {
-        return (options.samplesPerPixel === undefined || options.samplesPerPixel > 0) &&
-            (options.meterType === undefined || options.meterType) &&
-            (options.resolution === undefined || options.resolution > 0) &&
-            (options.width === undefined || options.width > 0) &&
-            (options.scrollPosition === undefined || options.scrollPosition >= 0) &&
-            (options.samplerate === undefined || options.samplerate > 0);
+    protected validateOptions(options: ManagerInput) {
+        const currentOptions = this._options || defaultOptions;
+        
+        if(!options.samplesPerPixel || options.samplesPerPixel <= 0) {
+            options.samplesPerPixel = currentOptions.samplesPerPixel;
+        }
+        if(!options.meterType) {
+            options.meterType = currentOptions.meterType;
+        }
+        if(!options.resolution || options.resolution <= 0) {
+            options.resolution = currentOptions.resolution;
+        }
+        if(!options.width || this.options.width <= 0) {
+            options.width = currentOptions.width;
+        }
+        if(!options.scrollPosition || this.options.scrollPosition <= 0) {
+            options.scrollPosition = currentOptions.scrollPosition;
+        }
+        if(!options.samplerate || this.options.samplerate <= 0) {
+            options.samplerate = currentOptions.samplerate;
+        }
     }
 
     /**

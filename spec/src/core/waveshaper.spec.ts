@@ -46,10 +46,14 @@ describe('WaveShaper class tests', () => {
         expect(options.width).toBe(defaultConfig.width);
     });
 
-    it('Throws with invalid options.', () => {
+    it('Ignores invalid options.', () => {
+        const waveshaper = new WaveShaper({ samplesPerPixel: null } as any);
+        expect(waveshaper.options.samplesPerPixel).toBe(defaultConfig.samplesPerPixel);
 
-        expect(() => new WaveShaper({samplesPerPixel: null} as any)).toThrow();
-        expect(() => new WaveShaper().setOptions({samplesPerPixel: null} as any)).toThrow();
+        waveshaper.setOptions({ samplesPerPixel: 10 });
+        waveshaper.setOptions({ samplesPerPixel: 0 });
+
+        expect(waveshaper.options.samplesPerPixel).toBe(10);
     });
 
     it('Can add WaveShapers', () => {
