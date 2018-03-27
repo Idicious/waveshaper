@@ -3,7 +3,8 @@ import Data from '../models/data';
 import defaultOptions, { ManagerOptions, ManagerInput } from '../config/managerconfig';
 import TrackInput from '../models/track-input';
 import ProcessResult from '../models/process-result';
-import WaveShaperCallback from '../models/callback';
+import {WaveShaperCallback, SegmentCallback, OptionsCallback} from '../models/callback';
+import { Interval } from '..';
 
 /**
  * 
@@ -35,7 +36,23 @@ export default class WaveShaper {
      * @memberof WaveShaper
      */
     protected readonly callbackMap = new Map<string, WaveShaperCallback[]>();
-    
+
+    /**
+     * @description Segment callback functions
+     * 
+     * @readonly
+     * @memberof WaveShaper
+     */
+    protected readonly segmentCallbackMap = new Array<SegmentCallback>();
+
+    /**
+     * @description Options callbacks
+     * 
+     * @readonly
+     * @memberof WaveShaper
+     */
+    protected readonly optionsCallbacks = new Array<OptionsCallback>();
+
     /**
      * @description Currect settings
      * 
@@ -185,6 +202,67 @@ export default class WaveShaper {
     }
 
     /**
+     * Adds a callback that is triggered when an Interval is updated
+     * 
+     * @param cb Callback function
+     */
+    onSegment(cb: SegmentCallback) {
+        this.segmentCallbackMap.push(cb);
+    }
+
+    /**
+     * Removes a previously added callback for the Interval update callback
+     * 
+     * @param cb Callback function
+     */
+    offSegment(cb: SegmentCallback) {
+        const index = this.segmentCallbackMap.indexOf(cb);
+        if(index !== -1) {
+            this.segmentCallbackMap.splice(index, 1);
+        }
+    }
+
+    /**
+     * Emits a segment update
+     * 
+     * @param old Old interval
+     * @param changed Updated interval
+     */
+    emitSegment(old: Interval, changed: Interval) {
+        this.segmentCallbackMap.forEach(cb => cb(old, changed));
+    }
+
+    /**
+     * Adds a callback that is fired when options are updated
+     * 
+     * @param cb Callback function
+     */
+    onOptions(cb: OptionsCallback) {
+        this.optionsCallbacks.push(cb);
+    }
+
+    /**
+     * Removes a previously added callback
+     * @param cb Callback function
+     */
+    offOptions(cb: OptionsCallback) {
+        const index = this.optionsCallbacks.indexOf(cb);
+        if(index !== -1) {
+            this.optionsCallbacks.splice(index, 1);
+        }
+    }
+
+    /**
+     * Emits an options update
+     * 
+     * @param old Old options
+     * @param updated New options
+     */
+    protected emitOptions(old: ManagerOptions, updated: ManagerOptions) {
+        this.optionsCallbacks.forEach(cb => cb(old, updated));
+    }
+
+    /**
      * @description Merges the given options into the current and returns updated options
      * 
      * @param options A (partial) ManagerOptions object
@@ -193,8 +271,10 @@ export default class WaveShaper {
     setOptions(options: ManagerInput): WaveShaper {
         this.validateOptions(options);
 
-        this._options = { ...this.options, ...options };
-        this.invokeOptionsCallbacks(this.options);
+        const oldOptions = { ...this.options };
+
+        this._options = { ...oldOptions, ...options };
+        this.emitOptions(oldOptions, this.options);
 
         return this;
     }
@@ -328,13 +408,6 @@ export default class WaveShaper {
                 callback(result.options, new Float32Array(trackResult.data));
             }
         }
-    }
-
-    protected invokeOptionsCallbacks(options: ManagerOptions) {
-        const callbacks = this.callbackMap.get('options');
-        if(callbacks == null) return;
-
-        callbacks.forEach(cb => cb(options, null as any))
     }
 
     protected getProcessIds(...ids: string[]) : string[] {

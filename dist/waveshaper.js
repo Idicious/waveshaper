@@ -585,6 +585,20 @@ var WaveShaper = /** @class */ (function () {
          * @memberof WaveShaper
          */
         this.callbackMap = new Map();
+        /**
+         * @description Segment callback functions
+         *
+         * @readonly
+         * @memberof WaveShaper
+         */
+        this.segmentCallbackMap = new Array();
+        /**
+         * @description Options callbacks
+         *
+         * @readonly
+         * @memberof WaveShaper
+         */
+        this.optionsCallbacks = new Array();
         this._activeWaveShapers = [];
         this.validateOptions(options);
         this._options = __assign({}, managerconfig_1.default, options);
@@ -734,6 +748,61 @@ var WaveShaper = /** @class */ (function () {
         return this;
     };
     /**
+     * Adds a callback that is triggered when an Interval is updated
+     *
+     * @param cb Callback function
+     */
+    WaveShaper.prototype.onSegment = function (cb) {
+        this.segmentCallbackMap.push(cb);
+    };
+    /**
+     * Removes a previously added callback for the Interval update callback
+     *
+     * @param cb Callback function
+     */
+    WaveShaper.prototype.offSegment = function (cb) {
+        var index = this.segmentCallbackMap.indexOf(cb);
+        if (index !== -1) {
+            this.segmentCallbackMap.splice(index, 1);
+        }
+    };
+    /**
+     * Emits a segment update
+     *
+     * @param old Old interval
+     * @param changed Updated interval
+     */
+    WaveShaper.prototype.emitSegment = function (old, changed) {
+        this.segmentCallbackMap.forEach(function (cb) { return cb(old, changed); });
+    };
+    /**
+     * Adds a callback that is fired when options are updated
+     *
+     * @param cb Callback function
+     */
+    WaveShaper.prototype.onOptions = function (cb) {
+        this.optionsCallbacks.push(cb);
+    };
+    /**
+     * Removes a previously added callback
+     * @param cb Callback function
+     */
+    WaveShaper.prototype.offOptions = function (cb) {
+        var index = this.optionsCallbacks.indexOf(cb);
+        if (index !== -1) {
+            this.optionsCallbacks.splice(index, 1);
+        }
+    };
+    /**
+     * Emits an options update
+     *
+     * @param old Old options
+     * @param updated New options
+     */
+    WaveShaper.prototype.emitOptions = function (old, updated) {
+        this.optionsCallbacks.forEach(function (cb) { return cb(old, updated); });
+    };
+    /**
      * @description Merges the given options into the current and returns updated options
      *
      * @param options A (partial) ManagerOptions object
@@ -741,8 +810,9 @@ var WaveShaper = /** @class */ (function () {
      */
     WaveShaper.prototype.setOptions = function (options) {
         this.validateOptions(options);
-        this._options = __assign({}, this.options, options);
-        this.invokeOptionsCallbacks(this.options);
+        var oldOptions = __assign({}, this.options);
+        this._options = __assign({}, oldOptions, options);
+        this.emitOptions(oldOptions, this.options);
         return this;
     };
     /**
@@ -881,12 +951,6 @@ var WaveShaper = /** @class */ (function () {
                 callback(result.options, new Float32Array(trackResult.data));
             }
         }
-    };
-    WaveShaper.prototype.invokeOptionsCallbacks = function (options) {
-        var callbacks = this.callbackMap.get('options');
-        if (callbacks == null)
-            return;
-        callbacks.forEach(function (cb) { return cb(options, null); });
     };
     WaveShaper.prototype.getProcessIds = function () {
         var ids = [];

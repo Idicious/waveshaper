@@ -90,7 +90,9 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#intervalmap" class="tsd-kind-icon">Interval<wbr>Map</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#metertype" class="tsd-kind-icon">Meter<wbr>Type</a></li>
-								<li class="tsd-kind-type-alias"><a href="globals.html#waveshapercallback" class="tsd-kind-icon">Wave<wbr>Shaper<wbr>Callback</a></li>
+								<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#optionscallback" class="tsd-kind-icon">Options<wbr>Callback</a></li>
+								<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#segmentcallback" class="tsd-kind-icon">Segment<wbr>Callback</a></li>
+								<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#waveshapercallback" class="tsd-kind-icon">Wave<wbr>Shaper<wbr>Callback</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-not-exported">
@@ -124,7 +126,7 @@
 					<div class="tsd-signature tsd-kind-icon">Interval<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/methods/flatten.ts#L4">methods/flatten.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L4">methods/flatten.ts:4</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -142,24 +144,92 @@
 					<div class="tsd-signature tsd-kind-icon">Meter<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"peak"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"rms"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/config/managerconfig.ts#L1">config/managerconfig.ts:1</a></li>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L1">config/managerconfig.ts:1</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias">
-					<a name="waveshapercallback" class="tsd-anchor"></a>
-					<h3>Wave<wbr>Shaper<wbr>Callback</h3>
-					<div class="tsd-signature tsd-kind-icon">Wave<wbr>Shaper<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-not-exported">
+					<a name="optionscallback" class="tsd-anchor"></a>
+					<h3>Options<wbr>Callback</h3>
+					<div class="tsd-signature tsd-kind-icon">Options<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/models/callback.ts#L3">models/callback.ts:3</a></li>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/models/callback.ts#L6">models/callback.ts:6</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>old<span class="tsd-signature-symbol">: </span><a href="interfaces/manageroptions.html" class="tsd-signature-type">ManagerOptions</a>, updated<span class="tsd-signature-symbol">: </span><a href="interfaces/manageroptions.html" class="tsd-signature-type">ManagerOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>old: <a href="interfaces/manageroptions.html" class="tsd-signature-type">ManagerOptions</a></h5>
+											</li>
+											<li>
+												<h5>updated: <a href="interfaces/manageroptions.html" class="tsd-signature-type">ManagerOptions</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-not-exported">
+					<a name="segmentcallback" class="tsd-anchor"></a>
+					<h3>Segment<wbr>Callback</h3>
+					<div class="tsd-signature tsd-kind-icon">Segment<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/models/callback.ts#L8">models/callback.ts:8</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-siganture">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>old<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a>, updated<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>old: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a></h5>
+											</li>
+											<li>
+												<h5>updated: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-not-exported">
+					<a name="waveshapercallback" class="tsd-anchor"></a>
+					<h3>Wave<wbr>Shaper<wbr>Callback</h3>
+					<div class="tsd-signature tsd-kind-icon">Wave<wbr>Shaper<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/models/callback.ts#L4">models/callback.ts:4</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-siganture">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
 									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="interfaces/manageroptions.html" class="tsd-signature-type">ManagerOptions</a>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
@@ -193,7 +263,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/methods/flatten.ts#L213">methods/flatten.ts:213</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L213">methods/flatten.ts:213</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -228,7 +298,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/methods/flatten.ts#L142">methods/flatten.ts:142</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L142">methods/flatten.ts:142</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -264,7 +334,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/methods/flatten.ts#L34">methods/flatten.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L34">methods/flatten.ts:34</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -296,7 +366,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/methods/flatten.ts#L74">methods/flatten.ts:74</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L74">methods/flatten.ts:74</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -325,7 +395,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/methods/flatten.ts#L106">methods/flatten.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L106">methods/flatten.ts:106</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -354,7 +424,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/methods/flatten.ts#L43">methods/flatten.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L43">methods/flatten.ts:43</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -387,7 +457,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/methods/flatten.ts#L63">methods/flatten.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L63">methods/flatten.ts:63</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -416,7 +486,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/methods/flatten.ts#L5">methods/flatten.ts:5</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L5">methods/flatten.ts:5</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -439,7 +509,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/methods/flatten.ts#L87">methods/flatten.ts:87</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L87">methods/flatten.ts:87</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -467,7 +537,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/config/managerconfig.ts#L21">config/managerconfig.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L21">config/managerconfig.ts:21</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -476,7 +546,7 @@
 						<div class="tsd-signature tsd-kind-icon">meter<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"rms"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;rms&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/config/managerconfig.ts#L25">config/managerconfig.ts:25</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L25">config/managerconfig.ts:25</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -486,7 +556,7 @@
 						<div class="tsd-signature tsd-kind-icon">resolution<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;10</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/config/managerconfig.ts#L24">config/managerconfig.ts:24</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L24">config/managerconfig.ts:24</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -496,7 +566,7 @@
 						<div class="tsd-signature tsd-kind-icon">samplerate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;44100</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/config/managerconfig.ts#L27">config/managerconfig.ts:27</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L27">config/managerconfig.ts:27</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -506,7 +576,7 @@
 						<div class="tsd-signature tsd-kind-icon">samples<wbr>Per<wbr>Pixel<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;1024</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/config/managerconfig.ts#L23">config/managerconfig.ts:23</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L23">config/managerconfig.ts:23</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -516,7 +586,7 @@
 						<div class="tsd-signature tsd-kind-icon">scroll<wbr>Position<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/config/managerconfig.ts#L22">config/managerconfig.ts:22</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L22">config/managerconfig.ts:22</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -526,7 +596,7 @@
 						<div class="tsd-signature tsd-kind-icon">width<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;300</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/6c19f1d/src/config/managerconfig.ts#L26">config/managerconfig.ts:26</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L26">config/managerconfig.ts:26</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -573,7 +643,13 @@
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#metertype" class="tsd-kind-icon">Meter<wbr>Type</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#optionscallback" class="tsd-kind-icon">Options<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#segmentcallback" class="tsd-kind-icon">Segment<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
 						<a href="globals.html#waveshapercallback" class="tsd-kind-icon">Wave<wbr>Shaper<wbr>Callback</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-not-exported">
