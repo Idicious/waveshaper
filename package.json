@@ -9,6 +9,7 @@
     "src"
   ],
   "scripts": {
+    "build:dev": "webpack",
     "build": "webpack && yarn docs",
     "docs": "yarn typedoc --tsconfig ./tsconfig.test.json --out ./docs --mode file --excludePrivate --excludeProtected ./src",
     "start": "webpack-dev-server --hot --inline",
@@ -31,6 +32,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jasmine": "^2.8.6",
+    "babel-cli": "^6.26.0",
     "jasmine-core": "^2.99.1",
     "jasmine-ts": "^0.2.1",
     "karma": "^2.0.0",
@@ -44,5 +46,8 @@
     "typescript": "^2.7.2",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^2.9.3"
+  },
+  "dependencies": {
+    "weighted-interval-merge": "^0.2.1"
   }
 }

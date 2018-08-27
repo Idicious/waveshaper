@@ -1,13 +1,11 @@
+import { Interval } from "weighted-interval-merge";
+
 /**
  * A segment of audio
  */
-interface Interval {
-    id: string;
-    start: number;
-    end: number;
-    offsetStart: number;
-    index: number;
-    source: string;
+interface AudioInterval extends Interval {
+  trackId?: string;
+  source: string;
 }
 
-export default Interval;
+export default AudioInterval;

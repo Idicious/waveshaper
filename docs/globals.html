@@ -77,8 +77,8 @@
 						<section class="tsd-index-section ">
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface"><a href="interfaces/audiointerval.html" class="tsd-kind-icon">Audio<wbr>Interval</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/data.html" class="tsd-kind-icon">Data</a></li>
-								<li class="tsd-kind-interface"><a href="interfaces/interval.html" class="tsd-kind-icon">Interval</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/managerinput.html" class="tsd-kind-icon">Manager<wbr>Input</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/manageroptions.html" class="tsd-kind-icon">Manager<wbr>Options</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/processresult.html" class="tsd-kind-icon">Process<wbr>Result</a></li>
@@ -126,14 +126,14 @@
 					<div class="tsd-signature tsd-kind-icon">Interval<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L4">methods/flatten.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/methods/flatten.ts#L4">methods/flatten.ts:4</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-index-signature">
-								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h5>
+								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h5>
 							</li>
 						</ul>
 					</div>
@@ -144,7 +144,7 @@
 					<div class="tsd-signature tsd-kind-icon">Meter<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"peak"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"rms"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L1">config/managerconfig.ts:1</a></li>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/config/managerconfig.ts#L1">config/managerconfig.ts:1</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -154,7 +154,7 @@
 					<div class="tsd-signature tsd-kind-icon">Options<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/models/callback.ts#L6">models/callback.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/models/callback.ts#L12">models/callback.ts:12</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -188,7 +188,7 @@
 					<div class="tsd-signature tsd-kind-icon">Segment<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/models/callback.ts#L8">models/callback.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/models/callback.ts#L17">models/callback.ts:17</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -196,17 +196,17 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-siganture">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>old<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a>, updated<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>old<span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, updated<span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
-												<h5>old: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a></h5>
+												<h5>old: <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 											</li>
 											<li>
-												<h5>updated: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a></h5>
+												<h5>updated: <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -222,7 +222,7 @@
 					<div class="tsd-signature tsd-kind-icon">Wave<wbr>Shaper<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/models/callback.ts#L4">models/callback.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/models/callback.ts#L4">models/callback.ts:4</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -230,7 +230,7 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-siganture">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="interfaces/manageroptions.html" class="tsd-signature-type">ManagerOptions</a>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="interfaces/manageroptions.html" class="tsd-signature-type">ManagerOptions</a>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Float32Array</span>, start<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, width<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, shift<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
@@ -241,6 +241,15 @@
 											</li>
 											<li>
 												<h5>data: <span class="tsd-signature-type">Float32Array</span></h5>
+											</li>
+											<li>
+												<h5>start: <span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li>
+												<h5>width: <span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li>
+												<h5>shift: <span class="tsd-signature-type">number</span></h5>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -263,7 +272,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L213">methods/flatten.ts:213</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/methods/flatten.ts#L216">methods/flatten.ts:216</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -292,13 +301,13 @@
 					<a name="combine" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> combine</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">combine<span class="tsd-signature-symbol">(</span>highIndexes<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span>, lowIndexes<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">combine<span class="tsd-signature-symbol">(</span>highIndexes<span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span>, lowIndexes<span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L142">methods/flatten.ts:142</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/methods/flatten.ts#L143">methods/flatten.ts:143</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -309,17 +318,17 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>highIndexes: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>highIndexes: <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 								<li>
-									<h5>lowIndexes: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>lowIndexes: <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<div class="lead">
 										</div>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h4>
 							<p>Interval array</p>
 						</li>
 					</ul>
@@ -328,13 +337,13 @@
 					<a name="copy" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> copy</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">(</span>intervals<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">(</span>intervals<span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L34">methods/flatten.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/methods/flatten.ts#L34">methods/flatten.ts:34</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -345,14 +354,14 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>intervals: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>intervals: <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<div class="lead">
 										</div>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -360,13 +369,13 @@
 					<a name="groupbyindex" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> group<wbr>ByIndex</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">group<wbr>ByIndex<span class="tsd-signature-symbol">(</span>intervals<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="globals.html#intervalmap" class="tsd-signature-type">IntervalMap</a></li>
+						<li class="tsd-signature tsd-kind-icon">group<wbr>ByIndex<span class="tsd-signature-symbol">(</span>intervals<span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="globals.html#intervalmap" class="tsd-signature-type">IntervalMap</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L74">methods/flatten.ts:74</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/methods/flatten.ts#L74">methods/flatten.ts:74</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -377,7 +386,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>intervals: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>intervals: <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="globals.html#intervalmap" class="tsd-signature-type">IntervalMap</a></h4>
@@ -389,13 +398,13 @@
 					<a name="merge" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> merge</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">merge<span class="tsd-signature-symbol">(</span>intervals<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">merge<span class="tsd-signature-symbol">(</span>intervals<span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L106">methods/flatten.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/methods/flatten.ts#L108">methods/flatten.ts:108</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -406,10 +415,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>intervals: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>intervals: <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h4>
 							<p>Interval array</p>
 						</li>
 					</ul>
@@ -418,13 +427,13 @@
 					<a name="normalizeindex" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> normalize<wbr>Index</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">normalize<wbr>Index<span class="tsd-signature-symbol">(</span>segments<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">normalize<wbr>Index<span class="tsd-signature-symbol">(</span>segments<span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L43">methods/flatten.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/methods/flatten.ts#L43">methods/flatten.ts:43</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -436,14 +445,14 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>segments: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>segments: <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<div class="lead">
 										</div>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -451,13 +460,13 @@
 					<a name="sort" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> sort</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">sort<span class="tsd-signature-symbol">(</span>intervals<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">sort<span class="tsd-signature-symbol">(</span>intervals<span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L63">methods/flatten.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/methods/flatten.ts#L63">methods/flatten.ts:63</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -468,10 +477,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>intervals: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>intervals: <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h4>
 							<p>Interval array</p>
 						</li>
 					</ul>
@@ -480,19 +489,19 @@
 					<a name="start" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> start</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span>segment<span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span>segment<span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L5">methods/flatten.ts:5</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/methods/flatten.ts#L5">methods/flatten.ts:5</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>segment: <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a></h5>
+									<h5>segment: <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -503,13 +512,13 @@
 					<a name="weightedmerge" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> weighted<wbr>Merge</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">weighted<wbr>Merge<span class="tsd-signature-symbol">(</span>grouped<span class="tsd-signature-symbol">: </span><a href="globals.html#intervalmap" class="tsd-signature-type">IntervalMap</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">weighted<wbr>Merge<span class="tsd-signature-symbol">(</span>grouped<span class="tsd-signature-symbol">: </span><a href="globals.html#intervalmap" class="tsd-signature-type">IntervalMap</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/methods/flatten.ts#L87">methods/flatten.ts:87</a></li>
+									<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/methods/flatten.ts#L89">methods/flatten.ts:89</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -523,7 +532,7 @@
 									<h5>grouped: <a href="globals.html#intervalmap" class="tsd-signature-type">IntervalMap</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="interfaces/interval.html" class="tsd-signature-type">Interval</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="interfaces/audiointerval.html" class="tsd-signature-type">AudioInterval</a><span class="tsd-signature-symbol">[]</span></h4>
 							<p>Interval array</p>
 						</li>
 					</ul>
@@ -537,7 +546,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L21">config/managerconfig.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/config/managerconfig.ts#L21">config/managerconfig.ts:21</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -546,7 +555,7 @@
 						<div class="tsd-signature tsd-kind-icon">meter<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"rms"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;rms&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L25">config/managerconfig.ts:25</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/config/managerconfig.ts#L25">config/managerconfig.ts:25</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -556,7 +565,7 @@
 						<div class="tsd-signature tsd-kind-icon">resolution<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;10</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L24">config/managerconfig.ts:24</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/config/managerconfig.ts#L24">config/managerconfig.ts:24</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -566,7 +575,7 @@
 						<div class="tsd-signature tsd-kind-icon">samplerate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;44100</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L27">config/managerconfig.ts:27</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/config/managerconfig.ts#L27">config/managerconfig.ts:27</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -576,7 +585,7 @@
 						<div class="tsd-signature tsd-kind-icon">samples<wbr>Per<wbr>Pixel<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;1024</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L23">config/managerconfig.ts:23</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/config/managerconfig.ts#L23">config/managerconfig.ts:23</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -586,7 +595,7 @@
 						<div class="tsd-signature tsd-kind-icon">scroll<wbr>Position<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L22">config/managerconfig.ts:22</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/config/managerconfig.ts#L22">config/managerconfig.ts:22</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -596,7 +605,7 @@
 						<div class="tsd-signature tsd-kind-icon">width<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;300</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/2594aaa/src/config/managerconfig.ts#L26">config/managerconfig.ts:26</a></li>
+								<li>Defined in <a href="https://github.com/Idicious/WaveShaper.js/blob/fd591c5/src/config/managerconfig.ts#L26">config/managerconfig.ts:26</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -620,10 +629,10 @@
 						<a href="classes/waveshaper.html" class="tsd-kind-icon">Wave<wbr>Shaper</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/data.html" class="tsd-kind-icon">Data</a>
+						<a href="interfaces/audiointerval.html" class="tsd-kind-icon">Audio<wbr>Interval</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/interval.html" class="tsd-kind-icon">Interval</a>
+						<a href="interfaces/data.html" class="tsd-kind-icon">Data</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/managerinput.html" class="tsd-kind-icon">Manager<wbr>Input</a>

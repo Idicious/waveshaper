@@ -1,8 +1,8 @@
-import Interval from "../models/interval";
+import AudioInterval from "../models/interval";
 //import Interval from "../models/interval";
 
-declare type IntervalMap = {[key: string] : Interval[]};
-const start = (segment: Interval) => segment.start + segment.offsetStart;
+declare type IntervalMap = { [key: string]: AudioInterval[] };
+const start = (segment: AudioInterval) => segment.start + segment.offsetStart;
 
 /**
  * The algorithm first calculates real start and end times of each segment,
@@ -15,8 +15,8 @@ const start = (segment: Interval) => segment.start + segment.offsetStart;
  * @param segments Segments to flatten
  * @returns flattened Interval array
  */
-export default (segments: Interval[]): Interval[] => {
-  if(segments == null || segments.length === 0) return [];
+export default (segments: AudioInterval[]): AudioInterval[] => {
+  if (segments == null || segments.length === 0) return [];
 
   const sorted = sort(segments);
   const normalized = normalizeIndex(sorted);
@@ -24,23 +24,23 @@ export default (segments: Interval[]): Interval[] => {
   const grouped = groupByIndex(copied);
 
   return weightedMerge(grouped);
-}
+};
 
 /**
  * Copies elements so original are unaltered
- * 
- * @param intervals 
+ *
+ * @param intervals
  */
-const copy = (intervals: Interval[]): Interval[] => intervals.map(i => ({ ...i }));
-  
+const copy = (intervals: AudioInterval[]): AudioInterval[] =>
+  intervals.map(i => ({ ...i }));
 
 /**
  * When an element is altered the index is set very high,
  * this functions normalizes to indexes back to 0
- * 
- * @param segments 
+ *
+ * @param segments
  */
-const normalizeIndex = (segments: Interval[]): Interval[] => {
+const normalizeIndex = (segments: AudioInterval[]): AudioInterval[] => {
   let index = 0;
   let preNormalizeIndex = Number.MIN_SAFE_INTEGER;
   segments.forEach(el => {
@@ -52,40 +52,42 @@ const normalizeIndex = (segments: Interval[]): Interval[] => {
     }
   });
   return segments;
-}
+};
 
 /**
  * Sorts the intervals by index, then by start
- * 
- * @param intervals 
+ *
+ * @param intervals
  * @return Interval array
  */
-const sort = (intervals: Interval[]): Interval[] => 
+const sort = (intervals: AudioInterval[]): AudioInterval[] =>
   intervals.sort((a, b) => cmp(a.index, b.index) || cmp(start(a), start(b)));
 
 /**
  * Returns a map of intervals grouped by the key property
- * 
- * @param intervals 
- * @param key 
- * 
+ *
+ * @param intervals
+ * @param key
+ *
  * @returns Map of index => interval[]
  */
-const groupByIndex = (intervals: Interval[]): IntervalMap =>
-  intervals.reduce((groups, interval) => {
-    (groups[interval.index] = groups[interval.index] || []).push(interval);
-    return groups;
-  }, <IntervalMap>{});
-
+const groupByIndex = (intervals: AudioInterval[]): IntervalMap =>
+  intervals.reduce(
+    (groups, interval) => {
+      (groups[interval.index] = groups[interval.index] || []).push(interval);
+      return groups;
+    },
+    <IntervalMap>{}
+  );
 
 /**
  * Merges all the groups by index
- * 
- * @param grouped 
+ *
+ * @param grouped
  * @returns Interval array
  */
-const weightedMerge = (grouped: IntervalMap): Interval[] => {
-  let flattened: Interval[] | null = null;
+const weightedMerge = (grouped: IntervalMap): AudioInterval[] => {
+  let flattened: AudioInterval[] | null = null;
   for (let index of Object.keys(grouped)) {
     const merged = merge(grouped[index]);
     if (flattened == null) {
@@ -94,20 +96,19 @@ const weightedMerge = (grouped: IntervalMap): Interval[] => {
       flattened = combine(merged, flattened);
     }
   }
-  return <Interval[]>flattened;
-}
+  return <AudioInterval[]>flattened;
+};
 
 /**
  * Merges a set of intervals with the same index and remove any overlaps, left to right
- * 
- * @param intervals 
+ *
+ * @param intervals
  * @returns Interval array
  */
-const merge = (intervals: Interval[]): Interval[] => {
-  if (intervals.length <= 1) 
-    return intervals;
+const merge = (intervals: AudioInterval[]): AudioInterval[] => {
+  if (intervals.length <= 1) return intervals;
 
-  const result: Interval[] = [];
+  const result: AudioInterval[] = [];
 
   let current = intervals[0];
   for (let i = 1; i < intervals.length; i++) {
@@ -116,8 +117,8 @@ const merge = (intervals: Interval[]): Interval[] => {
     // If current is completely overlapped by second it is merged into it
     if (current.end >= next.end) {
       continue;
-    // Resolves partial overlaps by setting end of current to start of next
-    } else if(start(next) < current.end) {
+      // Resolves partial overlaps by setting end of current to start of next
+    } else if (start(next) < current.end) {
       result.push({ ...current, end: start(next) });
       current = next;
     } else {
@@ -129,24 +130,26 @@ const merge = (intervals: Interval[]): Interval[] => {
 
   result.push(current);
   return result;
-}
+};
 
 /**
  * Given two sets of intervals it merges them so the highIndexes set has priority
  *
  * @param highIndexes
  * @param lowIndexes
- * 
+ *
  * @returns Interval array
  */
-const combine = (highIndexes: Interval[], lowIndexes: Interval[]): Interval[] => {
+const combine = (
+  highIndexes: AudioInterval[],
+  lowIndexes: AudioInterval[]
+): AudioInterval[] => {
   let highIndex = 0;
   let lowIndex = 0;
 
-  const merged: Interval[] = [];
+  const merged: AudioInterval[] = [];
 
   while (highIndex < highIndexes.length || lowIndex < lowIndexes.length) {
-    
     const high = highIndexes[highIndex];
     const low = lowIndexes[lowIndex];
 
@@ -154,31 +157,31 @@ const combine = (highIndexes: Interval[], lowIndexes: Interval[]): Interval[] =>
     if (highIndex === highIndexes.length) {
       merged.push({ ...low });
       lowIndex++;
-    // Only high priority left so push high onto results
+      // Only high priority left so push high onto results
     } else if (lowIndex === lowIndexes.length) {
       merged.push({ ...high });
       highIndex++;
-    // High priority start before or at same time as low
+      // High priority start before or at same time as low
     } else if (start(high) <= start(low)) {
       // No overlap between low and high
       // low:                 ----------------------
       // high: ---------------
-      if(high.end <= start(low)) {
-      // Partial overlap where high ends after low
-      // low:                 ----------------------
-      // high: ----------------------
-      } else if(high.end < low.end) {
+      if (high.end <= start(low)) {
+        // Partial overlap where high ends after low
+        // low:                 ----------------------
+        // high: ----------------------
+      } else if (high.end < low.end) {
         low.offsetStart = high.end - low.start;
-      // Low index completely overlapped, dismiss it
-      // low:               -----------
-      // high: -------------------------------------
+        // Low index completely overlapped, dismiss it
+        // low:               -----------
+        // high: -------------------------------------
       } else {
         lowIndex++;
       }
 
       merged.push({ ...high });
       highIndex++;
-    // Low priority starts before high
+      // Low priority starts before high
     } else {
       // No overlap between low and high intervals
       // low: ---------------
@@ -186,24 +189,24 @@ const combine = (highIndexes: Interval[], lowIndexes: Interval[]): Interval[] =>
       if (low.end <= start(high)) {
         merged.push({ ...low });
         lowIndex++;
-      // Partial overlap where high ends after low
-      // low: ---------------------
-      // high                ----------------------
+        // Partial overlap where high ends after low
+        // low: ---------------------
+        // high                ----------------------
       } else if (high.end > low.end) {
         merged.push({ ...low, end: start(high) });
         lowIndex++;
-      // Partial overlap where high ends before low
-      // low: -------------------------------------
-      // high             -----------
+        // Partial overlap where high ends before low
+        // low: -------------------------------------
+        // high             -----------
       } else {
         merged.push({ ...low, end: start(high) });
         low.offsetStart = high.end - low.start;
-      } 
+      }
     }
   }
 
   return merged;
-}
+};
 
 /**
  *

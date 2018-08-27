@@ -1,14 +1,22 @@
 import { ManagerOptions } from "../config/managerconfig";
-import Interval from '../models/interval';
+import AudioInterval from "../models/interval";
 
-declare type WaveShaperCallback = (options: ManagerOptions, data: Float32Array) => void;
+declare type WaveShaperCallback = (
+  options: ManagerOptions,
+  data: Float32Array,
+  start: number,
+  width: number,
+  shift: number
+) => void;
 
-declare type OptionsCallback = (old: ManagerOptions, updated: ManagerOptions) => void;
+declare type OptionsCallback = (
+  old: ManagerOptions,
+  updated: ManagerOptions
+) => void;
 
-declare type SegmentCallback = (old: Interval, updated: Interval) => void;
+declare type SegmentCallback = (
+  old: AudioInterval | null,
+  updated: AudioInterval | null
+) => void;
 
-export {
-  WaveShaperCallback,
-  SegmentCallback,
-  OptionsCallback
-}
+export { WaveShaperCallback, SegmentCallback, OptionsCallback };

@@ -13,9 +13,9 @@ describe('Peak calculation tests.', () => {
             width: 2,
             resolution: 1
         }, [
-            {start: 0, end: 1, offsetStart: 0, source: '1', id: '1', index: 1},
-            {start: 1, end: 2, offsetStart: 0, source: '2', id: '1', index: 1}
-        ], data);
+            {start: 0, trackId: '1', end: 1, offsetStart: 0, source: '1', id: '1', index: 1},
+            {start: 1, trackId: '1', end: 2, offsetStart: 0, source: '2', id: '1', index: 1}
+        ], data, 0, 2, 0, new Float32Array(2 * 4));
 
         expect(result.length).toBe(8);
         expect(result[1]).toBe(50);
@@ -34,9 +34,9 @@ describe('Peak calculation tests.', () => {
             width: 2,
             resolution: 1
         }, [
-            {start: 0, end: 1, offsetStart: 0, source: '1', id: '1', index: 1},
-            {start: 1, end: 2, offsetStart: 0, source: '2', id: '1', index: 1}
-        ], data);
+            {start: 0, trackId: '1', end: 1, offsetStart: 0, source: '1', id: '1', index: 1},
+            {start: 1, trackId: '1', end: 2, offsetStart: 0, source: '2', id: '1', index: 1}
+        ], data, 0, 2, 0, new Float32Array(2 * 4));
 
         expect(result.length).toBe(8);
         expect(result[1]).toBe(0);
@@ -55,9 +55,9 @@ describe('Peak calculation tests.', () => {
             width: 2,
             resolution: 2
         }, [
-            {start: 0, end: 1, offsetStart: 0, source: '1', id: '1', index: 1},
-            {start: 1, end: 2, offsetStart: 0, source: '2', id: '1', index: 1}
-        ], data);
+            {start: 0, trackId: '1', end: 1, offsetStart: 0, source: '1', id: '1', index: 1},
+            {start: 1, trackId: '1', end: 2, offsetStart: 0, source: '2', id: '1', index: 1}
+        ], data, 0, 2, 0, new Float32Array(2 * 4));
 
         expect(result.length).toBe(8);
         expect(result[1]).toBe(50);
