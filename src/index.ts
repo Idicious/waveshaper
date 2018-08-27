@@ -7,7 +7,6 @@ import defaultConfig, {
 } from "./config/managerconfig";
 import rms from "./strategies/rms";
 import peak from "./strategies/peak";
-import flatten from "./methods/flatten";
 
 export {
   WaveShaper,
@@ -16,7 +15,6 @@ export {
   defaultConfig,
   rms,
   peak,
-  flatten,
   ManagerOptions,
   ManagerInput
 };
