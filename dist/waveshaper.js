@@ -7,7 +7,7 @@
 		exports["waveshaper"] = factory();
 	else
 		root["waveshaper"] = factory();
-})(typeof self !== 'undefined' ? self : this, function() {
+})(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -46,12 +46,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -69,18 +89,336 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "/";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.ts");
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ "./node_modules/weighted-interval-merge/dist/weighted-interval-merge.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/weighted-interval-merge/dist/weighted-interval-merge.js ***!
+  \******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+(function (global, factory) {
+   true ? factory(exports) :
+  undefined;
+}(this, (function (exports) { 'use strict';
+
+  var _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  /**
+   * @typedef {Object} Interval
+   * 
+   * @property {number} start
+   * @property {number} offsetStart
+   * @property {number} end
+   * @property {number} index
+   */
+
+  /**
+   * @typedef {{[key: string]: Interval}} IntervalMap
+   */
+
+  /**
+   * @param {Interval} interval
+   */
+  var calcStart = function calcStart(interval) {
+    return interval.start + interval.offsetStart;
+  };
+
+  /**
+   * The algorithm first calculates real start and end times of each segment,
+   * sorts them by priority, then start time.
+   *
+   * Finally it merges the segments by index so there are no overlapping
+   * segments and those with highest index are on top.
+   *
+   * @export
+   * @param {Interval[]} intervals Segments to flatten
+   * @returns {Interval[]} flattened Interval array
+   */
+  var weightedIntervalMerge = function weightedIntervalMerge(intervals) {
+    if (intervals == null || intervals.length === 0) return [];
+
+    var sorted = sort(intervals);
+    var normalized = normalizeIndex(sorted);
+    var copied = copy(normalized);
+    var grouped = groupByIndex(copied);
+
+    return weightedMerge(grouped);
+  };
+
+  /**
+   * Copies elements so original are unaltered
+   * 
+   * @param {Interval[]} intervals 
+   */
+  var copy = function copy(intervals) {
+    return intervals.map(function (i) {
+      return _extends({}, i, {
+        offsetStart: i.offsetStart || 0,
+        index: i.index || 1
+      });
+    });
+  };
+
+  /**
+   * When an element is altered the index is set very high,
+   * this functions normalizes to indexes back to 0
+   * 
+   * @param {Intervalp[]} intervals 
+   */
+  var normalizeIndex = function normalizeIndex(intervals) {
+    var index = 0;
+    var preNormalizeIndex = Number.MIN_SAFE_INTEGER;
+    intervals.forEach(function (el) {
+      if (el.index > preNormalizeIndex) {
+        preNormalizeIndex = el.index;
+        el.index = ++index;
+      } else {
+        el.index = index;
+      }
+    });
+    return intervals;
+  };
+
+  /**
+   * Sorts the intervals by index, then by start
+   * 
+   * @param {Interval[]} intervals 
+   * @return {Interval[]} Interval array
+   */
+  var sort = function sort(intervals) {
+    return intervals.sort(function (a, b) {
+      return cmp(a.index, b.index) || cmp(calcStart(a), calcStart(b));
+    });
+  };
+
+  /**
+   * Returns a map of intervals grouped by the key property
+   * 
+   * @param {Interval[]} intervals 
+   * @returns {IntervalMap} Map of index => interval[]
+   */
+  var groupByIndex = function groupByIndex(intervals) {
+    return intervals.reduce(function (groups, interval) {
+      (groups[interval.index] = groups[interval.index] || []).push(interval);
+      return groups;
+    }, {});
+  };
+
+  /**
+   * Merges all the groups by index
+   * 
+   * @param {IntervalMap} grouped 
+   * @returns {Interval[]} Interval array
+   */
+  var weightedMerge = function weightedMerge(grouped) {
+    var flattened = null;
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = Object.keys(grouped)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var index = _step.value;
+
+        var merged = merge(grouped[index]);
+        if (flattened == null) {
+          flattened = merged;
+        } else {
+          flattened = combine(merged, flattened);
+        }
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    return flattened;
+  };
+
+  /**
+   * Merges a set of intervals with the same index and remove any overlaps, left to right
+   * 
+   * @param {Interval[]} intervals 
+   * @returns {Interval[]} Interval array
+   */
+  var merge = function merge(intervals) {
+    if (intervals.length <= 1) return intervals;
+
+    var result = [];
+
+    var current = intervals[0];
+    for (var i = 1; i < intervals.length; i++) {
+      var next = intervals[i];
+
+      // If current is completely overlapped by second it is merged into it
+      if (current.end >= next.end) {
+        continue;
+        // Resolves partial overlaps by setting end of current to start of next
+      } else if (calcStart(next) < current.end) {
+        result.push(_extends({}, current, { end: calcStart(next) }));
+        current = next;
+      } else {
+        // No overlap, push onto results
+        result.push(current);
+        current = next;
+      }
+    }
+
+    result.push(current);
+    return result;
+  };
+
+  /**
+   * Given two sets of intervals it merges them so the highIndexes set has priority
+   *
+   * @param {Interval[]} highIndexes
+   * @param {Interval[]} lowIndexes
+   * 
+   * @returns {Interval[]} Interval array
+   */
+  var combine = function combine(highIndexes, lowIndexes) {
+    var highIndex = 0;
+    var lowIndex = 0;
+
+    var merged = [];
+
+    while (highIndex < highIndexes.length || lowIndex < lowIndexes.length) {
+
+      var high = highIndexes[highIndex];
+      var low = lowIndexes[lowIndex];
+
+      // Only low priority left so push low onto results
+      if (highIndex === highIndexes.length) {
+        merged.push(_extends({}, low));
+        lowIndex++;
+        // Only high priority left so push high onto results
+      } else if (lowIndex === lowIndexes.length) {
+        merged.push(_extends({}, high));
+        highIndex++;
+        // High priority start before or at same time as low
+      } else if (calcStart(high) <= calcStart(low)) {
+        // No overlap between low and high
+        // low:                 ----------------------
+        // high: ---------------
+        if (high.end <= calcStart(low)) ; else if (high.end < low.end) {
+          low.offsetStart = high.end - low.start;
+          // Low index completely overlapped, dismiss it
+          // low:               -----------
+          // high: -------------------------------------
+        } else {
+          lowIndex++;
+        }
+
+        merged.push(_extends({}, high));
+        highIndex++;
+        // Low priority starts before high
+      } else {
+        // No overlap between low and high intervals
+        // low: ---------------
+        // high                ----------------------
+        if (low.end <= calcStart(high)) {
+          merged.push(_extends({}, low));
+          lowIndex++;
+          // Partial overlap where high ends after low
+          // low: ---------------------
+          // high                ----------------------
+        } else if (high.end > low.end) {
+          merged.push(_extends({}, low, { end: calcStart(high) }));
+          lowIndex++;
+          // Partial overlap where high ends before low
+          // low: -------------------------------------
+          // high             -----------
+        } else {
+          merged.push(_extends({}, low, { end: calcStart(high) }));
+          low.offsetStart = high.end - low.start;
+        }
+      }
+    }
+
+    return merged;
+  };
+
+  /**
+   *
+   * @param {number} a
+   * @param {number} b
+   */
+  var cmp = function cmp(a, b) {
+    if (a > b) return +1;
+    if (a < b) return -1;
+    return 0;
+  };
+
+  exports.weightedIntervalMerge = weightedIntervalMerge;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+
+
+/***/ }),
+
+/***/ "./src/config/managerconfig.ts":
+/*!*************************************!*\
+  !*** ./src/config/managerconfig.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var defaultOptions = {
+    scrollPosition: 0,
+    samplesPerPixel: 1024,
+    resolution: 10,
+    meterType: 'rms',
+    width: 300,
+    samplerate: 44100
+};
+exports.default = defaultOptions;
+
+
+/***/ }),
+
+/***/ "./src/core/track.ts":
+/*!***************************!*\
+  !*** ./src/core/track.ts ***!
+  \***************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var peak_1 = __webpack_require__(1);
-var rms_1 = __webpack_require__(2);
-var weighted_interval_merge_1 = __webpack_require__(6);
+var peak_1 = __webpack_require__(/*! ../strategies/peak */ "./src/strategies/peak.ts");
+var rms_1 = __webpack_require__(/*! ../strategies/rms */ "./src/strategies/rms.ts");
+var weighted_interval_merge_1 = __webpack_require__(/*! weighted-interval-merge */ "./node_modules/weighted-interval-merge/dist/weighted-interval-merge.js");
 var Track = /** @class */ (function () {
     function Track(id, intervals, width) {
         this.width = width;
@@ -132,213 +470,12 @@ exports.default = Track;
 
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports) {
 
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * Calculates peak values
- *
- * @export
- * @param resolution
- * @param samplesPerPixel
- * @param width
- * @param intervals
- * @param scrollPosition
- * @param sampleRate
- * @param dataMap
- * @returns
- */
-exports.default = (function (options, intervals, dataMap, startPosition, width, shift, lastValue) {
-    var sampleSize = Math.ceil(options.samplesPerPixel / options.resolution);
-    var start = options.scrollPosition * options.samplesPerPixel;
-    var startSecond = start / options.samplerate;
-    var secondsPerPixel = options.samplesPerPixel / options.samplerate;
-    var calcStartSecond = startSecond + startPosition * secondsPerPixel;
-    var calcEndSecond = calcStartSecond + width * secondsPerPixel;
-    var absShift = Math.abs(shift) * 4;
-    var shiftTarget = shift > 0 ? 0 : absShift;
-    var shiftStart = shift > 0 ? absShift : 0;
-    var peaks = new Float32Array(lastValue.buffer)
-        .copyWithin(shiftTarget, shiftStart)
-        .fill(0, startPosition * 4, (startPosition + width) * 4);
-    var currentIntervalIndex = intervals.findIndex(function (i) { return i.end > calcStartSecond && i.start + i.offsetStart < calcEndSecond; });
-    // There are no intervals in this range so return empty array
-    if (currentIntervalIndex === -1)
-        return peaks;
-    var maxIntervalIncrementIndex = intervals.length - 1;
-    var currentInterval = intervals[currentIntervalIndex];
-    var buffer = dataMap.get(currentInterval.source);
-    // For each pixel we display
-    for (var i = startPosition; i < startPosition + width; i++) {
-        var currentSecond = startSecond + i * secondsPerPixel;
-        if (currentSecond >= currentInterval.end) {
-            if (currentIntervalIndex === maxIntervalIncrementIndex) {
-                return peaks;
-            }
-            else {
-                currentInterval = intervals[++currentIntervalIndex];
-                buffer = dataMap.get(currentInterval.source);
-            }
-        }
-        if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
-            peaks.set([0, 0, 0, 0], i * 4);
-            continue;
-        }
-        var startBorder = currentSecond - secondsPerPixel <
-            currentInterval.start + currentInterval.offsetStart;
-        var endBorder = currentSecond + secondsPerPixel > currentInterval.end;
-        var intervalBorder = startBorder || endBorder ? 1 : 0;
-        if (buffer == null) {
-            peaks.set([0, 0, intervalBorder, 1], i * 4);
-            continue;
-        }
-        var secondsIntoInterval = currentSecond - currentInterval.start;
-        var startSample = Math.floor(secondsIntoInterval * options.samplerate);
-        var endSample = startSample + options.samplesPerPixel;
-        var length_1 = buffer.length;
-        var loopEnd = length_1 < endSample ? length_1 : endSample;
-        // Cycle through the data-points relevant to the pixel
-        // Don't cycle through more than sampleSize frames per pixel.
-        var min = 0, max = 0;
-        for (var j = startSample; j < loopEnd; j += sampleSize) {
-            var sample = buffer[j];
-            // Keep track of positive and negative values separately
-            if (sample > max)
-                max = sample;
-            else if (sample < min)
-                min = sample;
-        }
-        peaks.set([min, max, intervalBorder, 1], i * 4);
-    }
-    return peaks;
-});
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * Calculate rms values
- *
- * @export
- * @param resolution
- * @param samplesPerPixel
- * @param width
- * @param intervals
- * @param scrollPosition
- * @param sampleRate
- * @param dataMap
- * @returns
- */
-exports.default = (function (options, intervals, dataMap, startPosition, width, shift, lastValue) {
-    var sampleSize = Math.ceil(options.samplesPerPixel / options.resolution);
-    var start = options.scrollPosition * options.samplesPerPixel;
-    var startSecond = start / options.samplerate;
-    var secondsPerPixel = options.samplesPerPixel / options.samplerate;
-    var calcStartSecond = startSecond + startPosition * secondsPerPixel;
-    var calcEndSecond = calcStartSecond + width * secondsPerPixel;
-    var absShift = Math.abs(shift) * 4;
-    var shiftTarget = shift > 0 ? 0 : absShift;
-    var shiftStart = shift > 0 ? absShift : 0;
-    var peaks = new Float32Array(lastValue.buffer)
-        .copyWithin(shiftTarget, shiftStart)
-        .fill(0, startPosition * 4, (startPosition + width) * 4);
-    var currentIntervalIndex = intervals.findIndex(function (i) { return i.end > calcStartSecond && i.start + i.offsetStart < calcEndSecond; });
-    // There are no intervals in this range so return empty array
-    if (currentIntervalIndex === -1) {
-        return peaks;
-    }
-    var maxIntervalIncrementIndex = intervals.length - 1;
-    var currentInterval = intervals[currentIntervalIndex];
-    var buffer = dataMap.get(currentInterval.source);
-    // For each pixel we display
-    for (var i = startPosition; i < startPosition + width; i++) {
-        var currentSecond = startSecond + i * secondsPerPixel;
-        if (currentSecond >= currentInterval.end) {
-            if (currentIntervalIndex === maxIntervalIncrementIndex) {
-                return peaks;
-            }
-            else {
-                currentInterval = intervals[++currentIntervalIndex];
-                buffer = dataMap.get(currentInterval.source);
-            }
-        }
-        if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
-            peaks.set([0, 0, 0, 0], i * 4);
-            continue;
-        }
-        var startBorder = currentSecond - secondsPerPixel <
-            currentInterval.start + currentInterval.offsetStart;
-        var endBorder = currentSecond + secondsPerPixel > currentInterval.end;
-        var intervalBorder = startBorder || endBorder ? 1 : 0;
-        if (buffer == null) {
-            peaks.set([0, 0, intervalBorder, 1], i * 4);
-            continue;
-        }
-        var secondsIntoInterval = currentSecond - currentInterval.start;
-        var startSample = Math.floor(secondsIntoInterval * options.samplerate);
-        var endSample = startSample + options.samplesPerPixel;
-        var length_1 = buffer.length;
-        var loopEnd = length_1 < endSample ? length_1 : endSample;
-        // Cycle through the data-points relevant to the pixel
-        // Don't cycle through more than sampleSize frames per pixel.
-        var posSum = 0, negSum = 0, count = 0;
-        for (var j = startSample; j < loopEnd; j += sampleSize, count++) {
-            var val = buffer[j];
-            // Keep track of positive and negative values separately
-            if (val > 0) {
-                posSum += val * val;
-            }
-            else {
-                negSum += val * val;
-            }
-        }
-        var min = -Math.sqrt(negSum / count);
-        var max = Math.sqrt(posSum / count);
-        peaks.set([min, max, intervalBorder, 1], i * 4);
-    }
-    return peaks;
-});
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var defaultOptions = {
-    scrollPosition: 0,
-    samplesPerPixel: 1024,
-    resolution: 10,
-    meterType: 'rms',
-    width: 300,
-    samplerate: 44100
-};
-exports.default = defaultOptions;
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var waveshaper_1 = __webpack_require__(5);
-exports.WaveShaper = waveshaper_1.default;
-var track_1 = __webpack_require__(0);
-exports.Track = track_1.default;
-var managerconfig_1 = __webpack_require__(3);
-exports.defaultConfig = managerconfig_1.default;
-var rms_1 = __webpack_require__(2);
-exports.rms = rms_1.default;
-var peak_1 = __webpack_require__(1);
-exports.peak = peak_1.default;
-
-
-/***/ }),
-/* 5 */
+/***/ "./src/core/waveshaper.ts":
+/*!********************************!*\
+  !*** ./src/core/waveshaper.ts ***!
+  \********************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __assign = (this && this.__assign) || Object.assign || function(t) {
@@ -350,8 +487,8 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var track_1 = __webpack_require__(0);
-var managerconfig_1 = __webpack_require__(3);
+var track_1 = __webpack_require__(/*! ./track */ "./src/core/track.ts");
+var managerconfig_1 = __webpack_require__(/*! ../config/managerconfig */ "./src/config/managerconfig.ts");
 /**
  *
  *
@@ -791,293 +928,212 @@ exports.default = WaveShaper;
 
 
 /***/ }),
-/* 6 */
+
+/***/ "./src/index.ts":
+/*!**********************!*\
+  !*** ./src/index.ts ***!
+  \**********************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-(function (global, factory) {
-   true ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.intervalMerge = {})));
-}(this, (function (exports) { 'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
+var waveshaper_1 = __webpack_require__(/*! ./core/waveshaper */ "./src/core/waveshaper.ts");
+exports.WaveShaper = waveshaper_1.default;
+var track_1 = __webpack_require__(/*! ./core/track */ "./src/core/track.ts");
+exports.Track = track_1.default;
+var managerconfig_1 = __webpack_require__(/*! ./config/managerconfig */ "./src/config/managerconfig.ts");
+exports.defaultConfig = managerconfig_1.default;
+var rms_1 = __webpack_require__(/*! ./strategies/rms */ "./src/strategies/rms.ts");
+exports.rms = rms_1.default;
+var peak_1 = __webpack_require__(/*! ./strategies/peak */ "./src/strategies/peak.ts");
+exports.peak = peak_1.default;
 
-  var _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
 
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
+/***/ }),
+
+/***/ "./src/strategies/peak.ts":
+/*!********************************!*\
+  !*** ./src/strategies/peak.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Calculates peak values
+ *
+ * @export
+ * @param resolution
+ * @param samplesPerPixel
+ * @param width
+ * @param intervals
+ * @param scrollPosition
+ * @param sampleRate
+ * @param dataMap
+ * @returns
+ */
+exports.default = (function (options, intervals, dataMap, startPosition, width, shift, lastValue) {
+    var sampleSize = Math.ceil(options.samplesPerPixel / options.resolution);
+    var start = options.scrollPosition * options.samplesPerPixel;
+    var startSecond = start / options.samplerate;
+    var secondsPerPixel = options.samplesPerPixel / options.samplerate;
+    var calcStartSecond = startSecond + startPosition * secondsPerPixel;
+    var calcEndSecond = calcStartSecond + width * secondsPerPixel;
+    var absShift = Math.abs(shift) * 4;
+    var shiftTarget = shift > 0 ? 0 : absShift;
+    var shiftStart = shift > 0 ? absShift : 0;
+    var peaks = new Float32Array(lastValue.buffer)
+        .copyWithin(shiftTarget, shiftStart)
+        .fill(0, startPosition * 4, (startPosition + width) * 4);
+    var currentIntervalIndex = intervals.findIndex(function (i) { return i.end > calcStartSecond && i.start + i.offsetStart < calcEndSecond; });
+    // There are no intervals in this range so return empty array
+    if (currentIntervalIndex === -1)
+        return peaks;
+    var maxIntervalIncrementIndex = intervals.length - 1;
+    var currentInterval = intervals[currentIntervalIndex];
+    var buffer = dataMap.get(currentInterval.source);
+    // For each pixel we display
+    for (var i = startPosition; i < startPosition + width; i++) {
+        var currentSecond = startSecond + i * secondsPerPixel;
+        if (currentSecond >= currentInterval.end) {
+            if (currentIntervalIndex === maxIntervalIncrementIndex) {
+                return peaks;
+            }
+            else {
+                currentInterval = intervals[++currentIntervalIndex];
+                buffer = dataMap.get(currentInterval.source);
+            }
         }
-      }
+        if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
+            peaks.set([0, 0, 0, 0], i * 4);
+            continue;
+        }
+        var startBorder = currentSecond - secondsPerPixel <
+            currentInterval.start + currentInterval.offsetStart;
+        var endBorder = currentSecond + secondsPerPixel > currentInterval.end;
+        var intervalBorder = startBorder || endBorder ? 1 : 0;
+        if (buffer == null) {
+            peaks.set([0, 0, intervalBorder, 1], i * 4);
+            continue;
+        }
+        var secondsIntoInterval = currentSecond - currentInterval.start;
+        var startSample = Math.floor(secondsIntoInterval * options.samplerate);
+        var endSample = startSample + options.samplesPerPixel;
+        var length_1 = buffer.length;
+        var loopEnd = length_1 < endSample ? length_1 : endSample;
+        // Cycle through the data-points relevant to the pixel
+        // Don't cycle through more than sampleSize frames per pixel.
+        var min = 0, max = 0;
+        for (var j = startSample; j < loopEnd; j += sampleSize) {
+            var sample = buffer[j];
+            // Keep track of positive and negative values separately
+            if (sample > max)
+                max = sample;
+            else if (sample < min)
+                min = sample;
+        }
+        peaks.set([min, max, intervalBorder, 1], i * 4);
     }
+    return peaks;
+});
 
-    return target;
-  };
 
-  /**
-   * @typedef {Object} Interval
-   * 
-   * @property {number} start
-   * @property {number} offsetStart
-   * @property {number} end
-   * @property {number} index
-   */
+/***/ }),
 
-  /**
-   * @typedef {{[key: string]: Interval}} IntervalMap
-   */
+/***/ "./src/strategies/rms.ts":
+/*!*******************************!*\
+  !*** ./src/strategies/rms.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
 
-  /**
-   * @param {Interval} interval
-   */
-  var calcStart = function calcStart(interval) {
-    return interval.start + interval.offsetStart;
-  };
-
-  /**
-   * The algorithm first calculates real start and end times of each segment,
-   * sorts them by priority, then start time.
-   *
-   * Finally it merges the segments by index so there are no overlapping
-   * segments and those with highest index are on top.
-   *
-   * @export
-   * @param {Interval[]} intervals Segments to flatten
-   * @returns {Interval[]} flattened Interval array
-   */
-  var weightedIntervalMerge = function weightedIntervalMerge(intervals) {
-    if (intervals == null || intervals.length === 0) return [];
-
-    var sorted = sort(intervals);
-    var normalized = normalizeIndex(sorted);
-    var copied = copy(normalized);
-    var grouped = groupByIndex(copied);
-
-    return weightedMerge(grouped);
-  };
-
-  /**
-   * Copies elements so original are unaltered
-   * 
-   * @param {Interval[]} intervals 
-   */
-  var copy = function copy(intervals) {
-    return intervals.map(function (i) {
-      return _extends({}, i, {
-        offsetStart: i.offsetStart || 0,
-        index: i.index || 1
-      });
-    });
-  };
-
-  /**
-   * When an element is altered the index is set very high,
-   * this functions normalizes to indexes back to 0
-   * 
-   * @param {Intervalp[]} intervals 
-   */
-  var normalizeIndex = function normalizeIndex(intervals) {
-    var index = 0;
-    var preNormalizeIndex = Number.MIN_SAFE_INTEGER;
-    intervals.forEach(function (el) {
-      if (el.index > preNormalizeIndex) {
-        preNormalizeIndex = el.index;
-        el.index = ++index;
-      } else {
-        el.index = index;
-      }
-    });
-    return intervals;
-  };
-
-  /**
-   * Sorts the intervals by index, then by start
-   * 
-   * @param {Interval[]} intervals 
-   * @return {Interval[]} Interval array
-   */
-  var sort = function sort(intervals) {
-    return intervals.sort(function (a, b) {
-      return cmp(a.index, b.index) || cmp(calcStart(a), calcStart(b));
-    });
-  };
-
-  /**
-   * Returns a map of intervals grouped by the key property
-   * 
-   * @param {Interval[]} intervals 
-   * @returns {IntervalMap} Map of index => interval[]
-   */
-  var groupByIndex = function groupByIndex(intervals) {
-    return intervals.reduce(function (groups, interval) {
-      (groups[interval.index] = groups[interval.index] || []).push(interval);
-      return groups;
-    }, {});
-  };
-
-  /**
-   * Merges all the groups by index
-   * 
-   * @param {IntervalMap} grouped 
-   * @returns {Interval[]} Interval array
-   */
-  var weightedMerge = function weightedMerge(grouped) {
-    var flattened = null;
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = Object.keys(grouped)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var index = _step.value;
-
-        var merged = merge(grouped[index]);
-        if (flattened == null) {
-          flattened = merged;
-        } else {
-          flattened = combine(merged, flattened);
-        }
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Calculate rms values
+ *
+ * @export
+ * @param resolution
+ * @param samplesPerPixel
+ * @param width
+ * @param intervals
+ * @param scrollPosition
+ * @param sampleRate
+ * @param dataMap
+ * @returns
+ */
+exports.default = (function (options, intervals, dataMap, startPosition, width, shift, lastValue) {
+    var sampleSize = Math.ceil(options.samplesPerPixel / options.resolution);
+    var start = options.scrollPosition * options.samplesPerPixel;
+    var startSecond = start / options.samplerate;
+    var secondsPerPixel = options.samplesPerPixel / options.samplerate;
+    var calcStartSecond = startSecond + startPosition * secondsPerPixel;
+    var calcEndSecond = calcStartSecond + width * secondsPerPixel;
+    var absShift = Math.abs(shift) * 4;
+    var shiftTarget = shift > 0 ? 0 : absShift;
+    var shiftStart = shift > 0 ? absShift : 0;
+    var peaks = new Float32Array(lastValue.buffer)
+        .copyWithin(shiftTarget, shiftStart)
+        .fill(0, startPosition * 4, (startPosition + width) * 4);
+    var currentIntervalIndex = intervals.findIndex(function (i) { return i.end > calcStartSecond && i.start + i.offsetStart < calcEndSecond; });
+    // There are no intervals in this range so return empty array
+    if (currentIntervalIndex === -1) {
+        return peaks;
     }
-
-    return flattened;
-  };
-
-  /**
-   * Merges a set of intervals with the same index and remove any overlaps, left to right
-   * 
-   * @param {Interval[]} intervals 
-   * @returns {Interval[]} Interval array
-   */
-  var merge = function merge(intervals) {
-    if (intervals.length <= 1) return intervals;
-
-    var result = [];
-
-    var current = intervals[0];
-    for (var i = 1; i < intervals.length; i++) {
-      var next = intervals[i];
-
-      // If current is completely overlapped by second it is merged into it
-      if (current.end >= next.end) {
-        continue;
-        // Resolves partial overlaps by setting end of current to start of next
-      } else if (calcStart(next) < current.end) {
-        result.push(_extends({}, current, { end: calcStart(next) }));
-        current = next;
-      } else {
-        // No overlap, push onto results
-        result.push(current);
-        current = next;
-      }
-    }
-
-    result.push(current);
-    return result;
-  };
-
-  /**
-   * Given two sets of intervals it merges them so the highIndexes set has priority
-   *
-   * @param {Interval[]} highIndexes
-   * @param {Interval[]} lowIndexes
-   * 
-   * @returns {Interval[]} Interval array
-   */
-  var combine = function combine(highIndexes, lowIndexes) {
-    var highIndex = 0;
-    var lowIndex = 0;
-
-    var merged = [];
-
-    while (highIndex < highIndexes.length || lowIndex < lowIndexes.length) {
-
-      var high = highIndexes[highIndex];
-      var low = lowIndexes[lowIndex];
-
-      // Only low priority left so push low onto results
-      if (highIndex === highIndexes.length) {
-        merged.push(_extends({}, low));
-        lowIndex++;
-        // Only high priority left so push high onto results
-      } else if (lowIndex === lowIndexes.length) {
-        merged.push(_extends({}, high));
-        highIndex++;
-        // High priority start before or at same time as low
-      } else if (calcStart(high) <= calcStart(low)) {
-        // No overlap between low and high
-        // low:                 ----------------------
-        // high: ---------------
-        if (high.end <= calcStart(low)) ; else if (high.end < low.end) {
-          low.offsetStart = high.end - low.start;
-          // Low index completely overlapped, dismiss it
-          // low:               -----------
-          // high: -------------------------------------
-        } else {
-          lowIndex++;
+    var maxIntervalIncrementIndex = intervals.length - 1;
+    var currentInterval = intervals[currentIntervalIndex];
+    var buffer = dataMap.get(currentInterval.source);
+    // For each pixel we display
+    for (var i = startPosition; i < startPosition + width; i++) {
+        var currentSecond = startSecond + i * secondsPerPixel;
+        if (currentSecond >= currentInterval.end) {
+            if (currentIntervalIndex === maxIntervalIncrementIndex) {
+                return peaks;
+            }
+            else {
+                currentInterval = intervals[++currentIntervalIndex];
+                buffer = dataMap.get(currentInterval.source);
+            }
         }
-
-        merged.push(_extends({}, high));
-        highIndex++;
-        // Low priority starts before high
-      } else {
-        // No overlap between low and high intervals
-        // low: ---------------
-        // high                ----------------------
-        if (low.end <= calcStart(high)) {
-          merged.push(_extends({}, low));
-          lowIndex++;
-          // Partial overlap where high ends after low
-          // low: ---------------------
-          // high                ----------------------
-        } else if (high.end > low.end) {
-          merged.push(_extends({}, low, { end: calcStart(high) }));
-          lowIndex++;
-          // Partial overlap where high ends before low
-          // low: -------------------------------------
-          // high             -----------
-        } else {
-          merged.push(_extends({}, low, { end: calcStart(high) }));
-          low.offsetStart = high.end - low.start;
+        if (currentInterval.start + currentInterval.offsetStart > currentSecond) {
+            peaks.set([0, 0, 0, 0], i * 4);
+            continue;
         }
-      }
+        var startBorder = currentSecond - secondsPerPixel <
+            currentInterval.start + currentInterval.offsetStart;
+        var endBorder = currentSecond + secondsPerPixel > currentInterval.end;
+        var intervalBorder = startBorder || endBorder ? 1 : 0;
+        if (buffer == null) {
+            peaks.set([0, 0, intervalBorder, 1], i * 4);
+            continue;
+        }
+        var secondsIntoInterval = currentSecond - currentInterval.start;
+        var startSample = Math.floor(secondsIntoInterval * options.samplerate);
+        var endSample = startSample + options.samplesPerPixel;
+        var length_1 = buffer.length;
+        var loopEnd = length_1 < endSample ? length_1 : endSample;
+        // Cycle through the data-points relevant to the pixel
+        // Don't cycle through more than sampleSize frames per pixel.
+        var posSum = 0, negSum = 0, count = 0;
+        for (var j = startSample; j < loopEnd; j += sampleSize, count++) {
+            var val = buffer[j];
+            // Keep track of positive and negative values separately
+            if (val > 0) {
+                posSum += val * val;
+            }
+            else {
+                negSum += val * val;
+            }
+        }
+        var min = -Math.sqrt(negSum / count);
+        var max = Math.sqrt(posSum / count);
+        peaks.set([min, max, intervalBorder, 1], i * 4);
     }
-
-    return merged;
-  };
-
-  /**
-   *
-   * @param {number} a
-   * @param {number} b
-   */
-  var cmp = function cmp(a, b) {
-    if (a > b) return +1;
-    if (a < b) return -1;
-    return 0;
-  };
-
-  exports.weightedIntervalMerge = weightedIntervalMerge;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
+    return peaks;
+});
 
 
 /***/ })
-/******/ ]);
+
+/******/ });
 });
 //# sourceMappingURL=waveshaper.js.map
